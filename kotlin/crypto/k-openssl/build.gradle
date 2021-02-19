@@ -1,0 +1,17 @@
+plugins {
+    id 'java-library'
+    id 'kotlin'
+}
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(path: ':kotlin:crypto:base64')
+    implementation project(path: ':kotlin:crypto:bouncycastle-ktx')
+    api project(path: ':kotlin:crypto:k-openssl-common')
+    implementation deps.kotlin.coroutinesCore
+
+    testImplementation project(path: ':kotlin:test:test-k-openssl')
+}

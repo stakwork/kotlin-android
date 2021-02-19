@@ -1,0 +1,51 @@
+rootProject.name = "kotlin-android"
+
+/////////////////////////
+/// :android:concepts ///
+/////////////////////////
+include ':android:concepts:concept-android-navigation'
+
+/////////////////////////
+/// :android:features ///
+/////////////////////////
+include ':android:features:android-feature-toast-utils'
+include ':android:features:authentication:android-feature-authentication-core'
+include ':android:features:android-feature-views'
+
+//////////////////////
+/// :kotlin:common ///
+//////////////////////
+include ':kotlin:common:build-config'
+
+////////////////////////
+/// :kotlin:concepts ///
+////////////////////////
+include ':kotlin:concepts:authentication:concept-authentication'
+include ':kotlin:concepts:authentication:concept-encryption-key'
+include ':kotlin:concepts:concept-coroutines'
+include ':kotlin:concepts:navigation:concept-navigation-client'
+include ':kotlin:concepts:navigation:concept-navigation-driver'
+include ':kotlin:concepts:concept-views'
+
+//////////////////////
+/// :kotlin:crypto ///
+//////////////////////
+include ':kotlin:crypto:base32'
+include ':kotlin:crypto:k-openssl'
+include ':kotlin:crypto:bouncycastle-ktx'
+include ':kotlin:crypto:base64'
+include ':kotlin:crypto:k-openssl-common'
+
+////////////////////////
+/// :kotlin:features ///
+////////////////////////
+include ':kotlin:features:authentication:feature-authentication-core'
+include ':kotlin:features:authentication:feature-authentication-view'
+
+////////////////////
+/// :kotlin:test ///
+////////////////////
+include ':kotlin:test:test-concept-coroutines'
+include ':kotlin:test:test-k-openssl'
+
+include ':sample'

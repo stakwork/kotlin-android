@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_linear_toast"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:elevation="4dp"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:padding="8dp"
+    tools:background="@drawable/toast_utils_default_background"
+    tools:ignore="UseCompoundDrawables">
+
+    <ImageView
+        android:id="@+id/image_view_toast"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/text_view_toast"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        tools:text="toast test\nwith some overflow"
+        tools:textColor="@color/toast_utils_default_text" />
+
+</androidx.appcompat.widget.LinearLayoutCompat>

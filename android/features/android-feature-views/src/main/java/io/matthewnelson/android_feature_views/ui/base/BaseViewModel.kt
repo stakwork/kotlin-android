@@ -1,0 +1,33 @@
+package io.matthewnelson.android_feature_views.ui.base
+
+import androidx.lifecycle.ViewModel
+import io.matthewnelson.concept_views.viewstate.ViewState
+import io.matthewnelson.concept_views.viewstate.ViewStateContainer
+import io.matthewnelson.concept_views.viewstate.collect
+import io.matthewnelson.concept_views.viewstate.value
+
+suspend inline fun <VS: ViewState<VS>> BaseViewModel<VS>.collectViewState(
+    crossinline action: suspend (value: VS) -> Unit
+): Unit =
+    this.viewStateContainer.collect { action(it) }
+
+inline val <VS: ViewState<VS>>BaseViewModel<VS>.currentViewState: VS
+    get() = this.viewStateContainer.value
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun <VS: ViewState<VS>> BaseViewModel<VS>.updateViewState(viewState: VS) =
+    this.viewStateContainer.updateViewState(viewState)
+
+/**
+ * Encapsulates a [ViewStateContainer] with a [ViewModel] which gets collected
+ * from the [BaseFragment]
+ * */
+abstract class BaseViewModel<
+        VS: ViewState<VS>
+        >(initialViewState: VS): ViewModel()
+{
+    @Suppress("RemoveExplicitTypeArguments")
+    open val viewStateContainer: ViewStateContainer<VS> by lazy {
+        ViewStateContainer<VS>(initialViewState)
+    }
+}

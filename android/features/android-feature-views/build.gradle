@@ -1,0 +1,50 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+}
+
+android {
+    compileSdkVersion versions.compileSdk
+    buildToolsVersion versions.buildTools
+
+    defaultConfig {
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.compileSdk
+        versionCode VERSION_CODE.toInteger()
+        versionName VERSION_NAME
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments disableAnalytics: 'true'
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    api project(path: ':android:concepts:concept-android-navigation')
+    api project(path: ':android:features:android-feature-toast-utils')
+    api project(path: ':kotlin:concepts:concept-coroutines')
+    api project(path: ':kotlin:concepts:concept-views')
+    api deps.androidx.appCompat
+    api deps.androidx.constraintLayout
+    api deps.androidx.core
+    api deps.androidx.lifecycle.commonJava8
+    api deps.androidx.lifecycle.hilt
+    api deps.androidx.lifecycle.viewModel
+    api deps.androidx.lifecycle.viewModelSavedState
+    implementation deps.androidx.viewBinding
+    api deps.kotlin.coroutinesAndroid
+    api deps.viewBindingDelegateNoReflect
+}

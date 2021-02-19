@@ -1,0 +1,79 @@
+plugins {
+    id 'com.android.application'
+    id 'dagger.hilt.android.plugin'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+}
+
+android {
+    compileSdkVersion versions.compileSdk
+    buildToolsVersion versions.buildTools
+
+    buildFeatures.viewBinding = true
+    defaultConfig {
+        applicationId "io.matthewnelson.kotlin_android"
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.compileSdk
+        versionCode VERSION_CODE.toInteger()
+        versionName VERSION_NAME
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments disableAnalytics: 'true'
+
+//        multiDexEnabled true
+    }
+
+    // Gradle 4.0's introduction of Google analytics to Android App Developers.
+    // https://developer.android.com/studio/releases/gradle-plugin
+    dependenciesInfo {
+        // Disables dependency metadata when building APKs.
+        includeInApk = false
+        // Disables dependency metadata when building Android App Bundles.
+        includeInBundle = false
+    }
+
+    packagingOptions {
+        exclude 'META-INF/*.kotlin_module'
+        exclude 'META-INF/*.version'
+    }
+
+    buildTypes {
+        release {
+            resValue "string", "app_name", "KotlinAndroid"
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            applicationIdSuffix ".debug"
+            resValue "string", "app_name", "KotlinAndroid Debug"
+            debuggable true
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation project(path: ':android:features:android-feature-views')
+    implementation project(path: ':android:features:authentication:android-feature-authentication-core')
+    implementation project(path: ':kotlin:common:build-config')
+    implementation project(path: ':kotlin:concepts:navigation:concept-navigation-driver')
+
+    implementation deps.google.hilt
+    kapt kaptDeps.google.hilt
+    kapt kaptDeps.androidx.lifecycle.hilt
+
+//    debugImplementation debugDeps.square.leakCanary
+
+    testImplementation testDeps.junit
+
+    androidTestImplementation testDeps.androidx.core
+    androidTestImplementation testDeps.androidx.espresso
+    androidTestImplementation testDeps.androidx.junit
+}

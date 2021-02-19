@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    xmlns:tools="http://schemas.android.com/tools"
+    package="io.opensolutions.authentication_core_android">
+
+
+    <!-- dependency requires minSdk 21 which is checked for -->
+    <uses-sdk tools:overrideLibrary="androidx.security" />
+</manifest>

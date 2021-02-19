@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="close_app_double_tap_toast_msg">Tap back again to minimize</string>
+</resources>
