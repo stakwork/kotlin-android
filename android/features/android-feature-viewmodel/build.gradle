@@ -32,12 +32,10 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    api project(path: ':android:features:android-feature-navigation')
-    api project(path: ':android:features:android-feature-viewmodel')
-    api project(path: ':kotlin:features:feature-navigation')
-    api deps.androidx.appCompat
-    api deps.androidx.constraintLayout
-    api deps.androidx.core
-    implementation deps.androidx.viewBinding
-    api deps.viewBindingDelegateNoReflect
+    api project(path: ':kotlin:concepts:concept-coroutines')
+    api project(path: ':kotlin:concepts:concept-views')
+    api deps.androidx.lifecycle.commonJava8
+    api deps.androidx.lifecycle.viewModel
+    api deps.androidx.lifecycle.viewModelSavedState
+    api deps.kotlin.coroutinesAndroid
 }

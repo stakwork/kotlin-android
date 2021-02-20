@@ -8,6 +8,7 @@ include ':android:features:authentication:android-feature-authentication-core'
 include ':android:features:android-feature-navigation'
 include ':android:features:android-feature-screens'
 include ':android:features:android-feature-toast-utils'
+include ':android:features:android-feature-viewmodel'
 
 //////////////////////
 /// :kotlin:common ///
