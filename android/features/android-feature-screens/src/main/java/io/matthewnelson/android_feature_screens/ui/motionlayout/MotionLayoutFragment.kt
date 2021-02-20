@@ -20,9 +20,11 @@ import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.viewbinding.ViewBinding
+import io.matthewnelson.android_concept_views.MotionLayoutViewState
 import io.matthewnelson.concept_views.sideeffect.SideEffect
-import io.matthewnelson.android_feature_screens.ui.base.currentViewState
 import io.matthewnelson.android_feature_screens.ui.sideeffect.SideEffectFragment
+import io.matthewnelson.android_feature_viewmodel.MotionLayoutViewModel
+import io.matthewnelson.android_feature_viewmodel.currentViewState
 
 /**
  * An abstraction of [SideEffectFragment] that aids in the execution of a [MotionLayout].

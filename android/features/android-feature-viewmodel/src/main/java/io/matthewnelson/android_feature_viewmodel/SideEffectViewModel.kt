@@ -13,12 +13,11 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 * */
-package io.matthewnelson.android_feature_screens.ui.sideeffect
+package io.matthewnelson.android_feature_viewmodel
 
 import io.matthewnelson.concept_views.sideeffect.SideEffect
 import io.matthewnelson.concept_views.sideeffect.SideEffectContainer
 import io.matthewnelson.concept_views.sideeffect.collect
-import io.matthewnelson.android_feature_screens.ui.base.BaseViewModel
 import io.matthewnelson.concept_views.viewstate.ViewState
 
 suspend inline fun <T, SE: SideEffect<T>, VS: ViewState<VS>> SideEffectViewModel<T, SE, VS>.collectSideEffects(
@@ -32,12 +31,10 @@ suspend inline fun <T, SE: SideEffect<T>, VS: ViewState<VS>> SideEffectViewModel
     this.sideEffectContainer.submitSideEffect(sideEffect)
 
 /**
- * Adds [SideEffect]s to the [BaseViewModel] which gets observed
- * from [SideEffectFragment].
+ * Adds [SideEffect]s to the [BaseViewModel]
  *
  * @see [SideEffect]
  * @see [SideEffectContainer]
- * @see [SideEffectFragment]
  * */
 abstract class SideEffectViewModel<
         T,

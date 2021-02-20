@@ -22,12 +22,13 @@ import androidx.viewbinding.ViewBinding
 import io.matthewnelson.concept_views.sideeffect.SideEffect
 import io.matthewnelson.concept_views.viewstate.ViewState
 import io.matthewnelson.android_feature_screens.ui.base.BaseFragment
+import io.matthewnelson.android_feature_viewmodel.SideEffectViewModel
+import io.matthewnelson.android_feature_viewmodel.collectSideEffects
 
 /**
  * An abstraction that adds [SideEffect]s to the [BaseFragment].
  *
  * @see [SideEffect]
- * @see [SideEffectViewModel]
  * */
 abstract class SideEffectFragment<
         T,

@@ -33,6 +33,6 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     api project(path: ':kotlin:concepts:concept-views')
-    implementation deps.androidx.appCompat
+//    implementation deps.androidx.appCompat
     api deps.androidx.constraintLayout
 }

@@ -32,8 +32,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    api project(path: ':kotlin:concepts:concept-coroutines')
-    api project(path: ':kotlin:concepts:concept-views')
+    api project(path: ':android:concepts:android-concept-views')
     api deps.androidx.lifecycle.commonJava8
     api deps.androidx.lifecycle.viewModel
     api deps.androidx.lifecycle.viewModelSavedState

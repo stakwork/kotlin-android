@@ -20,6 +20,8 @@ import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
+import io.matthewnelson.android_feature_viewmodel.BaseViewModel
+import io.matthewnelson.android_feature_viewmodel.collectViewState
 import io.matthewnelson.concept_views.viewstate.ViewState
 
 abstract class BaseFragment<

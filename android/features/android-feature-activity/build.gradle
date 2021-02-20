@@ -36,7 +36,6 @@ dependencies {
     api project(path: ':android:features:android-feature-viewmodel')
     api project(path: ':kotlin:features:feature-navigation')
     api deps.androidx.appCompat
-    api deps.androidx.constraintLayout
     api deps.androidx.core
     implementation deps.androidx.viewBinding
     api deps.viewBindingDelegateNoReflect

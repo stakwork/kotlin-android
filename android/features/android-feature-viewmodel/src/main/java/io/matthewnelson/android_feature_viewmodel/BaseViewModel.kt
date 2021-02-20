@@ -13,7 +13,7 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 * */
-package io.matthewnelson.android_feature_screens.ui.base
+package io.matthewnelson.android_feature_viewmodel
 
 import androidx.lifecycle.ViewModel
 import io.matthewnelson.concept_views.viewstate.ViewState
@@ -34,8 +34,7 @@ inline fun <VS: ViewState<VS>> BaseViewModel<VS>.updateViewState(viewState: VS) 
     this.viewStateContainer.updateViewState(viewState)
 
 /**
- * Encapsulates a [ViewStateContainer] with a [ViewModel] which gets collected
- * from the [BaseFragment]
+ * Encapsulates a [ViewStateContainer] with a [ViewModel]
  * */
 abstract class BaseViewModel<
         VS: ViewState<VS>

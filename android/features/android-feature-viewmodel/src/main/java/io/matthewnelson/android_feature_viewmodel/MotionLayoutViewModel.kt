@@ -13,19 +13,15 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 * */
-package io.matthewnelson.android_feature_screens.ui.motionlayout
+package io.matthewnelson.android_feature_viewmodel
 
-import io.matthewnelson.android_feature_screens.ui.base.BaseViewModel
-import io.matthewnelson.android_feature_screens.ui.base.BaseFragment
+import io.matthewnelson.android_concept_views.MotionLayoutViewState
 import io.matthewnelson.concept_views.sideeffect.SideEffect
-import io.matthewnelson.android_feature_screens.ui.sideeffect.SideEffectFragment
-import io.matthewnelson.android_feature_screens.ui.sideeffect.SideEffectViewModel
 
 /**
  * An abstraction that defines the [BaseViewModel.viewStateContainer] as being of type
  * [MotionLayoutViewState].
  *
- * @see [MotionLayoutFragment]
  * @see [MotionLayoutViewState]
  * */
 abstract class MotionLayoutViewModel<
@@ -50,14 +46,6 @@ abstract class MotionLayoutViewModel<
      *           if (myMotionLayoutViewState is MyMotionLayoutViewState.FinalState) {
      *               viewModel.onMotionSceneCompletion()
      *           }
-     *       }
-     *   }
-     *
-     * Alternatively (if using a [BaseFragment], [SideEffectFragment], or [MotionLayoutFragment]):
-     *
-     *   onViewStateFlowCollect(viewState: MyMotionLayoutViewState) {
-     *       if (viewState is MyMotionLayoutViewState.FinalState) {
-     *           viewModel.onMotionSceneCompletion()
      *       }
      *   }
      * */
