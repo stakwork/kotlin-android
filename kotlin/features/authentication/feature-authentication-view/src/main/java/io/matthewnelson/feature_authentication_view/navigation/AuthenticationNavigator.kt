@@ -15,8 +15,8 @@
 * */
 package io.matthewnelson.feature_authentication_view.navigation
 
-import io.matthewnelson.concept_navigation_client.BaseNavigationDriver
-import io.matthewnelson.concept_navigation_client.Navigator
+import io.matthewnelson.concept_navigation.BaseNavigationDriver
+import io.matthewnelson.concept_navigation.Navigator
 
 abstract class AuthenticationNavigator<T>(
     navigationDriver: BaseNavigationDriver<T>

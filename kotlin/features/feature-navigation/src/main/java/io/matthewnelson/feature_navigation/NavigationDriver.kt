@@ -13,10 +13,10 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 * */
-package io.matthewnelson.concept_navigation_driver
+package io.matthewnelson.feature_navigation
 
-import io.matthewnelson.concept_navigation_client.BaseNavigationDriver
-import io.matthewnelson.concept_navigation_client.NavigationRequest
+import io.matthewnelson.concept_navigation.BaseNavigationDriver
+import io.matthewnelson.concept_navigation.NavigationRequest
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow

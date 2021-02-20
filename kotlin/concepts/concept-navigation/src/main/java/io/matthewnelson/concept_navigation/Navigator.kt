@@ -13,7 +13,7 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 * */
-package io.matthewnelson.concept_navigation_client
+package io.matthewnelson.concept_navigation
 
 /**
  * Implement a single [Navigator] for each module, then define any abstract methods
