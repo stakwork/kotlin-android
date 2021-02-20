@@ -13,7 +13,7 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 * */
-package io.matthewnelson.concept_android_navigation.requests
+package io.matthewnelson.android_feature_navigation
 
 import androidx.navigation.NavOptions
 import io.opensolutions.common_navigation_android.R
