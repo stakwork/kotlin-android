@@ -1,6 +1,11 @@
 rootProject.name = "kotlin-android"
 
 /////////////////////////
+/// :android:concepts ///
+/////////////////////////
+include ':android:concepts:android-concept-views'
+
+/////////////////////////
 /// :android:features ///
 /////////////////////////
 include ':android:features:android-feature-activity'
