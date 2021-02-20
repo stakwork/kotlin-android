@@ -13,18 +13,11 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 * */
-package io.matthewnelson.android_feature_screens.ui.base
+package io.matthewnelson.android_feature_activity
 
-import androidx.annotation.LayoutRes
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModel
-import androidx.viewbinding.ViewBinding
+import androidx.navigation.NavController
+import io.matthewnelson.feature_navigation.NavigationDriver
 
-abstract class BaseActivity<
-        VM: ViewModel,
-        VB: ViewBinding
-        >(@LayoutRes layoutId: Int): AppCompatActivity(layoutId)
-{
-    protected abstract val viewModel: VM
-    protected abstract val binding: VB
+interface NavigationViewModel {
+    val navigationDriver: NavigationDriver<NavController>
 }
