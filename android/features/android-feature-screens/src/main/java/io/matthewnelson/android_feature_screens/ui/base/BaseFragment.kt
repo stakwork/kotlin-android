@@ -13,49 +13,39 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 * */
-package io.matthewnelson.android_feature_views.ui.sideeffect
+package io.matthewnelson.android_feature_screens.ui.base
 
 import android.os.Bundle
 import androidx.annotation.LayoutRes
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
-import io.matthewnelson.concept_views.sideeffect.SideEffect
 import io.matthewnelson.concept_views.viewstate.ViewState
-import io.matthewnelson.android_feature_views.ui.base.BaseFragment
 
-/**
- * An abstraction that adds [SideEffect]s to the [BaseFragment].
- *
- * @see [SideEffect]
- * @see [SideEffectViewModel]
- * */
-abstract class SideEffectFragment<
-        T,
-        SE: SideEffect<T>,
+abstract class BaseFragment<
         VS: ViewState<VS>,
-        SEVM: SideEffectViewModel<T, SE, VS>,
+        BVM: BaseViewModel<VS>,
         VB: ViewBinding
-        >(@LayoutRes layoutId: Int): BaseFragment<
-        VS,
-        SEVM,
-        VB
-        >(layoutId)
+        >(@LayoutRes layoutId: Int): Fragment(layoutId)
 {
+    protected abstract val viewModel: BVM
+    protected abstract val binding: VB
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        subscribeToSideEffectSharedFlow()
+        subscribeToViewStateFlow()
     }
 
-    protected abstract suspend fun onSideEffectCollect(sideEffect: SE)
+    protected abstract suspend fun onViewStateFlowCollect(viewState: VS)
 
     /**
      * Called from [onCreate]. Must be mindful if overriding to lazily start things
      * using lifecycleScope.launchWhenStarted
      * */
-    protected open fun subscribeToSideEffectSharedFlow() {
+    protected open fun subscribeToViewStateFlow() {
         lifecycleScope.launchWhenStarted {
-            viewModel.collectSideEffects { sideEffect ->
-                onSideEffectCollect(sideEffect)
+            viewModel.collectViewState { viewState ->
+                onViewStateFlowCollect(viewState)
             }
         }
     }

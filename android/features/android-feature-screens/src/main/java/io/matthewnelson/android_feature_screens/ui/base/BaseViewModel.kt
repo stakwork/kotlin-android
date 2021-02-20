@@ -13,7 +13,7 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 * */
-package io.matthewnelson.android_feature_views.ui.base
+package io.matthewnelson.android_feature_screens.ui.base
 
 import androidx.lifecycle.ViewModel
 import io.matthewnelson.concept_views.viewstate.ViewState

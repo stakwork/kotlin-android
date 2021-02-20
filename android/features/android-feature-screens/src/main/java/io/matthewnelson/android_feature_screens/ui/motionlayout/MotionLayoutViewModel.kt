@@ -13,13 +13,13 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 * */
-package io.matthewnelson.android_feature_views.ui.motionlayout
+package io.matthewnelson.android_feature_screens.ui.motionlayout
 
-import io.matthewnelson.android_feature_views.ui.base.BaseViewModel
-import io.matthewnelson.android_feature_views.ui.base.BaseFragment
+import io.matthewnelson.android_feature_screens.ui.base.BaseViewModel
+import io.matthewnelson.android_feature_screens.ui.base.BaseFragment
 import io.matthewnelson.concept_views.sideeffect.SideEffect
-import io.matthewnelson.android_feature_views.ui.sideeffect.SideEffectFragment
-import io.matthewnelson.android_feature_views.ui.sideeffect.SideEffectViewModel
+import io.matthewnelson.android_feature_screens.ui.sideeffect.SideEffectFragment
+import io.matthewnelson.android_feature_screens.ui.sideeffect.SideEffectViewModel
 
 /**
  * An abstraction that defines the [BaseViewModel.viewStateContainer] as being of type

@@ -13,7 +13,7 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 * */
-package io.matthewnelson.android_feature_views.navigation
+package io.matthewnelson.android_feature_screens.navigation
 
 import android.content.Context
 import android.content.Intent

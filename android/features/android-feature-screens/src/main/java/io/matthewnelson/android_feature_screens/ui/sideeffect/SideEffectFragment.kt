@@ -13,39 +13,49 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 * */
-package io.matthewnelson.android_feature_views.ui.base
+package io.matthewnelson.android_feature_screens.ui.sideeffect
 
 import android.os.Bundle
 import androidx.annotation.LayoutRes
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
+import io.matthewnelson.concept_views.sideeffect.SideEffect
 import io.matthewnelson.concept_views.viewstate.ViewState
+import io.matthewnelson.android_feature_screens.ui.base.BaseFragment
 
-abstract class BaseFragment<
+/**
+ * An abstraction that adds [SideEffect]s to the [BaseFragment].
+ *
+ * @see [SideEffect]
+ * @see [SideEffectViewModel]
+ * */
+abstract class SideEffectFragment<
+        T,
+        SE: SideEffect<T>,
         VS: ViewState<VS>,
-        BVM: BaseViewModel<VS>,
+        SEVM: SideEffectViewModel<T, SE, VS>,
         VB: ViewBinding
-        >(@LayoutRes layoutId: Int): Fragment(layoutId)
+        >(@LayoutRes layoutId: Int): BaseFragment<
+        VS,
+        SEVM,
+        VB
+        >(layoutId)
 {
-    protected abstract val viewModel: BVM
-    protected abstract val binding: VB
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        subscribeToViewStateFlow()
+        subscribeToSideEffectSharedFlow()
     }
 
-    protected abstract suspend fun onViewStateFlowCollect(viewState: VS)
+    protected abstract suspend fun onSideEffectCollect(sideEffect: SE)
 
     /**
      * Called from [onCreate]. Must be mindful if overriding to lazily start things
      * using lifecycleScope.launchWhenStarted
      * */
-    protected open fun subscribeToViewStateFlow() {
+    protected open fun subscribeToSideEffectSharedFlow() {
         lifecycleScope.launchWhenStarted {
-            viewModel.collectViewState { viewState ->
-                onViewStateFlowCollect(viewState)
+            viewModel.collectSideEffects { sideEffect ->
+                onSideEffectCollect(sideEffect)
             }
         }
     }

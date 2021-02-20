@@ -13,7 +13,7 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 * */
-package io.matthewnelson.android_feature_views.ui.motionlayout
+package io.matthewnelson.android_feature_screens.ui.motionlayout
 
 import android.os.Bundle
 import android.view.View
@@ -21,8 +21,8 @@ import androidx.annotation.LayoutRes
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.viewbinding.ViewBinding
 import io.matthewnelson.concept_views.sideeffect.SideEffect
-import io.matthewnelson.android_feature_views.ui.base.currentViewState
-import io.matthewnelson.android_feature_views.ui.sideeffect.SideEffectFragment
+import io.matthewnelson.android_feature_screens.ui.base.currentViewState
+import io.matthewnelson.android_feature_screens.ui.sideeffect.SideEffectFragment
 
 /**
  * An abstraction of [SideEffectFragment] that aids in the execution of a [MotionLayout].
