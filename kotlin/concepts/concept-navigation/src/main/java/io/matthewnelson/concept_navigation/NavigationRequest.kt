@@ -13,8 +13,11 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 * */
-package io.matthewnelson.concept_navigation_client
+package io.matthewnelson.concept_navigation
 
-abstract class BaseNavigationDriver<T> {
-    abstract suspend fun submitNavigationRequest(request: NavigationRequest<T>)
+/**
+ * Extend and create a request specific to the destination desired.
+ * */
+abstract class NavigationRequest<T> {
+    abstract fun navigate(controller: T)
 }

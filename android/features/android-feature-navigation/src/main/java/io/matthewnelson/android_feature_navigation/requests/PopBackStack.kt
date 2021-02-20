@@ -13,11 +13,11 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 * */
-package io.matthewnelson.concept_android_navigation.requests
+package io.matthewnelson.android_feature_navigation.requests
 
 import androidx.annotation.IdRes
 import androidx.navigation.NavController
-import io.matthewnelson.concept_navigation_client.NavigationRequest
+import io.matthewnelson.concept_navigation.NavigationRequest
 
 class PopBackStack(
     @IdRes private val destinationId: Int? = null,

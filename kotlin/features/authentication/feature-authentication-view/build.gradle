@@ -10,7 +10,7 @@ targetCompatibility = JavaVersion.VERSION_1_8
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     api project(path: ':kotlin:features:authentication:feature-authentication-core')
-    api project(path: ':kotlin:concepts:navigation:concept-navigation-client')
+    api project(path: ':kotlin:concepts:concept-navigation')
     api project(path: ':kotlin:concepts:concept-views')
 
     testImplementation project(path: ':kotlin:test:test-concept-coroutines')
