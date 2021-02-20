@@ -8,7 +8,7 @@ android {
     buildToolsVersion versions.buildTools
 
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion versions.minSdk
         targetSdkVersion versions.compileSdk
         versionCode VERSION_CODE.toInteger()
         versionName VERSION_NAME
@@ -32,7 +32,9 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    api project(path: ':kotlin:features:authentication:feature-authentication-core')
-    implementation deps.androidx.annotation
-    implementation deps.androidx.securityCrypto
+    api project(path: ':android:concepts:android-concept-views')
+    api deps.androidx.lifecycle.commonJava8
+    api deps.androidx.lifecycle.viewModel
+    api deps.androidx.lifecycle.viewModelSavedState
+    api deps.kotlin.coroutinesAndroid
 }

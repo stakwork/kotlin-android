@@ -13,22 +13,11 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 * */
-package io.matthewnelson.android_feature_navigation
+package io.matthewnelson.android_feature_activity
 
-import androidx.navigation.NavOptions
+import androidx.navigation.NavController
+import io.matthewnelson.feature_navigation.NavigationDriver
 
-object DefaultNavOptions {
-
-    @Suppress("SpellCheckingInspection")
-    val defaultAnims: NavOptions.Builder
-        get() = NavOptions.Builder()
-            .setEnterAnim(R.anim.slide_in_left)
-            .setExitAnim(R.anim.slide_out_left)
-            .setPopEnterAnim(R.anim.slide_in_right)
-            .setPopExitAnim(R.anim.slide_out_right)
-
-    @Suppress("SpellCheckingInspection")
-    val defaultAnimsBuilt: NavOptions by lazy {
-        defaultAnims.build()
-    }
+interface NavigationViewModel {
+    val navigationDriver: NavigationDriver<NavController>
 }
