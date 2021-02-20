@@ -24,10 +24,10 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import io.matthewnelson.android_feature_screens.R
 import io.matthewnelson.android_feature_toast_utils.ToastUtils
 import io.matthewnelson.android_feature_toast_utils.ToastUtilsResponse
 import io.matthewnelson.android_feature_toast_utils.show
-import io.opensolutions.common_views_android.R
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow

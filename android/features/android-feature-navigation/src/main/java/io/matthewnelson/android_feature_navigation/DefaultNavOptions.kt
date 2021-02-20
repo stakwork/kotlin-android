@@ -16,7 +16,6 @@
 package io.matthewnelson.android_feature_navigation
 
 import androidx.navigation.NavOptions
-import io.opensolutions.common_navigation_android.R
 
 object DefaultNavOptions {
 
