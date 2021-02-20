@@ -36,9 +36,7 @@ dependencies {
     api project(path: ':android:features:android-feature-toast-utils')
     api project(path: ':android:features:android-feature-viewmodel')
     api deps.androidx.appCompat
-    api deps.androidx.constraintLayout
     api deps.androidx.core
-    api deps.androidx.lifecycle.hilt
     implementation deps.androidx.viewBinding
     api deps.viewBindingDelegateNoReflect
 }

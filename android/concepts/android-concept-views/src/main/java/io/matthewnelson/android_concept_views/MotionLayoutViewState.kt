@@ -13,7 +13,7 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 * */
-package io.matthewnelson.android_feature_screens.ui.motionlayout
+package io.matthewnelson.android_concept_views
 
 import androidx.annotation.IdRes
 import androidx.constraintlayout.motion.widget.MotionLayout
@@ -24,9 +24,6 @@ import io.matthewnelson.concept_views.viewstate.ViewState
  *
  * For the final state of the Motion Scene, define [endSetId] as null, and override
  * [restoreMotionScene] to implement the transition and progress.
- *
- * @see [MotionLayoutFragment]
- * @see [MotionLayoutViewModel]
  * */
 abstract class MotionLayoutViewState<MLVS>: ViewState<MLVS>() {
 
@@ -41,8 +38,6 @@ abstract class MotionLayoutViewState<MLVS>: ViewState<MLVS>() {
 
     /**
      * Transitions the Motion Scene to it's defined [endSetId]. Override to customize.
-     *
-     * @see [MotionLayoutFragment.onViewStateFlowCollect]
      * */
     open fun transitionToEndSet(motionLayout: MotionLayout) {
         endSetId?.let { endSet ->
@@ -52,8 +47,6 @@ abstract class MotionLayoutViewState<MLVS>: ViewState<MLVS>() {
 
     /**
      * Default behavior is to set the Motion Scene to it's starting state. Override to customize.
-     *
-     * @see [MotionLayoutFragment.onViewCreatedRestoreMotionScene]
      * */
     open fun restoreMotionScene(motionLayout: MotionLayout) {
         endSetId?.let { endSet ->
