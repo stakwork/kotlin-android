@@ -1,16 +1,13 @@
 rootProject.name = "kotlin-android"
 
 /////////////////////////
-/// :android:concepts ///
-/////////////////////////
-include ':android:concepts:concept-android-navigation'
-
-/////////////////////////
 /// :android:features ///
 /////////////////////////
-include ':android:features:android-feature-toast-utils'
+include ':android:features:android-feature-activity'
 include ':android:features:authentication:android-feature-authentication-core'
-include ':android:features:android-feature-views'
+include ':android:features:android-feature-navigation'
+include ':android:features:android-feature-screens'
+include ':android:features:android-feature-toast-utils'
 
 //////////////////////
 /// :kotlin:common ///
@@ -23,24 +20,28 @@ include ':kotlin:common:build-config'
 include ':kotlin:concepts:authentication:concept-authentication'
 include ':kotlin:concepts:authentication:concept-encryption-key'
 include ':kotlin:concepts:concept-coroutines'
-include ':kotlin:concepts:navigation:concept-navigation-client'
-include ':kotlin:concepts:navigation:concept-navigation-driver'
+include ':kotlin:concepts:concept-navigation'
 include ':kotlin:concepts:concept-views'
 
 //////////////////////
 /// :kotlin:crypto ///
 //////////////////////
-include ':kotlin:crypto:base32'
-include ':kotlin:crypto:k-openssl'
 include ':kotlin:crypto:bouncycastle-ktx'
-include ':kotlin:crypto:base64'
+include ':kotlin:crypto:k-openssl'
 include ':kotlin:crypto:k-openssl-common'
+
+////////////////////////
+/// :kotlin:encoders ///
+////////////////////////
+include ':kotlin:encoders:base32'
+include ':kotlin:encoders:base64'
 
 ////////////////////////
 /// :kotlin:features ///
 ////////////////////////
 include ':kotlin:features:authentication:feature-authentication-core'
 include ':kotlin:features:authentication:feature-authentication-view'
+include ':kotlin:features:feature-navigation'
 
 ////////////////////
 /// :kotlin:test ///
