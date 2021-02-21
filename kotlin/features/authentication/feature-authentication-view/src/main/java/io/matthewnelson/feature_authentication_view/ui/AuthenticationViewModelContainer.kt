@@ -23,7 +23,7 @@ import io.matthewnelson.concept_views.viewstate.value
 import io.matthewnelson.feature_authentication_core.AuthenticationManager
 import io.matthewnelson.feature_authentication_core.model.AuthenticateFlowResponse
 import io.matthewnelson.feature_authentication_core.model.AuthenticationState
-import io.matthewnelson.feature_authentication_core.model.ForegroundState
+import io.matthewnelson.concept_foreground_state.ForegroundState
 import io.matthewnelson.feature_authentication_core.model.PinEntry
 import io.matthewnelson.feature_authentication_view.components.AuthenticationRequestTracker
 import io.matthewnelson.feature_authentication_view.components.ConfirmPressAction
@@ -115,7 +115,7 @@ class AuthenticationViewModelContainer<T>(
 
             // Clear pin entry if moved to background
             launch {
-                AuthenticationManager.foregroundStateFlow.collect { state ->
+                authenticationManager.foregroundStateFlow.collect { state ->
                     if (state is ForegroundState.Background && confirmPressJob?.isActive != true) {
                         pinEntry.clearPin()
                     }

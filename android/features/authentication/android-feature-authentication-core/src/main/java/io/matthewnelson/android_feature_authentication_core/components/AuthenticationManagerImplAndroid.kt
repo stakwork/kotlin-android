@@ -22,7 +22,7 @@ import android.os.SystemClock
 import androidx.annotation.MainThread
 import io.matthewnelson.feature_authentication_core.components.AuthenticationManagerImpl
 import io.matthewnelson.feature_authentication_core.model.AuthenticationState
-import io.matthewnelson.feature_authentication_core.model.ForegroundState
+import io.matthewnelson.concept_foreground_state.ForegroundState
 import io.matthewnelson.android_feature_authentication_core.data.PersistentStorageAndroid
 import io.matthewnelson.concept_coroutines.CoroutineDispatchers
 import io.matthewnelson.concept_encryption_key.EncryptionKeyHandler

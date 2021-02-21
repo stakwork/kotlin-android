@@ -18,9 +18,9 @@ package io.matthewnelson.feature_authentication_core
 import app.cash.exhaustive.Exhaustive
 import io.matthewnelson.feature_authentication_core.model.AuthenticateFlowResponse
 import io.matthewnelson.feature_authentication_core.model.AuthenticationState
-import io.matthewnelson.feature_authentication_core.model.ForegroundState
 import io.matthewnelson.feature_authentication_core.model.PinEntry
 import io.matthewnelson.concept_authentication.AuthenticationRequest
+import io.matthewnelson.concept_foreground_state.ForegroundStateManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,7 +32,7 @@ import kotlinx.coroutines.flow.asStateFlow
  *
  * Inject this class as needed.
  * */
-abstract class AuthenticationManager {
+abstract class AuthenticationManager: ForegroundStateManager() {
 
     abstract fun authenticate(
         pinEntry: PinEntry,
@@ -59,14 +59,6 @@ abstract class AuthenticationManager {
 
         val authenticationStateFlow: StateFlow<AuthenticationState>
             get() = _authenticationStateFlow.asStateFlow()
-
-        @Suppress("ObjectPropertyName", "RemoveExplicitTypeArguments")
-        private val _foregroundStateFlow: MutableStateFlow<ForegroundState> by lazy {
-            MutableStateFlow<ForegroundState>(ForegroundState.Background)
-        }
-
-        val foregroundStateFlow: StateFlow<ForegroundState>
-            get() = _foregroundStateFlow.asStateFlow()
     }
 
     @JvmSynthetic
@@ -87,9 +79,5 @@ abstract class AuthenticationManager {
 
     protected fun updateAuthenticationState(state: AuthenticationState) {
         updateAuthenticationState(state, null)
-    }
-
-    protected fun updateForegroundState(state: ForegroundState) {
-        _foregroundStateFlow.value = state
     }
 }

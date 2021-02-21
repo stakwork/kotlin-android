@@ -11,5 +11,6 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     api project(path: ':kotlin:concepts:authentication:concept-authentication')
     api project(path: ':kotlin:concepts:concept-coroutines')
+    api project(path: ':kotlin:concepts:concept-foreground-state')
     implementation project(path: ':kotlin:crypto:k-openssl')
 }
