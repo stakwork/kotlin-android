@@ -17,14 +17,14 @@ package io.matthewnelson.feature_authentication_view.navigation
 
 import io.matthewnelson.concept_authentication.coordinator.AuthenticationRequest
 import io.matthewnelson.concept_authentication.coordinator.AuthenticationResponse
-import io.matthewnelson.feature_authentication_core.AuthenticationCoordinator
+import io.matthewnelson.feature_authentication_core.AuthenticationCoreCoordinator
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
 abstract class AuthenticationViewCoordinator<T>(
     private val authenticationNavigator: AuthenticationNavigator<T>
-): AuthenticationCoordinator() {
+): AuthenticationCoreCoordinator() {
 
     @JvmSynthetic
     internal fun getAuthenticationRequestSharedFlow(): SharedFlow<AuthenticationRequest> =

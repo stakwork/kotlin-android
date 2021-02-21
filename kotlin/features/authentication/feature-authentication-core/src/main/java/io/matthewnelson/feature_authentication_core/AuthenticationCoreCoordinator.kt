@@ -16,7 +16,7 @@
 package io.matthewnelson.feature_authentication_core
 
 import app.cash.exhaustive.Exhaustive
-import io.matthewnelson.concept_authentication.coordinator.BaseAuthenticationCoordinator
+import io.matthewnelson.concept_authentication.coordinator.AuthenticationCoordinator
 import io.matthewnelson.feature_authentication_core.components.AuthenticationManagerImpl
 import io.matthewnelson.concept_authentication.coordinator.AuthenticationRequest
 import io.matthewnelson.concept_authentication.coordinator.AuthenticationResponse
@@ -26,7 +26,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.isActive
 
-abstract class AuthenticationCoordinator: BaseAuthenticationCoordinator() {
+abstract class AuthenticationCoreCoordinator: AuthenticationCoordinator() {
 
     @Suppress("RemoveExplicitTypeArguments", "PropertyName")
     protected val _authenticationResponseSharedFlow: MutableSharedFlow<AuthenticationResponse> by lazy {

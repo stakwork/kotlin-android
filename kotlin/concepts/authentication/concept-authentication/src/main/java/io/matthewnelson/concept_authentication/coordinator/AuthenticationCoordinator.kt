@@ -17,7 +17,7 @@ package io.matthewnelson.concept_authentication.coordinator
 
 import kotlinx.coroutines.flow.Flow
 
-abstract class BaseAuthenticationCoordinator {
+abstract class AuthenticationCoordinator {
 
     /**
      * Returns the corresponding response for the provided request, or
