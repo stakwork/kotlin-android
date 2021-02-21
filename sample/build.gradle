@@ -12,7 +12,7 @@ android {
     buildFeatures.viewBinding = true
     defaultConfig {
         applicationId "io.matthewnelson.kotlin_android"
-        minSdkVersion versions.minSdk
+        minSdkVersion 21
         targetSdkVersion versions.compileSdk
         versionCode VERSION_CODE.toInteger()
         versionName VERSION_NAME
