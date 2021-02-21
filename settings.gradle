@@ -48,6 +48,7 @@ include ':kotlin:encoders:base64'
 ////////////////////////
 include ':kotlin:features:authentication:feature-authentication-core'
 include ':kotlin:features:authentication:feature-authentication-view'
+include ':kotlin:features:feature-foreground-state'
 include ':kotlin:features:feature-navigation'
 
 ////////////////////

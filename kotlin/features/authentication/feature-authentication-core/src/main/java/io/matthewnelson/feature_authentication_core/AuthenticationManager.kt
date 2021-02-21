@@ -20,7 +20,7 @@ import io.matthewnelson.feature_authentication_core.model.AuthenticateFlowRespon
 import io.matthewnelson.feature_authentication_core.model.AuthenticationState
 import io.matthewnelson.feature_authentication_core.model.PinEntry
 import io.matthewnelson.concept_authentication.AuthenticationRequest
-import io.matthewnelson.concept_foreground_state.ForegroundStateManager
+import io.matthewnelson.feature_foreground_state.ForegroundStateManagerImpl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,7 +32,7 @@ import kotlinx.coroutines.flow.asStateFlow
  *
  * Inject this class as needed.
  * */
-abstract class AuthenticationManager: ForegroundStateManager() {
+abstract class AuthenticationManager: ForegroundStateManagerImpl() {
 
     abstract fun authenticate(
         pinEntry: PinEntry,
