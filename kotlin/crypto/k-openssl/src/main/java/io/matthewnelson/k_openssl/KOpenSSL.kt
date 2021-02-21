@@ -17,6 +17,7 @@ package io.matthewnelson.k_openssl
 
 import io.matthewnelson.k_openssl_common.annotations.RawPasswordAccess
 import io.matthewnelson.k_openssl_common.clazzes.*
+import io.matthewnelson.k_openssl_common.extensions.encodeToByteArray
 import io.matthewnelson.k_openssl_common.extensions.toByteArray
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
@@ -46,7 +47,7 @@ abstract class KOpenSSL {
                 chars.lines().joinToString("")
                     .decodeBase64ToArray()
                     ?.copyOfRange(0, 8)
-                    ?.contentEquals(SALTED.toByteArray())
+                    ?.contentEquals(SALTED.encodeToByteArray())
                     ?: false
             } catch (e: Exception) {
                 false
@@ -178,7 +179,7 @@ abstract class KOpenSSL {
 
     @Throws(IllegalStateException::class)
     protected open fun encodeCipherText(salt: ByteArray, cipherText: ByteArray): String =
-        (SALTED.toByteArray() + salt + cipherText)
+        (SALTED.encodeToByteArray() + salt + cipherText)
             .encodeBase64()
             .replace("(.{64})".toRegex(), "$1\n")
 

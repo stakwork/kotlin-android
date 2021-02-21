@@ -23,19 +23,17 @@ import java.security.MessageDigest
 inline fun ByteArray.toSha256Hash(): Sha256Hash {
     MessageDigest.getInstance("SHA-256").let { digest ->
         digest.reset()
-        digest.update(this, 0, this.size)
+        digest.update(this, 0, size)
         return Sha256Hash(digest.digest().toHex())
     }
 }
 
 @Suppress("NOTHING_TO_INLINE")
 inline fun String.toSha256Hash(): Sha256Hash =
-    this.encodeToByteArray().toSha256Hash()
+    encodeToByteArray().toSha256Hash()
 
-class Sha256Hash(val value: String) {
+inline class Sha256Hash(val value: String) {
 
-    // TODO: Kotlin 1.4.30 update will allow inline classes to
-    //  have init blocks
     init {
         require(isValid(value)) {
             "$value is not a valid Sha256 hash"
@@ -48,9 +46,5 @@ class Sha256Hash(val value: String) {
 
         fun isValid(sha256Hash: ByteArray): Boolean =
             isValid(sha256Hash.toHex())
-    }
-
-    override fun toString(): String {
-        return "Sha256Hash(value=$value)"
     }
 }

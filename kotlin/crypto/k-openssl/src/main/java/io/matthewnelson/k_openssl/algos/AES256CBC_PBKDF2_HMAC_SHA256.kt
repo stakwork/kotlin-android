@@ -18,6 +18,7 @@ package io.matthewnelson.k_openssl.algos
 import io.matthewnelson.k_openssl_common.annotations.UnencryptedDataAccess
 import io.matthewnelson.k_openssl.KOpenSSL
 import io.matthewnelson.k_openssl_common.clazzes.*
+import io.matthewnelson.k_openssl_common.extensions.encodeToByteArray
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -179,7 +180,7 @@ class AES256CBC_PBKDF2_HMAC_SHA256: KOpenSSL() {
         unencryptedString: UnencryptedString,
         dispatcher: CoroutineDispatcher
     ): EncryptedString =
-        UnencryptedByteArray(unencryptedString.value.toByteArray()).let { unencryptedByteArray ->
+        unencryptedString.toUnencryptedByteArray().let { unencryptedByteArray ->
             encrypt(
                 password,
                 hashIterations,

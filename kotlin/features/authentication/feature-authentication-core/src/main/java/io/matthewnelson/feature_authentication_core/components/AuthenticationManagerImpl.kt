@@ -27,6 +27,7 @@ import io.matthewnelson.concept_encryption_key.EncryptionKeyException
 import io.matthewnelson.concept_encryption_key.EncryptionKeyHandler
 import io.matthewnelson.k_openssl_common.annotations.RawPasswordAccess
 import io.matthewnelson.k_openssl_common.clazzes.HashIterations
+import io.matthewnelson.k_openssl_common.clazzes.clear
 import kotlinx.coroutines.flow.*
 
 /**

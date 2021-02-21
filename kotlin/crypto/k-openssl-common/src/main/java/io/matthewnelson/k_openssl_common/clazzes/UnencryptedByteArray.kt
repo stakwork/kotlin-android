@@ -18,23 +18,26 @@ package io.matthewnelson.k_openssl_common.clazzes
 import io.matthewnelson.k_openssl_common.annotations.UnencryptedDataAccess
 import io.matthewnelson.k_openssl_common.extensions.toCharArray
 
-inline class UnencryptedByteArray(@property: UnencryptedDataAccess val value: ByteArray) {
+@Suppress("NOTHING_TO_INLINE")
+@OptIn(UnencryptedDataAccess::class)
+inline fun UnencryptedByteArray.clear(char: Char = '0') {
+    value.fill(char.toByte())
+}
 
-    @OptIn(UnencryptedDataAccess::class)
-    fun clear() {
-        value.fill('*'.toByte())
-    }
+@Suppress("NOTHING_TO_INLINE")
+@OptIn(UnencryptedDataAccess::class)
+inline fun UnencryptedByteArray.toUnencryptedCharArray(): UnencryptedCharArray =
+    UnencryptedCharArray(value.toCharArray())
+
+@Suppress("NOTHING_TO_INLINE")
+@OptIn(UnencryptedDataAccess::class)
+inline fun UnencryptedByteArray.toUnencryptedString(): UnencryptedString =
+    UnencryptedString(value.toString(charset("UTF-8")).trim())
+
+inline class UnencryptedByteArray(@property: UnencryptedDataAccess val value: ByteArray) {
 
     @Throws(IllegalAccessException::class)
     override fun toString(): String {
         throw IllegalAccessException("toUnencryptedString must be used.")
     }
-
-    @OptIn(UnencryptedDataAccess::class)
-    fun toUnencryptedCharArray(): UnencryptedCharArray =
-        UnencryptedCharArray(value.toCharArray())
-
-    @OptIn(UnencryptedDataAccess::class)
-    fun toUnencryptedString(): UnencryptedString =
-        UnencryptedString(value.toString(Charsets.UTF_8).trim())
 }

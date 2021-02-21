@@ -20,13 +20,13 @@ import java.nio.CharBuffer
 
 /** securely converts a ByteArray to a CharArray */
 @Suppress("NOTHING_TO_INLINE")
-inline fun ByteArray.toCharArray(): CharArray =
+inline fun ByteArray.toCharArray(fill: Char = '0'): CharArray =
     this.copyOf().let { copyByteArray ->
         ByteBuffer.wrap(copyByteArray).let { byteBuffer ->
             charset("UTF-8").newDecoder().decode(byteBuffer).let { charBuffer ->
                 charBuffer.array().copyOf(charBuffer.limit()).let { charArray ->
-                    byteBuffer.array().fill('*'.toByte())
-                    charBuffer.array().fill('*')
+                    byteBuffer.array().fill(fill.toByte())
+                    charBuffer.array().fill(fill)
                     charArray
                 }
             }
@@ -35,13 +35,13 @@ inline fun ByteArray.toCharArray(): CharArray =
 
 /** securely converts a CharArray to a ByteArray */
 @Suppress("NOTHING_TO_INLINE")
-inline fun CharArray.toByteArray(): ByteArray =
+inline fun CharArray.toByteArray(fill: Char = '0'): ByteArray =
     this.copyOf().let { copyCharArray ->
         CharBuffer.wrap(copyCharArray).let { charBuffer ->
             charset("UTF-8").newEncoder().encode(charBuffer).let { byteBuffer ->
                 byteBuffer.array().copyOf(byteBuffer.limit()).let { byteArray ->
-                    charBuffer.array().fill('*')
-                    byteBuffer.array().fill('*'.toByte())
+                    charBuffer.array().fill(fill)
+                    byteBuffer.array().fill(fill.toByte())
                     byteArray
                 }
             }
