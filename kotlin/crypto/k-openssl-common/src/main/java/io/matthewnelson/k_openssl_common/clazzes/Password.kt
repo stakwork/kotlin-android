@@ -17,12 +17,13 @@ package io.matthewnelson.k_openssl_common.clazzes
 
 import io.matthewnelson.k_openssl_common.annotations.RawPasswordAccess
 
-inline class Password(@property: RawPasswordAccess val value: CharArray) {
+@Suppress("NOTHING_TO_INLINE")
+@OptIn(RawPasswordAccess::class)
+inline fun Password.clear(char: Char = '0') {
+    value.fill(char)
+}
 
-    @OptIn(RawPasswordAccess::class)
-    fun clear() {
-        value.fill('*')
-    }
+inline class Password(@property: RawPasswordAccess val value: CharArray) {
 
     @Throws(IllegalAccessException::class)
     override fun toString(): String {

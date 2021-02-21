@@ -17,6 +17,7 @@ package io.matthewnelson.feature_authentication_core.model
 
 import io.matthewnelson.k_openssl_common.annotations.RawPasswordAccess
 import io.matthewnelson.k_openssl_common.clazzes.Password
+import io.matthewnelson.k_openssl_common.clazzes.clear
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

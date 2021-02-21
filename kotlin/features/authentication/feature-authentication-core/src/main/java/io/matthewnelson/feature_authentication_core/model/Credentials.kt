@@ -21,9 +21,7 @@ import io.matthewnelson.concept_encryption_key.EncryptionKeyHandler
 import io.matthewnelson.feature_authentication_core.components.AuthenticationProcessor
 import io.matthewnelson.k_openssl.KOpenSSL
 import io.matthewnelson.k_openssl_common.annotations.UnencryptedDataAccess
-import io.matthewnelson.k_openssl_common.clazzes.EncryptedString
-import io.matthewnelson.k_openssl_common.clazzes.HashIterations
-import io.matthewnelson.k_openssl_common.clazzes.Password
+import io.matthewnelson.k_openssl_common.clazzes.*
 
 internal class Credentials private constructor(
     private val encryptedEncryptionKey: EncryptedString,

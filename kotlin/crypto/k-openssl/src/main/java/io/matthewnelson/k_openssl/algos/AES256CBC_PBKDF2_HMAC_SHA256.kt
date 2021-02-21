@@ -180,7 +180,7 @@ class AES256CBC_PBKDF2_HMAC_SHA256: KOpenSSL() {
         unencryptedString: UnencryptedString,
         dispatcher: CoroutineDispatcher
     ): EncryptedString =
-        UnencryptedByteArray(unencryptedString.value.encodeToByteArray()).let { unencryptedByteArray ->
+        unencryptedString.toUnencryptedByteArray().let { unencryptedByteArray ->
             encrypt(
                 password,
                 hashIterations,

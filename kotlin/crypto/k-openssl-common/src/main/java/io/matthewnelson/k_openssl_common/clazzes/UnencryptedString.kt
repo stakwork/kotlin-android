@@ -16,5 +16,16 @@
 package io.matthewnelson.k_openssl_common.clazzes
 
 import io.matthewnelson.k_openssl_common.annotations.UnencryptedDataAccess
+import io.matthewnelson.k_openssl_common.extensions.encodeToByteArray
+
+@Suppress("NOTHING_TO_INLINE")
+@OptIn(UnencryptedDataAccess::class)
+inline fun UnencryptedString.toUnencryptedByteArray(): UnencryptedByteArray =
+    UnencryptedByteArray(value.encodeToByteArray())
+
+@Suppress("NOTHING_TO_INLINE")
+@OptIn(UnencryptedDataAccess::class)
+inline fun UnencryptedString.toUnencryptedCharArray(): UnencryptedCharArray =
+    UnencryptedCharArray(value.toCharArray())
 
 inline class UnencryptedString(@property: UnencryptedDataAccess val value: String)
