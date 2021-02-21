@@ -16,10 +16,10 @@
 package io.matthewnelson.feature_authentication_core
 
 import app.cash.exhaustive.Exhaustive
-import io.matthewnelson.concept_authentication.BaseAuthenticationCoordinator
+import io.matthewnelson.concept_authentication.coordinator.BaseAuthenticationCoordinator
 import io.matthewnelson.feature_authentication_core.components.AuthenticationManagerImpl
-import io.matthewnelson.concept_authentication.AuthenticationRequest
-import io.matthewnelson.concept_authentication.AuthenticationResponse
+import io.matthewnelson.concept_authentication.coordinator.AuthenticationRequest
+import io.matthewnelson.concept_authentication.coordinator.AuthenticationResponse
 import io.matthewnelson.feature_authentication_core.model.AuthenticationState
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay

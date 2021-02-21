@@ -16,8 +16,8 @@
 package io.matthewnelson.feature_authentication_view.ui
 
 import app.cash.exhaustive.Exhaustive
-import io.matthewnelson.concept_authentication.AuthenticationRequest
-import io.matthewnelson.concept_authentication.AuthenticationResponse
+import io.matthewnelson.concept_authentication.coordinator.AuthenticationRequest
+import io.matthewnelson.concept_authentication.coordinator.AuthenticationResponse
 import io.matthewnelson.concept_coroutines.CoroutineDispatchers
 import io.matthewnelson.concept_views.viewstate.value
 import io.matthewnelson.feature_authentication_core.AuthenticationManager

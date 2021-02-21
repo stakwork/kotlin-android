@@ -15,8 +15,8 @@
 * */
 package io.matthewnelson.feature_authentication_core.model
 
-import io.matthewnelson.concept_authentication.AuthenticationRequest
-import io.matthewnelson.concept_authentication.AuthenticationResponse
+import io.matthewnelson.concept_authentication.coordinator.AuthenticationRequest
+import io.matthewnelson.concept_authentication.coordinator.AuthenticationResponse
 
 sealed class AuthenticateFlowResponse {
 

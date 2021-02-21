@@ -15,8 +15,8 @@
 * */
 package io.matthewnelson.feature_authentication_view.navigation
 
-import io.matthewnelson.concept_authentication.AuthenticationRequest
-import io.matthewnelson.concept_authentication.AuthenticationResponse
+import io.matthewnelson.concept_authentication.coordinator.AuthenticationRequest
+import io.matthewnelson.concept_authentication.coordinator.AuthenticationResponse
 import io.matthewnelson.feature_authentication_core.AuthenticationCoordinator
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharedFlow

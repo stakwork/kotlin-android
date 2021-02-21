@@ -15,7 +15,7 @@
 * */
 package io.matthewnelson.feature_authentication_core.components
 
-import io.matthewnelson.concept_authentication.AuthenticationRequest
+import io.matthewnelson.concept_authentication.coordinator.AuthenticationRequest
 import io.matthewnelson.feature_authentication_core.AuthenticationManager
 import io.matthewnelson.feature_authentication_core.data.PersistentStorage
 import io.matthewnelson.feature_authentication_core.model.AuthenticateFlowResponse

@@ -16,8 +16,8 @@
 package io.matthewnelson.feature_authentication_core.components
 
 import app.cash.exhaustive.Exhaustive
-import io.matthewnelson.concept_authentication.AuthenticationRequest
-import io.matthewnelson.concept_authentication.AuthenticationResponse
+import io.matthewnelson.concept_authentication.coordinator.AuthenticationRequest
+import io.matthewnelson.concept_authentication.coordinator.AuthenticationResponse
 import io.matthewnelson.feature_authentication_core.data.PersistentStorage
 import io.matthewnelson.feature_authentication_core.model.AuthenticateFlowResponse
 import io.matthewnelson.feature_authentication_core.model.AuthenticationException
