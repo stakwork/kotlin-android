@@ -17,7 +17,7 @@ package io.matthewnelson.feature_authentication_core
 
 import app.cash.exhaustive.Exhaustive
 import io.matthewnelson.feature_authentication_core.model.AuthenticateFlowResponse
-import io.matthewnelson.feature_authentication_core.model.AuthenticationState
+import io.matthewnelson.concept_authentication.state.AuthenticationState
 import io.matthewnelson.feature_authentication_core.model.PinEntry
 import io.matthewnelson.concept_authentication.coordinator.AuthenticationRequest
 import io.matthewnelson.feature_foreground_state.ForegroundStateManagerImpl

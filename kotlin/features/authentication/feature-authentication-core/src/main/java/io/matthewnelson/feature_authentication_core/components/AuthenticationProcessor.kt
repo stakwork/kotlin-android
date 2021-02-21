@@ -21,7 +21,7 @@ import io.matthewnelson.concept_authentication.coordinator.AuthenticationRespons
 import io.matthewnelson.feature_authentication_core.data.PersistentStorage
 import io.matthewnelson.feature_authentication_core.model.AuthenticateFlowResponse
 import io.matthewnelson.feature_authentication_core.model.AuthenticationException
-import io.matthewnelson.feature_authentication_core.model.AuthenticationState
+import io.matthewnelson.concept_authentication.state.AuthenticationState
 import io.matthewnelson.feature_authentication_core.model.Credentials
 import io.matthewnelson.feature_authentication_core.model.PinEntry
 import io.matthewnelson.concept_coroutines.CoroutineDispatchers

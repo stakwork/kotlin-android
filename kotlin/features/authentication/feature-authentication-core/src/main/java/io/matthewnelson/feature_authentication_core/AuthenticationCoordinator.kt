@@ -20,7 +20,7 @@ import io.matthewnelson.concept_authentication.coordinator.BaseAuthenticationCoo
 import io.matthewnelson.feature_authentication_core.components.AuthenticationManagerImpl
 import io.matthewnelson.concept_authentication.coordinator.AuthenticationRequest
 import io.matthewnelson.concept_authentication.coordinator.AuthenticationResponse
-import io.matthewnelson.feature_authentication_core.model.AuthenticationState
+import io.matthewnelson.concept_authentication.state.AuthenticationState
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*

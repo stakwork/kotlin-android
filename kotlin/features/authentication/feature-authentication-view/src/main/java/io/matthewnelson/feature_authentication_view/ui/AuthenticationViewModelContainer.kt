@@ -22,7 +22,7 @@ import io.matthewnelson.concept_coroutines.CoroutineDispatchers
 import io.matthewnelson.concept_views.viewstate.value
 import io.matthewnelson.feature_authentication_core.AuthenticationManager
 import io.matthewnelson.feature_authentication_core.model.AuthenticateFlowResponse
-import io.matthewnelson.feature_authentication_core.model.AuthenticationState
+import io.matthewnelson.concept_authentication.state.AuthenticationState
 import io.matthewnelson.concept_foreground_state.ForegroundState
 import io.matthewnelson.feature_authentication_core.model.PinEntry
 import io.matthewnelson.feature_authentication_view.components.AuthenticationRequestTracker
