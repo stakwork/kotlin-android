@@ -21,18 +21,18 @@ import io.matthewnelson.k_openssl_common.extensions.toCharArray
 @Suppress("NOTHING_TO_INLINE")
 @OptIn(UnencryptedDataAccess::class)
 inline fun UnencryptedByteArray.clear(char: Char = '0') {
-    this.value.fill(char.toByte())
+    value.fill(char.toByte())
 }
 
 @Suppress("NOTHING_TO_INLINE")
 @OptIn(UnencryptedDataAccess::class)
 inline fun UnencryptedByteArray.toUnencryptedCharArray(): UnencryptedCharArray =
-    UnencryptedCharArray(this.value.toCharArray())
+    UnencryptedCharArray(value.toCharArray())
 
 @Suppress("NOTHING_TO_INLINE")
 @OptIn(UnencryptedDataAccess::class)
 inline fun UnencryptedByteArray.toUnencryptedString(): UnencryptedString =
-    UnencryptedString(this.value.toString(charset("UTF-8")).trim())
+    UnencryptedString(value.toString(charset("UTF-8")).trim())
 
 inline class UnencryptedByteArray(@property: UnencryptedDataAccess val value: ByteArray) {
 
