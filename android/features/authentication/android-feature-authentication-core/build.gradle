@@ -4,12 +4,12 @@ plugins {
 }
 
 android {
-    compileSdkVersion versions.compileSdk
-    buildToolsVersion versions.buildTools
+    compileSdkVersion KAversions.compileSdk
+    buildToolsVersion KAversions.buildTools
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion versions.compileSdk
+        targetSdkVersion KAversions.compileSdk
         versionCode VERSION_CODE.toInteger()
         versionName VERSION_NAME
 
@@ -33,6 +33,6 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     api project(path: ':kotlin:features:authentication:feature-authentication-core')
-    implementation deps.androidx.annotation
-    implementation deps.androidx.securityCrypto
+    implementation KAdeps.androidx.annotation
+    implementation KAdeps.androidx.securityCrypto
 }

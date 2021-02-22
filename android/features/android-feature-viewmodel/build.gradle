@@ -4,12 +4,12 @@ plugins {
 }
 
 android {
-    compileSdkVersion versions.compileSdk
-    buildToolsVersion versions.buildTools
+    compileSdkVersion KAversions.compileSdk
+    buildToolsVersion KAversions.buildTools
 
     defaultConfig {
-        minSdkVersion versions.minSdk
-        targetSdkVersion versions.compileSdk
+        minSdkVersion KAversions.minSdk
+        targetSdkVersion KAversions.compileSdk
         versionCode VERSION_CODE.toInteger()
         versionName VERSION_NAME
 
@@ -33,8 +33,8 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     api project(path: ':android:concepts:android-concept-views')
-    api deps.androidx.lifecycle.commonJava8
-    api deps.androidx.lifecycle.viewModel
-    api deps.androidx.lifecycle.viewModelSavedState
-    api deps.kotlin.coroutinesAndroid
+    api KAdeps.androidx.lifecycle.commonJava8
+    api KAdeps.androidx.lifecycle.viewModel
+    api KAdeps.androidx.lifecycle.viewModelSavedState
+    api KAdeps.kotlin.coroutinesAndroid
 }
