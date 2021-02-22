@@ -16,33 +16,36 @@
 package io.matthewnelson.concept_authentication_core
 
 import io.matthewnelson.concept_authentication.coordinator.AuthenticationRequest
+import io.matthewnelson.concept_authentication.state.AuthenticationStateManager
 import io.matthewnelson.concept_authentication_core.model.ConfirmUserInputToReset
 import io.matthewnelson.concept_authentication_core.model.ConfirmUserInputToSetForFirstTime
 import io.matthewnelson.concept_authentication_core.model.UserInput
+import io.matthewnelson.concept_foreground_state.ForegroundStateManager
 import kotlinx.coroutines.flow.Flow
 
 abstract class AuthenticationManager<
         F,
-        U: UserInput<U>,
-        S: ConfirmUserInputToReset<U>,
-        V: ConfirmUserInputToSetForFirstTime<U>,
-        >
+        S: ConfirmUserInputToReset,
+        V: ConfirmUserInputToSetForFirstTime,
+        >: AuthenticationStateManager,
+    ForegroundStateManager // TODO: Move to separate feature
 {
+    abstract fun getNewUserInput(): UserInput
 
     abstract fun authenticate(
-        userInput: U,
+        userInput: UserInput,
         requests: List<AuthenticationRequest>
     ): Flow<F>
 
-    abstract fun resetPin(
-        resetPinResponse: S,
-        userInputConfirmation: U,
+    abstract fun resetPassword(
+        resetPasswordResponse: S,
+        userInputConfirmation: UserInput,
         requests: List<AuthenticationRequest>
     ): Flow<F>
 
-    abstract fun setPinFirstTime(
-        setPinFirstTimeResponse: V,
-        userInputConfirmation: U,
+    abstract fun setPasswordFirstTime(
+        setPasswordFirstTimeResponse: V,
+        userInputConfirmation: UserInput,
         requests: List<AuthenticationRequest>
     ): Flow<F>
 }

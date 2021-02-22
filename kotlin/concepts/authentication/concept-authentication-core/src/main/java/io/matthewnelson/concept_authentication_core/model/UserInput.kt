@@ -16,29 +16,27 @@
 package io.matthewnelson.concept_authentication_core.model
 
 import kotlinx.coroutines.flow.StateFlow
-import java.io.CharArrayWriter
 
-abstract class UserInput<U: UserInput<U>>(
-    val minChars: Int,
-    val maxChars: Int,
-) {
-    protected abstract val writer: CharArrayWriter
+interface UserInput {
+    val inputLengthStateFlow: StateFlow<Int>
 
-    abstract val pinLengthStateFlow: StateFlow<Int>
-
+    /**
+     * Add a character to the [UserInput]
+     *
+     * @throws [IllegalArgumentException] if defined maximum input length is exceeded.
+     * */
     @Throws(IllegalArgumentException::class)
-    abstract fun addCharacter(c: Char)
+    fun addCharacter(c: Char)
 
-    abstract fun clearPin()
+    fun clearInput()
 
-    abstract fun clone(): U
+    fun compare(userInput: UserInput): Boolean
 
-    abstract fun compare(pinEntry: U): Boolean
-
+    /**
+     * Remove the last character from the [UserInput]
+     *
+     * @throws [IllegalArgumentException] if no more characters can be removed.
+     * */
     @Throws(IllegalArgumentException::class)
-    abstract fun dropLastCharacter()
-
-    override fun toString(): String {
-        return ""
-    }
+    fun dropLastCharacter()
 }

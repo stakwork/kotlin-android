@@ -15,12 +15,14 @@
 * */
 package io.matthewnelson.concept_authentication_core.model
 
-interface ConfirmUserInputToReset<U: UserInput<U>> {
-    fun clearCurrentValidPinEntry()
-    fun clearNewPinEntry()
-    fun setNewPinEntry(newPinEntry: U?)
+interface ConfirmUserInputToReset {
+    fun clearOriginalValidatedPassword()
+    fun clearNewPassword()
+
+    @Throws(ClassCastException::class)
+    fun storeNewPasswordToBeSet(newUserInput: UserInput?)
 }
 
-interface ConfirmUserInputToSetForFirstTime<U: UserInput<U>> {
-    fun clearInitialPinEntry()
+interface ConfirmUserInputToSetForFirstTime {
+    fun clearInitialUserInput()
 }
