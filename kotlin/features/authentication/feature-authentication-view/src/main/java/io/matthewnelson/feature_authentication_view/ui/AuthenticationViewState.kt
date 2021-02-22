@@ -16,14 +16,14 @@
 package io.matthewnelson.feature_authentication_view.ui
 
 import io.matthewnelson.concept_views.viewstate.ViewState
-import io.matthewnelson.feature_authentication_core.model.PinWriter
+import io.matthewnelson.feature_authentication_core.AuthenticationCoreManager
 
 sealed class AuthenticationViewState: ViewState<AuthenticationViewState>() {
     abstract val pinPadChars: Array<Char>
     abstract val pinLength: Int
     abstract val inputLockState: InputLockState
     val confirmButtonShow: Boolean
-        get() = pinLength >= PinWriter.MIN_CHAR_COUNT
+        get() = pinLength >= AuthenticationCoreManager.minUserInputLength
 
     class Idle(
         override val pinLength: Int = 0,
