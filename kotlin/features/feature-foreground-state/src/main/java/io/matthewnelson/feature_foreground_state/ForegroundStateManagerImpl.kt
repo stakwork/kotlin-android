@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-abstract class ForegroundStateManagerImpl: ForegroundStateManager() {
+abstract class ForegroundStateManagerImpl: ForegroundStateManager {
 
     @Suppress("ObjectPropertyName", "RemoveExplicitTypeArguments")
     private val _foregroundStateFlow: MutableStateFlow<ForegroundState> by lazy {
