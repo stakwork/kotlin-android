@@ -11,5 +11,5 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     api project(path: ':kotlin:concepts:authentication:concept-authentication')
     api project(path: ':kotlin:concepts:concept-foreground-state')
-    implementation deps.kotlin.coroutinesCore
+    implementation KAdeps.kotlin.coroutinesCore
 }

@@ -9,5 +9,5 @@ targetCompatibility = JavaVersion.VERSION_1_8
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    api deps.kotlin.coroutinesCore
+    api KAdeps.kotlin.coroutinesCore
 }

@@ -6,14 +6,14 @@ plugins {
 }
 
 android {
-    compileSdkVersion versions.compileSdk
-    buildToolsVersion versions.buildTools
+    compileSdkVersion KAversions.compileSdk
+    buildToolsVersion KAversions.buildTools
 
     buildFeatures.viewBinding = true
     defaultConfig {
         applicationId "io.matthewnelson.kotlin_android"
         minSdkVersion 21
-        targetSdkVersion versions.compileSdk
+        targetSdkVersion KAversions.compileSdk
         versionCode VERSION_CODE.toInteger()
         versionName VERSION_NAME
 
@@ -66,16 +66,16 @@ dependencies {
     implementation project(path: ':kotlin:common:build-config')
     implementation project(path: ':kotlin:features:feature-navigation')
 
-    implementation deps.androidx.lifecycle.hilt
-    kapt kaptDeps.androidx.lifecycle.hilt
-    implementation deps.google.hilt
-    kapt kaptDeps.google.hilt
+    implementation KAdeps.androidx.lifecycle.hilt
+    kapt KAkaptDeps.androidx.lifecycle.hilt
+    implementation KAdeps.google.hilt
+    kapt KAkaptDeps.google.hilt
 
-//    debugImplementation debugDeps.square.leakCanary
+//    debugImplementation KAdebugDeps.square.leakCanary
 
-    testImplementation testDeps.junit
+    testImplementation KAtestDeps.junit
 
-    androidTestImplementation testDeps.androidx.core
-    androidTestImplementation testDeps.androidx.espresso
-    androidTestImplementation testDeps.androidx.junit
+    androidTestImplementation KAtestDeps.androidx.core
+    androidTestImplementation KAtestDeps.androidx.espresso
+    androidTestImplementation KAtestDeps.androidx.junit
 }

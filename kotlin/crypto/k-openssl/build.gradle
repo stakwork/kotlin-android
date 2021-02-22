@@ -11,7 +11,7 @@ dependencies {
     implementation project(path: ':kotlin:crypto:bouncycastle-ktx')
     api project(path: ':kotlin:crypto:k-openssl-common')
     implementation project(path: ':kotlin:encoders:base64')
-    implementation deps.kotlin.coroutinesCore
+    implementation KAdeps.kotlin.coroutinesCore
 
     testImplementation project(path: ':kotlin:test:test-k-openssl')
 }

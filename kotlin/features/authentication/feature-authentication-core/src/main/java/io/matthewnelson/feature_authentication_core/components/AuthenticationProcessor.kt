@@ -141,7 +141,6 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
             return if (creds.validateTestString(dispatchers, key, encryptionKeyHandler, kOpenSSL)) {
                 PinValidationResponse.PinEntryIsValid(key)
             } else {
-                val i = 0
                 PinValidationResponse.PinEntryIsNotValid
             }
         } ?: PinValidationResponse.NoCredentials

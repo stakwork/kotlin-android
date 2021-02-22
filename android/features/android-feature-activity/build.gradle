@@ -4,12 +4,12 @@ plugins {
 }
 
 android {
-    compileSdkVersion versions.compileSdk
-    buildToolsVersion versions.buildTools
+    compileSdkVersion KAversions.compileSdk
+    buildToolsVersion KAversions.buildTools
 
     defaultConfig {
-        minSdkVersion versions.minSdk
-        targetSdkVersion versions.compileSdk
+        minSdkVersion KAversions.minSdk
+        targetSdkVersion KAversions.compileSdk
         versionCode VERSION_CODE.toInteger()
         versionName VERSION_NAME
 
@@ -35,8 +35,8 @@ dependencies {
     api project(path: ':android:features:android-feature-navigation')
     api project(path: ':android:features:android-feature-viewmodel')
     api project(path: ':kotlin:features:feature-navigation')
-    api deps.androidx.appCompat
-    api deps.androidx.core
-    implementation deps.androidx.viewBinding
-    api deps.viewBindingDelegateNoReflect
+    api KAdeps.androidx.appCompat
+    api KAdeps.androidx.core
+    implementation KAdeps.androidx.viewBinding
+    api KAdeps.viewBindingDelegateNoReflect
 }

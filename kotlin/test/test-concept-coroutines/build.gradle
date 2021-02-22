@@ -9,7 +9,7 @@ targetCompatibility = JavaVersion.VERSION_1_8
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     api project(path: ':kotlin:concepts:concept-coroutines')
-    api testDeps.junit
-    api testDeps.kotlin.coroutines
-    api testDeps.turbine
+    api KAtestDeps.junit
+    api KAtestDeps.kotlin.coroutines
+    api KAtestDeps.turbine
 }

@@ -8,12 +8,11 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath plugin.androidGradle
-        classpath plugin.google.hilt
-        classpath plugin.gradleVersions
-        classpath plugin.kotlin.gradle
-        classpath plugin.square.exhaustive
-        classpath plugin.square.sqlDelight
+        classpath KAplugin.androidGradle
+        classpath KAplugin.google.hilt
+        classpath KAplugin.gradleVersions
+        classpath KAplugin.kotlin.gradle
+        classpath KAplugin.square.exhaustive
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -29,9 +28,6 @@ allprojects {
         //  Remove once https://github.com/kirich1409/ViewBindingPropertyDelegate/issues/39
         //  is resolved
         jcenter()
-
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-        maven { url "https://maven.mozilla.org/maven2/" }
     }
 
     tasks.withType(Test) {
