@@ -16,17 +16,18 @@
 package io.matthewnelson.feature_authentication_core.components
 
 import app.cash.exhaustive.Exhaustive
-import io.matthewnelson.concept_authentication.AuthenticationRequest
-import io.matthewnelson.concept_authentication.AuthenticationResponse
+import io.matthewnelson.concept_authentication.coordinator.AuthenticationRequest
+import io.matthewnelson.concept_authentication.coordinator.AuthenticationResponse
 import io.matthewnelson.feature_authentication_core.data.PersistentStorage
-import io.matthewnelson.feature_authentication_core.model.AuthenticateFlowResponse
-import io.matthewnelson.feature_authentication_core.model.AuthenticationException
-import io.matthewnelson.feature_authentication_core.model.AuthenticationState
-import io.matthewnelson.feature_authentication_core.model.Credentials
-import io.matthewnelson.feature_authentication_core.model.PinEntry
+import io.matthewnelson.concept_authentication.state.AuthenticationState
 import io.matthewnelson.concept_coroutines.CoroutineDispatchers
 import io.matthewnelson.concept_encryption_key.EncryptionKey
 import io.matthewnelson.concept_encryption_key.EncryptionKeyHandler
+import io.matthewnelson.feature_authentication_core.AuthenticationCoreManager
+import io.matthewnelson.feature_authentication_core.model.*
+import io.matthewnelson.feature_authentication_core.model.AuthenticationException
+import io.matthewnelson.feature_authentication_core.model.Credentials
+import io.matthewnelson.feature_authentication_core.model.UserInputWriter
 import io.matthewnelson.k_openssl.KOpenSSL
 import io.matthewnelson.k_openssl.algos.AES256CBC_PBKDF2_HMAC_SHA256
 import io.matthewnelson.k_openssl_common.annotations.RawPasswordAccess
@@ -40,7 +41,7 @@ import kotlinx.coroutines.withContext
  *  errors.
  * */
 internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> private constructor(
-    private val authenticationManagerImpl: AuthenticationManagerImpl<T>,
+    private val authenticationCoreManager: AuthenticationCoreManager<T>,
     private val dispatchers: CoroutineDispatchers,
     private val encryptionKeyHashIterations: HashIterations,
     val encryptionKeyHandler: EncryptionKeyHandler,
@@ -51,14 +52,14 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
     companion object {
         @JvmSynthetic
         fun <T: AuthenticationManagerInitializer> instantiate(
-            authenticationManagerImpl: AuthenticationManagerImpl<T>,
+            authenticationCoreManager: AuthenticationCoreManager<T>,
             dispatchers: CoroutineDispatchers,
             encryptionKeyHashIterations: HashIterations,
             encryptionKeyHandler: EncryptionKeyHandler,
             persistentStorage: PersistentStorage
         ): AuthenticationProcessor<T> =
             AuthenticationProcessor(
-                authenticationManagerImpl,
+                authenticationCoreManager,
                 dispatchers,
                 encryptionKeyHashIterations,
                 encryptionKeyHandler,
@@ -68,7 +69,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
 
     @JvmSynthetic
     fun initializeWrongPinLockout(value: T) {
-//        if (!authenticationManagerImpl.isInitialized) {
+//        if (!authenticationCoreManager.isInitialized) {
             // TODO: Implement
 //        }
     }
@@ -78,7 +79,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
     ////////////////////
     @JvmSynthetic
     fun authenticate(
-        pinEntry: PinEntry,
+        pinEntry: UserInputWriter,
         requests: List<AuthenticationRequest>
     ): Flow<AuthenticateFlowResponse> = flow {
         emit(AuthenticateFlowResponse.Notify.DecryptingEncryptionKey)
@@ -101,7 +102,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
                 }
                 is PinValidationResponse.NoCredentials -> {
                     emit(
-                        AuthenticateFlowResponse.ConfirmPinEntryToSetForFirstTime
+                        AuthenticateFlowResponse.ConfirmInputToSetForFirstTime
                             .instantiate(pinEntry.clone())
                     )
                 }
@@ -116,7 +117,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
 
     private suspend fun validatePinEntry(
         kOpenSSL: KOpenSSL,
-        pinEntry: PinEntry
+        pinEntry: UserInputWriter
     ): PinValidationResponse =
         persistentStorage.retrieveCredentials()?.let { credsString ->
             val creds = try {
@@ -140,6 +141,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
             return if (creds.validateTestString(dispatchers, key, encryptionKeyHandler, kOpenSSL)) {
                 PinValidationResponse.PinEntryIsValid(key)
             } else {
+                val i = 0
                 PinValidationResponse.PinEntryIsNotValid
             }
         } ?: PinValidationResponse.NoCredentials
@@ -155,15 +157,15 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
     /// Reset Pin ///
     /////////////////
     @JvmSynthetic
-    fun resetPin(
-        resetPin: AuthenticateFlowResponse.ConfirmNewPinEntryToReset,
+    fun resetPassword(
+        resetPasswordResponse: AuthenticateFlowResponse.PasswordConfirmedForReset,
         requests: List<AuthenticationRequest>
     ): Flow<AuthenticateFlowResponse> = flow {
         emit(AuthenticateFlowResponse.Notify.EncryptingEncryptionKeyWithNewPin)
 
         try {
             val kOpenSSL = AES256CBC_PBKDF2_HMAC_SHA256()
-            val key: EncryptionKey = authenticationManagerImpl
+            val key: EncryptionKey = authenticationCoreManager
                 .getEncryptionKeyCopy() ?: persistentStorage.retrieveCredentials()
                 ?.let { credsString ->
                     val creds = try {
@@ -181,7 +183,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
                         encryptionKeyHashIterations,
                         encryptionKeyHandler,
                         kOpenSSL,
-                        resetPin.getCurrentValidPinEntry()
+                        resetPasswordResponse.getOriginalValidatedPassword()
                     )
 
                 } ?: throw AuthenticationException(
@@ -191,7 +193,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
 
             val encryptedEncryptionKey = encryptEncryptionKey(
                 key,
-                resetPin.getNewPinEntry() ?: let {
+                resetPasswordResponse.getNewPasswordToBeSet() ?: let {
                     key.password.clear()
                     throw AuthenticationException(
                         AuthenticateFlowResponse.Error.ResetPin.NewPinEntryWasNull
@@ -206,7 +208,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
                 encryptedTestString
             )
 
-            if (resetPin.newPinEntryHasBeenCleared) {
+            if (resetPasswordResponse.newPasswordHasBeenCleared) {
                 throw AuthenticationException(
                     AuthenticateFlowResponse.Error.ResetPin.NewPinEntryWasCleared
                 )
@@ -214,11 +216,11 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
 
             persistentStorage.saveCredentials(creds)
 
-            resetPin.onCompletion()
+            resetPasswordResponse.onPasswordResetCompletion()
             emitAll(
                 processValidPinEntryResponse(
                     key,
-                    resetPin.getNewPinEntry() ?: throw AuthenticationException(
+                    resetPasswordResponse.getNewPasswordToBeSet() ?: throw AuthenticationException(
                         AuthenticateFlowResponse.Error.ResetPin.NewPinEntryWasNull
                     ),
                     requests
@@ -235,8 +237,8 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
     /// Set Pin First Time ///
     //////////////////////////
     @JvmSynthetic
-    fun setPinFirstTime(
-        setPinFirstTime: AuthenticateFlowResponse.ConfirmPinEntryToSetForFirstTime,
+    fun setPasswordFirstTime(
+        setPasswordFirstTimeResponse: AuthenticateFlowResponse.ConfirmInputToSetForFirstTime,
         requests: List<AuthenticationRequest>
     ): Flow<AuthenticateFlowResponse> = flow {
         try {
@@ -244,14 +246,15 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
 
             val newKey = encryptionKeyHandler.generateEncryptionKey()
             val kOpenssl = AES256CBC_PBKDF2_HMAC_SHA256()
+            val initialInput = setPasswordFirstTimeResponse.getInitialUserInput()
             val encryptedEncryptionKey = encryptEncryptionKey(
                 newKey,
-                setPinFirstTime.getInitialPinEntry(),
+                initialInput,
                 kOpenssl
             )
             val encryptedTestString = encryptTestString(newKey, kOpenssl)
 
-            if (setPinFirstTime.hasBeenCleared) {
+            if (setPasswordFirstTimeResponse.initialUserInputHasBeenCleared) {
                 throw AuthenticationException(AuthenticateFlowResponse.Error.SetPinFirstTime.NewPinEntryWasCleared)
             }
 
@@ -263,7 +266,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
             persistentStorage.saveCredentials(creds)
 
             emitAll(
-                processValidPinEntryResponse(newKey, setPinFirstTime.getInitialPinEntry(), requests)
+                processValidPinEntryResponse(newKey, setPasswordFirstTimeResponse.getInitialUserInput(), requests)
             )
         } catch (e: AuthenticationException) {
             emit(e.flowResponseError)
@@ -274,10 +277,10 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
 
     private suspend fun encryptEncryptionKey(
         key: EncryptionKey,
-        pinEntry: PinEntry,
+        userInput: UserInputWriter,
         kOpenSSL: KOpenSSL
     ): EncryptedString {
-        Password(pinEntry.getPinWriter().toCharArray()).let { password ->
+        Password(userInput.toCharArray()).let { password ->
 
             @OptIn(RawPasswordAccess::class)
             UnencryptedByteArray(key.password.value.toByteArray()).let { unencryptedByteArray ->
@@ -285,7 +288,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
                 return try {
                     kOpenSSL.encrypt(
                         password,
-                        encryptionKeyHandler.getHashIterations(key),
+                        encryptionKeyHashIterations,
                         unencryptedByteArray,
                         dispatchers.default
                     )
@@ -326,7 +329,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
     /////////////////
     private suspend fun processValidPinEntryResponse(
         encryptionKey: EncryptionKey,
-        pinEntry: PinEntry,
+        userInput: UserInputWriter,
         requests: List<AuthenticationRequest>
     ): Flow<AuthenticateFlowResponse> = flow {
         withContext(dispatchers.default) {
@@ -336,11 +339,11 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
                     when (request) {
                         is AuthenticationRequest.LogIn -> {
 
-                            AuthenticationManagerImpl.getEncryptionKey() ?: let {
-                                authenticationManagerImpl.setEncryptionKey(encryptionKey)
+                            AuthenticationCoreManager.getEncryptionKey() ?: let {
+                                authenticationCoreManager.setEncryptionKey(encryptionKey)
                             }
 
-                            authenticationManagerImpl.updateAuthenticationState(
+                            authenticationCoreManager.updateAuthenticationState(
                                 AuthenticationState.NotRequired, null
                             )
                             responses.add(
@@ -349,8 +352,8 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
                         }
                         is AuthenticationRequest.ResetPin -> {
 
-                            AuthenticateFlowResponse.ConfirmNewPinEntryToReset
-                                .generate(pinEntry, request)
+                            AuthenticateFlowResponse.PasswordConfirmedForReset
+                                .generate(userInput, request)
                                 ?.let { flowResponseToConfirmNewPinEntryToReset ->
                                     emit(flowResponseToConfirmNewPinEntryToReset)
                                     return@withContext
@@ -367,8 +370,8 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
                         }
                         is AuthenticationRequest.GetEncryptionKey -> {
 
-                            AuthenticationManagerImpl.getEncryptionKey() ?: let {
-                                authenticationManagerImpl.setEncryptionKey(encryptionKey)
+                            AuthenticationCoreManager.getEncryptionKey() ?: let {
+                                authenticationCoreManager.setEncryptionKey(encryptionKey)
                             }
 
                             responses.add(

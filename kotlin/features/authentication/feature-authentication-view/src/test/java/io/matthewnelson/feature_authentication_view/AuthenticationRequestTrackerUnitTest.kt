@@ -15,7 +15,7 @@
 * */
 package io.matthewnelson.feature_authentication_view
 
-import io.matthewnelson.concept_authentication.AuthenticationRequest
+import io.matthewnelson.concept_authentication.coordinator.AuthenticationRequest
 import io.matthewnelson.feature_authentication_view.components.AuthenticationRequestTracker
 import org.junit.Assert
 import org.junit.Test

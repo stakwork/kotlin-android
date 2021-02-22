@@ -16,17 +16,19 @@
 package io.matthewnelson.feature_authentication_core
 
 import app.cash.exhaustive.Exhaustive
-import io.matthewnelson.concept_authentication.BaseAuthenticationCoordinator
-import io.matthewnelson.feature_authentication_core.components.AuthenticationManagerImpl
-import io.matthewnelson.concept_authentication.AuthenticationRequest
-import io.matthewnelson.concept_authentication.AuthenticationResponse
-import io.matthewnelson.feature_authentication_core.model.AuthenticationState
+import io.matthewnelson.concept_authentication.coordinator.AuthenticationCoordinator
+import io.matthewnelson.concept_authentication.coordinator.AuthenticationRequest
+import io.matthewnelson.concept_authentication.coordinator.AuthenticationResponse
+import io.matthewnelson.concept_authentication.state.AuthenticationState
+import io.matthewnelson.concept_authentication.state.AuthenticationStateManager
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.isActive
 
-abstract class AuthenticationCoordinator: BaseAuthenticationCoordinator() {
+abstract class AuthenticationCoreCoordinator(
+    val authenticationStateManager: AuthenticationStateManager
+): AuthenticationCoordinator() {
 
     @Suppress("RemoveExplicitTypeArguments", "PropertyName")
     protected val _authenticationResponseSharedFlow: MutableSharedFlow<AuthenticationResponse> by lazy {
@@ -46,9 +48,9 @@ abstract class AuthenticationCoordinator: BaseAuthenticationCoordinator() {
         @Exhaustive
         when (request) {
             is AuthenticationRequest.GetEncryptionKey -> {
-                when (AuthenticationManager.authenticationStateFlow.value) {
+                when (authenticationStateManager.authenticationStateFlow.value) {
                     is AuthenticationState.NotRequired -> {
-                        AuthenticationManagerImpl.getEncryptionKey()?.let { key ->
+                        AuthenticationCoreManager.getEncryptionKey()?.let { key ->
                             return flowOf(
                                 AuthenticationResponse.Success.Key(request, key)
                             )
@@ -58,9 +60,9 @@ abstract class AuthenticationCoordinator: BaseAuthenticationCoordinator() {
                 }
             }
             is AuthenticationRequest.LogIn -> {
-                when (AuthenticationManager.authenticationStateFlow.value) {
+                when (authenticationStateManager.authenticationStateFlow.value) {
                     is AuthenticationState.NotRequired -> {
-                        AuthenticationManagerImpl.getEncryptionKey()?.let {
+                        AuthenticationCoreManager.getEncryptionKey()?.let {
                             return flowOf(
                                 AuthenticationResponse.Success.Authenticated(request)
                             )

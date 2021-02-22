@@ -13,7 +13,7 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 * */
-package io.matthewnelson.concept_authentication
+package io.matthewnelson.concept_authentication.coordinator
 
 import io.matthewnelson.concept_encryption_key.EncryptionKey
 
@@ -25,8 +25,6 @@ sealed class AuthenticationResponse(val authenticationRequest: AuthenticationReq
             request: AuthenticationRequest
         ): Success(request)
 
-        // TODO: Make an encryption Key generator interface to implement
-        //  so lib users can generate whatever key they like.
         class Key(
             request: AuthenticationRequest,
             val encryptionKey: EncryptionKey

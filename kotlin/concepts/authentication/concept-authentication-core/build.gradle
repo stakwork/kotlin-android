@@ -9,7 +9,7 @@ targetCompatibility = JavaVersion.VERSION_1_8
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    api project(path: ':kotlin:concepts:authentication:concept-authentication-core')
-    api project(path: ':kotlin:concepts:concept-coroutines')
-    implementation project(path: ':kotlin:crypto:k-openssl')
+    api project(path: ':kotlin:concepts:authentication:concept-authentication')
+    api project(path: ':kotlin:concepts:concept-foreground-state')
+    implementation deps.kotlin.coroutinesCore
 }

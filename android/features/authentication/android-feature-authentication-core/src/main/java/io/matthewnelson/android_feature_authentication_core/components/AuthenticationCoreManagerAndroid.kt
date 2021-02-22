@@ -20,25 +20,36 @@ import android.app.Application
 import android.os.Bundle
 import android.os.SystemClock
 import androidx.annotation.MainThread
-import io.matthewnelson.feature_authentication_core.components.AuthenticationManagerImpl
-import io.matthewnelson.feature_authentication_core.model.AuthenticationState
-import io.matthewnelson.feature_authentication_core.model.ForegroundState
+import io.matthewnelson.feature_authentication_core.AuthenticationCoreManager
+import io.matthewnelson.concept_authentication.state.AuthenticationState
+import io.matthewnelson.concept_foreground_state.ForegroundState
 import io.matthewnelson.android_feature_authentication_core.data.PersistentStorageAndroid
 import io.matthewnelson.concept_coroutines.CoroutineDispatchers
 import io.matthewnelson.concept_encryption_key.EncryptionKeyHandler
 import io.matthewnelson.k_openssl_common.clazzes.HashIterations
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
-abstract class AuthenticationManagerImplAndroid(
+abstract class AuthenticationCoreManagerAndroid(
     dispatchers: CoroutineDispatchers,
     encryptionKeyHashIterations: HashIterations,
     encryptionKeyHandler: EncryptionKeyHandler,
     persistentStorage: PersistentStorageAndroid
-): AuthenticationManagerImpl<AuthenticationManagerInitializerAndroid>(
+): AuthenticationCoreManager<AuthenticationManagerInitializerAndroid>(
     dispatchers,
     encryptionKeyHashIterations,
     encryptionKeyHandler,
     persistentStorage
 ), Application.ActivityLifecycleCallbacks {
+
+    @Suppress("ObjectPropertyName", "RemoveExplicitTypeArguments")
+    private val _foregroundStateFlow: MutableStateFlow<ForegroundState> by lazy {
+        MutableStateFlow<ForegroundState>(ForegroundState.Background)
+    }
+
+    override val foregroundStateFlow: StateFlow<ForegroundState>
+        get() = _foregroundStateFlow.asStateFlow()
 
     var backgroundLogOutTime: Long = 0L
         protected set
@@ -82,7 +93,7 @@ abstract class AuthenticationManagerImplAndroid(
      * */
     override fun onActivityStarted(activity: Activity) {
         if (++activityStackCount == 1 && !changingConfigurations) {
-            updateForegroundState(ForegroundState.Foreground)
+            _foregroundStateFlow.value = ForegroundState.Foreground
             if (authenticationStateFlow.value is AuthenticationState.NotRequired &&
                 backgroundLogOutTime > 0L &&
                 (SystemClock.uptimeMillis() - timeMovedToBackground) > backgroundLogOutTime
@@ -100,7 +111,7 @@ abstract class AuthenticationManagerImplAndroid(
     override fun onActivityStopped(activity: Activity) {
         changingConfigurations = activity.isChangingConfigurations
         if (--activityStackCount == 0 && !changingConfigurations) {
-            updateForegroundState(ForegroundState.Background)
+            _foregroundStateFlow.value = ForegroundState.Background
             timeMovedToBackground = SystemClock.uptimeMillis()
         }
     }

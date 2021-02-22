@@ -13,14 +13,10 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 * */
-package io.matthewnelson.feature_authentication_core.model
+package io.matthewnelson.concept_authentication.state
 
-sealed class AuthenticationState {
+import kotlinx.coroutines.flow.StateFlow
 
-    object NotRequired: AuthenticationState()
-
-    sealed class Required: AuthenticationState() {
-        object InitialLogIn: Required()
-        object LoggedOut: Required()
-    }
+interface AuthenticationStateManager {
+    val authenticationStateFlow: StateFlow<AuthenticationState>
 }

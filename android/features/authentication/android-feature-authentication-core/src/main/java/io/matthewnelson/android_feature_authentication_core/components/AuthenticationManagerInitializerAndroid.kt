@@ -21,6 +21,13 @@ import io.matthewnelson.feature_authentication_core.components.AuthenticationMan
 class AuthenticationManagerInitializerAndroid(
     val application: Application,
     val backgroundLogOutTime: Long = 0L,
-    override val wrongPinAttemptsUntilLockedOut: Int = 0,
-    override val wrongPinLockoutDuration: Long = 0L
-): AuthenticationManagerInitializer()
+    minimumUserInputLength: Int = 8,
+    maximumUserInputLength: Int = 42,
+    wrongPinAttemptsUntilLockedOut: Int = 0,
+    wrongPinLockoutDuration: Long = 0L
+): AuthenticationManagerInitializer(
+    minimumUserInputLength,
+    maximumUserInputLength,
+    wrongPinAttemptsUntilLockedOut,
+    wrongPinLockoutDuration
+)

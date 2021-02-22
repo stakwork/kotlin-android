@@ -13,9 +13,16 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 * */
-package io.matthewnelson.feature_authentication_core.model
+package io.matthewnelson.concept_authentication_core.model
 
-sealed class ForegroundState {
-    object Background: ForegroundState()
-    object Foreground: ForegroundState()
+interface ConfirmUserInputToReset {
+    fun clearOriginalValidatedPassword()
+    fun clearNewPassword()
+
+    @Throws(ClassCastException::class)
+    fun storeNewPasswordToBeSet(newUserInput: UserInput?)
+}
+
+interface ConfirmUserInputToSetForFirstTime {
+    fun clearInitialUserInput()
 }

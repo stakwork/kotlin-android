@@ -13,11 +13,11 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 * */
-package io.matthewnelson.concept_authentication
+package io.matthewnelson.concept_authentication.coordinator
 
 import kotlinx.coroutines.flow.Flow
 
-abstract class BaseAuthenticationCoordinator {
+abstract class AuthenticationCoordinator {
 
     /**
      * Returns the corresponding response for the provided request, or

@@ -13,25 +13,10 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 * */
-package io.matthewnelson.concept_authentication
+package io.matthewnelson.concept_foreground_state
 
-sealed class AuthenticationRequest {
+import kotlinx.coroutines.flow.StateFlow
 
-    abstract val priority: Int
-
-    class ConfirmPin: AuthenticationRequest() {
-        override val priority: Int = 3
-    }
-
-    class GetEncryptionKey: AuthenticationRequest() {
-        override val priority: Int = 4
-    }
-
-    class LogIn: AuthenticationRequest() {
-        override val priority: Int = 1
-    }
-
-    class ResetPin: AuthenticationRequest() {
-        override val priority: Int = 2
-    }
+interface ForegroundStateManager {
+    val foregroundStateFlow: StateFlow<ForegroundState>
 }

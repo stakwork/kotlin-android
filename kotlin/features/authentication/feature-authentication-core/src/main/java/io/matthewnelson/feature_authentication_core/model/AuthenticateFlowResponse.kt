@@ -15,19 +15,38 @@
 * */
 package io.matthewnelson.feature_authentication_core.model
 
-import io.matthewnelson.concept_authentication.AuthenticationRequest
-import io.matthewnelson.concept_authentication.AuthenticationResponse
+import io.matthewnelson.concept_authentication.coordinator.AuthenticationRequest
+import io.matthewnelson.concept_authentication.coordinator.AuthenticationResponse
+import io.matthewnelson.concept_authentication_core.model.ConfirmUserInputToReset
+import io.matthewnelson.concept_authentication_core.model.ConfirmUserInputToSetForFirstTime
+import io.matthewnelson.concept_authentication_core.model.UserInput
+import io.matthewnelson.concept_authentication_core.AuthenticationManager
 
 sealed class AuthenticateFlowResponse {
 
-    class ConfirmNewPinEntryToReset private constructor(
-        private val currentValidPinEntry: PinEntry,
-        private val request: AuthenticationRequest.ResetPin
-    ): AuthenticateFlowResponse() {
+    /**
+     * Is issued after processing a [AuthenticationRequest.ResetPin] for the first time via
+     * [AuthenticationManager.authenticate] where the user's input was validated against
+     * their currently set password.
+     *
+     * Password reset process:
+     *   1          - Confirm current password via [AuthenticationManager.authenticate]
+     *   1 response - [PasswordConfirmedForReset] to "fill out"
+     *   2          - Input new password and store in [newPasswordToBeSet]
+     *   3          - Confirm new password matches [newPasswordToBeSet]
+     *   .            via [AuthenticationManager.resetPassword]
+     *
+     * @param [originalValidatedUserInput] The original, validated [UserInput] (their current password)
+     * @param [originalRequest] The original [AuthenticationRequest] being fulfilled.
+     * */
+    class PasswordConfirmedForReset private constructor(
+        private val originalValidatedUserInput: UserInputWriter,
+        private val originalRequest: AuthenticationRequest.ResetPin
+    ): AuthenticateFlowResponse(), ConfirmUserInputToReset {
 
         companion object {
             private val trackerLock = Object()
-            private val resetPinCompletionTracker: Array<Int?> by lazy {
+            private val resetCompletionTracker: Array<Int?> by lazy {
                 arrayOfNulls(2)
             }
 
@@ -36,14 +55,14 @@ sealed class AuthenticateFlowResponse {
              * */
             @JvmSynthetic
             internal fun generate(
-                validPinEntry: PinEntry,
+                validUserInput: UserInputWriter,
                 request: AuthenticationRequest.ResetPin
-            ): ConfirmNewPinEntryToReset? =
+            ): PasswordConfirmedForReset? =
                 synchronized(trackerLock) {
-                    if (resetPinCompletionTracker.contains(request.hashCode())) {
+                    if (resetCompletionTracker.contains(request.hashCode())) {
                         null
                     } else {
-                        ConfirmNewPinEntryToReset(validPinEntry.clone(), request)
+                        PasswordConfirmedForReset(validUserInput.clone(), request)
                     }
                 }
         }
@@ -53,93 +72,113 @@ sealed class AuthenticateFlowResponse {
          * processing request responses.
          * */
         @JvmSynthetic
-        internal fun onCompletion() {
+        internal fun onPasswordResetCompletion() {
             synchronized(trackerLock) {
-                for (i in 0 until resetPinCompletionTracker.lastIndex) {
-                    resetPinCompletionTracker[i] = resetPinCompletionTracker[i + 1]
+                for (i in 0 until resetCompletionTracker.lastIndex) {
+                    resetCompletionTracker[i] = resetCompletionTracker[i + 1]
                 }
-                resetPinCompletionTracker[resetPinCompletionTracker.lastIndex] = request.hashCode()
+                resetCompletionTracker[resetCompletionTracker.lastIndex] = originalRequest.hashCode()
             }
         }
 
-        private var newPinEntry: PinEntry? = null
+        private var newPasswordToBeSet: UserInputWriter? = null
 
         @Volatile
-        internal var currentValidPinEntryHasBeenCleared: Boolean = false
+        internal var originalValidatedUserInputHasBeenCleared: Boolean = false
             private set
 
         @Synchronized
-        fun clearCurrentValidPinEntry() {
-            currentValidPinEntryHasBeenCleared = true
-            currentValidPinEntry.clearPin()
+        override fun clearOriginalValidatedPassword() {
+            originalValidatedUserInputHasBeenCleared = true
+            originalValidatedUserInput.clearInput()
         }
 
         @Volatile
-        internal var newPinEntryHasBeenCleared: Boolean = false
+        internal var newPasswordHasBeenCleared: Boolean = false
             private set
 
         @Synchronized
-        fun clearNewPinEntry() {
-            newPinEntry?.let { pe ->
-                newPinEntryHasBeenCleared = true
-                pe.clearPin()
+        override fun clearNewPassword() {
+            newPasswordToBeSet?.let { pe ->
+                newPasswordHasBeenCleared = true
+                pe.clearInput()
             }
         }
 
+        /**
+         * Checks the value set for [newPasswordToBeSet] with the final confirmation [UserInput]
+         * to ensure it is correct, before actually setting the new password.
+         * */
         @JvmSynthetic
         @Synchronized
-        internal fun compareConfirmedPinEntry(confirmedPinEntry: PinEntry): Boolean? =
-            newPinEntry?.compare(confirmedPinEntry)
+        internal fun compareNewPasswordWithConfirmationInput(
+            confirmationInput: UserInput
+        ): Boolean? =
+            newPasswordToBeSet?.compare(confirmationInput)
 
         @JvmSynthetic
         @Synchronized
-        internal fun getCurrentValidPinEntry(): PinEntry =
-            currentValidPinEntry
+        internal fun getOriginalValidatedPassword(): UserInputWriter =
+            originalValidatedUserInput
 
         @JvmSynthetic
         @Synchronized
-        internal fun getNewPinEntry(): PinEntry? =
-            newPinEntry
+        internal fun getNewPasswordToBeSet(): UserInputWriter? =
+            newPasswordToBeSet
 
         @Synchronized
-        fun setNewPinEntry(newPinEntry: PinEntry?) {
-            this.newPinEntry?.clearPin()
-            this.newPinEntry = newPinEntry?.clone()
+        @Throws(ClassCastException::class)
+        override fun storeNewPasswordToBeSet(newUserInput: UserInput?) {
+            this.newPasswordToBeSet?.clearInput()
+            this.newPasswordToBeSet = (newUserInput as? UserInputWriter)?.clone()
         }
     }
 
-    class ConfirmPinEntryToSetForFirstTime private constructor(
-        private val initialPinEntry: PinEntry
-    ): AuthenticateFlowResponse() {
+    /**
+     * Issued after processing [AuthenticationRequest.LogIn] where by there is no persisted
+     * credentials. User's original input is stored here in [initialUserInput] so they can
+     * confirm it once more for correctness.
+     *
+     * Setting a password for the first time process:
+     *   1          - Enter password and try to authenticate via [AuthenticationManager.authenticate]
+     *   1 response - No credentials persisted, [ConfirmInputToSetForFirstTime] is issued to "fill out"
+     *   2          - Confirm new password matches [initialUserInput] via
+     *   .            [AuthenticationManager.setPasswordFirstTime]
+     *
+     * @param [initialUserInput] original user input before being issued [ConfirmInputToSetForFirstTime]
+     * */
+    class ConfirmInputToSetForFirstTime private constructor(
+        private val initialUserInput: UserInputWriter
+    ): AuthenticateFlowResponse(), ConfirmUserInputToSetForFirstTime {
 
         companion object {
             @JvmSynthetic
-            internal fun instantiate(initialPinEntry: PinEntry): ConfirmPinEntryToSetForFirstTime =
-                ConfirmPinEntryToSetForFirstTime(initialPinEntry)
+            internal fun instantiate(initialUserInput: UserInputWriter): ConfirmInputToSetForFirstTime =
+                ConfirmInputToSetForFirstTime(initialUserInput)
         }
 
         @Volatile
-        internal var hasBeenCleared: Boolean = false
+        internal var initialUserInputHasBeenCleared: Boolean = false
             private set
 
         @Synchronized
-        fun clearInitialPinEntry() {
-            hasBeenCleared = true
-            initialPinEntry.clearPin()
+        override fun clearInitialUserInput() {
+            initialUserInputHasBeenCleared = true
+            initialUserInput.clearInput()
         }
 
         @JvmSynthetic
         @Synchronized
-        internal fun compareConfirmedPinEntry(confirmedPinEntry: PinEntry): Boolean =
-            initialPinEntry.compare(confirmedPinEntry)
+        internal fun compareInitialInputWithConfirmedInput(confirmedUserInput: UserInput): Boolean =
+            initialUserInput.compare(confirmedUserInput)
 
         /**
          * Used within the flow's context under caller's coroutine scope.
          * */
         @JvmSynthetic
         @Synchronized
-        internal fun getInitialPinEntry(): PinEntry =
-            initialPinEntry
+        internal fun getInitialUserInput(): UserInputWriter =
+            initialUserInput
     }
 
     sealed class Notify: AuthenticateFlowResponse() {
@@ -148,8 +187,11 @@ sealed class AuthenticateFlowResponse {
         object GeneratingAndEncryptingEncryptionKey: Notify()
     }
 
+    /**
+     * Issued after all requests have been fulfilled via user producing a valid password.
+     * */
     class Success private constructor(
-        val value: List<AuthenticationResponse>
+        val requests: List<AuthenticationResponse>
     ): AuthenticateFlowResponse() {
         companion object {
             @JvmSynthetic
@@ -158,6 +200,9 @@ sealed class AuthenticateFlowResponse {
         }
     }
 
+    /**
+     * Issued after a password input fails to decrypt the encryption key.
+     * */
     class WrongPin private constructor(
         val attemptsLeftUntilLockout: Int
     ): AuthenticateFlowResponse() {
@@ -168,6 +213,9 @@ sealed class AuthenticateFlowResponse {
         }
     }
 
+    /**
+     * TODO: Must rework the entire error response scructure.
+     * */
     sealed class Error: AuthenticateFlowResponse() {
 
         object RequestListEmpty: Error()

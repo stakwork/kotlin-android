@@ -16,11 +16,26 @@
 package io.matthewnelson.feature_authentication_core.components
 
 /**
+ * Initializes parameters at runtime.
+ *
+ * See init requirements for user input min/max character lengths.
+ *
  * Wrong Pin Lockout feature will be enabled **only** if both
  * [wrongPinAttemptsUntilLockedOut] and [wrongPinLockoutDuration] are
  * greater than 0.
  * */
-abstract class AuthenticationManagerInitializer {
-    abstract val wrongPinAttemptsUntilLockedOut: Int
-    abstract val wrongPinLockoutDuration: Long
+abstract class AuthenticationManagerInitializer(
+    val minimumUserInputLength: Int = 8,
+    val maximumUserInputLength: Int = 42,
+    val wrongPinAttemptsUntilLockedOut: Int = 0,
+    val wrongPinLockoutDuration: Long = 0L,
+) {
+    init {
+        require(minimumUserInputLength >= 4) {
+            "minimumUserInputLength must be greater than or equal to 4"
+        }
+        require(maximumUserInputLength >= minimumUserInputLength) {
+            "maximumUserInputLength must be greater than or equal to minimumUserInputLength"
+        }
+    }
 }

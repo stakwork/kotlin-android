@@ -16,8 +16,8 @@
 package io.matthewnelson.feature_authentication_view.components
 
 import app.cash.exhaustive.Exhaustive
-import io.matthewnelson.feature_authentication_core.model.AuthenticateFlowResponse.ConfirmPinEntryToSetForFirstTime
-import io.matthewnelson.feature_authentication_core.model.AuthenticateFlowResponse.ConfirmNewPinEntryToReset
+import io.matthewnelson.feature_authentication_core.model.AuthenticateFlowResponse.ConfirmInputToSetForFirstTime
+import io.matthewnelson.feature_authentication_core.model.AuthenticateFlowResponse.PasswordConfirmedForReset
 
 internal class ConfirmPressAction {
 
@@ -36,12 +36,12 @@ internal class ConfirmPressAction {
             @Exhaustive
             when (currentAction) {
                 is Action.Authenticate -> {}
-                is Action.ResetPin -> {
-                    currentAction.flowResponseResetPin.clearCurrentValidPinEntry()
-                    currentAction.flowResponseResetPin.clearNewPinEntry()
+                is Action.ResetPassword -> {
+                    currentAction.flowResponseResetPassword.clearOriginalValidatedPassword()
+                    currentAction.flowResponseResetPassword.clearNewPassword()
                 }
-                is Action.SetPinFirstTime -> {
-                    currentAction.flowResponseSetPinFirstTime.clearInitialPinEntry()
+                is Action.SetPasswordFirstTime -> {
+                    currentAction.flowResponseConfirmInputToSetFirstTime.clearInitialUserInput()
                 }
             }
         }
@@ -49,27 +49,27 @@ internal class ConfirmPressAction {
     }
 
     sealed class Action {
-        object Authenticate : Action()
+        object Authenticate: Action()
 
-        class ResetPin private constructor(
-            val flowResponseResetPin: ConfirmNewPinEntryToReset
+        class ResetPassword private constructor(
+            val flowResponseResetPassword: PasswordConfirmedForReset
         ): Action() {
             companion object {
                 @JvmSynthetic
-                fun instantiate(flowResponseResetPin: ConfirmNewPinEntryToReset): ResetPin =
-                    ResetPin(flowResponseResetPin)
+                fun instantiate(flowResponseResetPassword: PasswordConfirmedForReset): ResetPassword =
+                    ResetPassword(flowResponseResetPassword)
             }
         }
 
-        class SetPinFirstTime private constructor(
-            val flowResponseSetPinFirstTime: ConfirmPinEntryToSetForFirstTime
+        class SetPasswordFirstTime private constructor(
+            val flowResponseConfirmInputToSetFirstTime: ConfirmInputToSetForFirstTime
         ): Action() {
             companion object {
                 @JvmSynthetic
                 fun instantiate(
-                    flowResponseSetPinFirstTime: ConfirmPinEntryToSetForFirstTime
-                ): SetPinFirstTime =
-                    SetPinFirstTime(flowResponseSetPinFirstTime)
+                    flowResponseConfirmInputToSetForFirstTime: ConfirmInputToSetForFirstTime
+                ): SetPasswordFirstTime =
+                    SetPasswordFirstTime(flowResponseConfirmInputToSetForFirstTime)
             }
         }
     }

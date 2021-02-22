@@ -13,18 +13,22 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 * */
-package io.matthewnelson.feature_authentication_core.components
+package io.matthewnelson.feature_authentication_core
 
-import io.matthewnelson.concept_authentication.AuthenticationRequest
-import io.matthewnelson.feature_authentication_core.AuthenticationManager
+import app.cash.exhaustive.Exhaustive
+import io.matthewnelson.concept_authentication.coordinator.AuthenticationRequest
+import io.matthewnelson.concept_authentication.state.AuthenticationState
+import io.matthewnelson.concept_authentication_core.AuthenticationManager
+import io.matthewnelson.concept_authentication_core.model.UserInput
 import io.matthewnelson.feature_authentication_core.data.PersistentStorage
 import io.matthewnelson.feature_authentication_core.model.AuthenticateFlowResponse
-import io.matthewnelson.feature_authentication_core.model.PinEntry
-import io.matthewnelson.feature_authentication_core.model.PinWriter
 import io.matthewnelson.concept_coroutines.CoroutineDispatchers
 import io.matthewnelson.concept_encryption_key.EncryptionKey
 import io.matthewnelson.concept_encryption_key.EncryptionKeyException
 import io.matthewnelson.concept_encryption_key.EncryptionKeyHandler
+import io.matthewnelson.feature_authentication_core.components.AuthenticationManagerInitializer
+import io.matthewnelson.feature_authentication_core.components.AuthenticationProcessor
+import io.matthewnelson.feature_authentication_core.model.UserInputWriter
 import io.matthewnelson.k_openssl_common.annotations.RawPasswordAccess
 import io.matthewnelson.k_openssl_common.clazzes.HashIterations
 import io.matthewnelson.k_openssl_common.clazzes.clear
@@ -33,12 +37,44 @@ import kotlinx.coroutines.flow.*
 /**
  * Extend this class and implement
  * */
-abstract class AuthenticationManagerImpl <T: AuthenticationManagerInitializer>(
+abstract class AuthenticationCoreManager <T: AuthenticationManagerInitializer>(
     dispatchers: CoroutineDispatchers,
     encryptionKeyHashIterations: HashIterations,
     encryptionKeyHandler: EncryptionKeyHandler,
     persistentStorage: PersistentStorage
-): AuthenticationManager() {
+): AuthenticationManager<
+        AuthenticateFlowResponse,
+        AuthenticateFlowResponse.PasswordConfirmedForReset,
+        AuthenticateFlowResponse.ConfirmInputToSetForFirstTime
+        >()
+{
+
+    ///////////////////////////
+    /// AuthenticationState ///
+    ///////////////////////////
+    private val _authenticationStateFlow: MutableStateFlow<AuthenticationState> by lazy {
+        MutableStateFlow(AuthenticationState.Required.InitialLogIn)
+    }
+
+    override val authenticationStateFlow: StateFlow<AuthenticationState>
+        get() = _authenticationStateFlow.asStateFlow()
+
+    @JvmSynthetic
+    @Suppress("UNUSED_PARAMETER")
+    internal fun updateAuthenticationState(state: AuthenticationState, any: Any?) {
+        @Exhaustive
+        when (state) {
+            is AuthenticationState.NotRequired -> {}
+            is AuthenticationState.Required -> {
+                clearEncryptionKey()
+            }
+        }
+        _authenticationStateFlow.value = state
+    }
+
+    protected fun updateAuthenticationState(state: AuthenticationState) {
+        updateAuthenticationState(state, null)
+    }
 
     @Suppress("RemoveExplicitTypeArguments")
     private val authenticationProcessor: AuthenticationProcessor<T> by lazy {
@@ -59,93 +95,121 @@ abstract class AuthenticationManagerImpl <T: AuthenticationManagerInitializer>(
     open fun initialize(value: T) {
         synchronized(initializeLock) {
             if (!isInitialized) {
+                minUserInputLength = value.minimumUserInputLength
+                maxUserInputLength = value.maximumUserInputLength
                 authenticationProcessor.initializeWrongPinLockout(value)
                 isInitialized = true
             }
         }
     }
 
+    override fun getNewUserInput(): UserInput {
+        return UserInputWriter.instantiate()
+    }
+
     @Synchronized
     override fun authenticate(
-        pinEntry: PinEntry,
+        userInput: UserInput,
         requests: List<AuthenticationRequest>
     ): Flow<AuthenticateFlowResponse> =
         when {
             requests.isEmpty() -> {
                 flowOf(AuthenticateFlowResponse.Error.RequestListEmpty)
             }
-            pinEntry.getPinWriter().size() < PinWriter.MIN_CHAR_COUNT ||
-            pinEntry.getPinWriter().size() > PinWriter.MAX_CHAR_COUNT -> {
+            try {
+                (userInput as UserInputWriter).size() < minUserInputLength ||
+                userInput.size() > maxUserInputLength
+            } catch(e: ClassCastException) {
+                // TODO: create new error to submit back instead of InvalidPinEntrySize
+                true
+            } -> {
                 flowOf(AuthenticateFlowResponse.Error.Authenticate.InvalidPinEntrySize)
             }
             else -> {
-                authenticationProcessor.authenticate(pinEntry, requests)
+                authenticationProcessor.authenticate(userInput as UserInputWriter, requests)
             }
         }
 
     @Synchronized
-    override fun resetPin(
-        resetPin: AuthenticateFlowResponse.ConfirmNewPinEntryToReset,
-        confirmedPinEntry: PinEntry,
+    override fun resetPassword(
+        resetPasswordResponse: AuthenticateFlowResponse.PasswordConfirmedForReset,
+        userInputConfirmation: UserInput,
         requests: List<AuthenticationRequest>
     ): Flow<AuthenticateFlowResponse> =
         when {
             requests.isEmpty() -> {
                 flowOf(AuthenticateFlowResponse.Error.RequestListEmpty)
             }
-            resetPin.getNewPinEntry() == null -> {
+            resetPasswordResponse.getNewPasswordToBeSet() == null -> {
                 flowOf(AuthenticateFlowResponse.Error.ResetPin.NewPinEntryWasNull)
             }
-            resetPin.getNewPinEntry()?.getPinWriter()?.size()
-                    ?: 0 < PinWriter.MIN_CHAR_COUNT ||
-            resetPin.getNewPinEntry()?.getPinWriter()?.size()
-                    ?: PinWriter.MAX_CHAR_COUNT + 1 > PinWriter.MAX_CHAR_COUNT -> {
-                flowOf(AuthenticateFlowResponse.Error.ResetPin.InvalidNewPinEntrySize)
-            }
-            confirmedPinEntry.getPinWriter().size() < PinWriter.MIN_CHAR_COUNT ||
-            confirmedPinEntry.getPinWriter().size() > PinWriter.MAX_CHAR_COUNT -> {
+
+            resetPasswordResponse.getNewPasswordToBeSet()?.size() ?: 0
+                    < minUserInputLength ||
+            resetPasswordResponse.getNewPasswordToBeSet()?.size() ?: maxUserInputLength + 1
+                    > maxUserInputLength -> {
+                        flowOf(AuthenticateFlowResponse.Error.ResetPin.InvalidNewPinEntrySize)
+                    }
+
+            try {
+                (userInputConfirmation as UserInputWriter).size() < minUserInputLength ||
+                        userInputConfirmation.size() > maxUserInputLength
+            } catch (e: ClassCastException) {
+                // TODO: create new error to submit back instead of InvalidPinEntrySize
+                true
+            } -> {
                 flowOf(AuthenticateFlowResponse.Error.ResetPin.InvalidConfirmedPinEntrySize)
             }
-            resetPin.currentValidPinEntryHasBeenCleared -> {
+            resetPasswordResponse.originalValidatedUserInputHasBeenCleared -> {
                 flowOf(AuthenticateFlowResponse.Error.ResetPin.CurrentPinEntryWasCleared)
             }
-            resetPin.newPinEntryHasBeenCleared -> {
+            resetPasswordResponse.newPasswordHasBeenCleared -> {
                 flowOf(AuthenticateFlowResponse.Error.ResetPin.NewPinEntryWasCleared)
             }
-            resetPin.compareConfirmedPinEntry(confirmedPinEntry) != true -> {
+            resetPasswordResponse.compareNewPasswordWithConfirmationInput(userInputConfirmation) != true -> {
                 flowOf(AuthenticateFlowResponse.Error.ResetPin.NewPinDoesNotMatchConfirmedPin)
             }
             else -> {
-                authenticationProcessor.resetPin(resetPin, requests)
+                authenticationProcessor.resetPassword(resetPasswordResponse, requests)
             }
         }
 
     @Synchronized
-    override fun setPinFirstTime(
-        setPinFirstTime: AuthenticateFlowResponse.ConfirmPinEntryToSetForFirstTime,
-        confirmedPinEntry: PinEntry,
+    override fun setPasswordFirstTime(
+        setPasswordFirstTime: AuthenticateFlowResponse.ConfirmInputToSetForFirstTime,
+        userInputConfirmation: UserInput,
         requests: List<AuthenticationRequest>
     ): Flow<AuthenticateFlowResponse> =
         when {
             requests.isEmpty() -> {
                 flowOf(AuthenticateFlowResponse.Error.RequestListEmpty)
             }
-            confirmedPinEntry.getPinWriter().size() < PinWriter.MIN_CHAR_COUNT ||
-            confirmedPinEntry.getPinWriter().size() > PinWriter.MAX_CHAR_COUNT -> {
+            try {
+                (userInputConfirmation as UserInputWriter).size() < minUserInputLength ||
+                        userInputConfirmation.size() > maxUserInputLength
+            } catch (e: ClassCastException) {
+                // TODO: create new error to submit back instead of InvalidPinEntrySize
+                true
+            } -> {
                 flowOf(AuthenticateFlowResponse.Error.SetPinFirstTime.InvalidNewPinEntrySize)
             }
-            !setPinFirstTime.compareConfirmedPinEntry(confirmedPinEntry) -> {
+            !setPasswordFirstTime.compareInitialInputWithConfirmedInput(userInputConfirmation) -> {
                 flowOf(AuthenticateFlowResponse.Error.SetPinFirstTime.NewPinDoesNotMatchConfirmedPin)
             }
-            setPinFirstTime.hasBeenCleared -> {
+            setPasswordFirstTime.initialUserInputHasBeenCleared -> {
                 flowOf(AuthenticateFlowResponse.Error.SetPinFirstTime.NewPinEntryWasCleared)
             }
             else -> {
-                authenticationProcessor.setPinFirstTime(setPinFirstTime, requests)
+                authenticationProcessor.setPasswordFirstTime(setPasswordFirstTime, requests)
             }
         }
 
     companion object {
+        var minUserInputLength: Int = 8
+            private set
+        var maxUserInputLength: Int = 42
+            private set
+
         @Volatile
         private var encryptionKey: EncryptionKey? = null
         private val encryptionKeyLock = Object()
@@ -158,7 +222,7 @@ abstract class AuthenticationManagerImpl <T: AuthenticationManagerInitializer>(
     }
 
     @JvmSynthetic
-    override fun clearEncryptionKey() {
+    internal fun clearEncryptionKey() {
         setEncryptionKey(null)
     }
 

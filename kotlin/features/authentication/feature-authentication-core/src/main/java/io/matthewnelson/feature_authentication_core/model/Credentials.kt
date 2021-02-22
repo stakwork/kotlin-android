@@ -18,7 +18,6 @@ package io.matthewnelson.feature_authentication_core.model
 import io.matthewnelson.concept_coroutines.CoroutineDispatchers
 import io.matthewnelson.concept_encryption_key.EncryptionKey
 import io.matthewnelson.concept_encryption_key.EncryptionKeyHandler
-import io.matthewnelson.feature_authentication_core.components.AuthenticationProcessor
 import io.matthewnelson.k_openssl.KOpenSSL
 import io.matthewnelson.k_openssl_common.annotations.UnencryptedDataAccess
 import io.matthewnelson.k_openssl_common.clazzes.*
@@ -71,9 +70,9 @@ internal class Credentials private constructor(
         encryptionKeyHashIterations: HashIterations,
         encryptionKeyHandler: EncryptionKeyHandler,
         kOpenSSL: KOpenSSL,
-        pinEntry: PinEntry
+        userInput: UserInputWriter
     ): EncryptionKey {
-        val password = Password(pinEntry.getPinWriter().toCharArray())
+        val password = Password(userInput.toCharArray())
         try {
             val unencryptedByteArray = kOpenSSL.decrypt(
                 encryptionKeyHashIterations,

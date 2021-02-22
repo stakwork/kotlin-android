@@ -13,40 +13,30 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 * */
-package io.matthewnelson.feature_authentication_core.model
+package io.matthewnelson.concept_authentication_core.model
 
 import kotlinx.coroutines.flow.StateFlow
 
-inline class PinEntry(private val value: PinWriter = PinWriter.instantiate()) {
+interface UserInput {
+    val inputLengthStateFlow: StateFlow<Int>
 
-    @JvmSynthetic
-    internal fun getPinWriter(): PinWriter =
-        value
-
-    val pinLengthStateFlow: StateFlow<Int>
-        get() = value.pinLengthStateFlow
-
+    /**
+     * Add a character to the [UserInput]
+     *
+     * @throws [IllegalArgumentException] if defined maximum input length is exceeded.
+     * */
     @Throws(IllegalArgumentException::class)
-    fun addCharacter(c: Char) {
-        value.addCharacter(c)
-    }
+    fun addCharacter(c: Char)
 
-    fun clearPin() {
-        value.clearPin()
-    }
+    fun clearInput()
 
-    fun clone(): PinEntry =
-        PinEntry(value.clone())
+    fun compare(userInput: UserInput): Boolean
 
-    fun compare(pinEntry: PinEntry): Boolean =
-        value.compare(pinEntry.value)
-
+    /**
+     * Remove the last character from the [UserInput]
+     *
+     * @throws [IllegalArgumentException] if no more characters can be removed.
+     * */
     @Throws(IllegalArgumentException::class)
-    fun dropLastCharacter() {
-        value.drop(1)
-    }
-
-    override fun toString(): String {
-        return ""
-    }
+    fun dropLastCharacter()
 }

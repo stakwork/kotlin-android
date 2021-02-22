@@ -15,7 +15,7 @@
 * */
 package io.matthewnelson.feature_authentication_view.components
 
-import io.matthewnelson.concept_authentication.AuthenticationRequest
+import io.matthewnelson.concept_authentication.coordinator.AuthenticationRequest
 
 internal class AuthenticationRequestTracker {
 
