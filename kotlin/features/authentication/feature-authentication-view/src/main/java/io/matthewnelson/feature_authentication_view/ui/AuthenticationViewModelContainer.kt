@@ -20,11 +20,11 @@ import io.matthewnelson.concept_authentication.coordinator.AuthenticationRequest
 import io.matthewnelson.concept_authentication.coordinator.AuthenticationResponse
 import io.matthewnelson.concept_coroutines.CoroutineDispatchers
 import io.matthewnelson.concept_views.viewstate.value
-import io.matthewnelson.feature_authentication_core.AuthenticationManager
 import io.matthewnelson.feature_authentication_core.model.AuthenticateFlowResponse
 import io.matthewnelson.concept_authentication.state.AuthenticationState
+import io.matthewnelson.concept_authentication_core.AuthenticationManager
+import io.matthewnelson.concept_authentication_core.model.UserInput
 import io.matthewnelson.concept_foreground_state.ForegroundState
-import io.matthewnelson.feature_authentication_core.model.PinEntry
 import io.matthewnelson.feature_authentication_view.components.AuthenticationRequestTracker
 import io.matthewnelson.feature_authentication_view.components.ConfirmPressAction
 import io.matthewnelson.feature_authentication_view.navigation.AuthenticationViewCoordinator
@@ -35,14 +35,18 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class AuthenticationViewModelContainer<T>(
-    val authenticationManager: AuthenticationManager,
+    val authenticationManager: AuthenticationManager<
+            AuthenticateFlowResponse,
+            AuthenticateFlowResponse.PasswordConfirmedForReset,
+            AuthenticateFlowResponse.ConfirmInputToSetForFirstTime
+            >,
     val dispatchers: CoroutineDispatchers,
     val eventHandler: AuthenticationEventHandler,
     val coordinator: AuthenticationViewCoordinator<T>,
     shufflePinNumbers: Boolean,
     val viewModelScope: CoroutineScope
 ) {
-    private val pinEntry: PinEntry = PinEntry()
+    private val userInput: UserInput = authenticationManager.getNewUserInput()
     private val authenticationRequestTracker = AuthenticationRequestTracker()
     private val confirmPressAction = ConfirmPressAction()
     private val viewStateUpdateLock = Object()
@@ -51,77 +55,6 @@ class AuthenticationViewModelContainer<T>(
     @Suppress("RemoveExplicitTypeArguments")
     val viewStateContainer: AuthenticationViewStateContainer by lazy {
         AuthenticationViewStateContainer(shufflePinNumbers)
-    }
-
-    init {
-        viewModelScope.launch(dispatchers.default) {
-
-            // When the view model gets cancelled, so will the supervisor scope.
-            // Clean up.
-            launch {
-                getAuthenticationFinishedStateFlow().collect {}
-            }.invokeOnCompletion {
-                pinEntry.clearPin()
-                confirmPressAction.updateAction(ConfirmPressAction.Action.Authenticate)
-            }
-
-            launch {
-                coordinator.getAuthenticationRequestSharedFlow().collect { request ->
-                    if (!authenticationRequestTracker.addRequest(request)) {
-                        return@collect
-                    }
-
-                    confirmPressJob?.join()
-
-                    synchronized(viewStateUpdateLock) {
-                        pinEntry.clearPin()
-                        confirmPressAction.updateAction(ConfirmPressAction.Action.Authenticate)
-
-                        val viewState = when (request) {
-                            is AuthenticationRequest.ResetPin,
-                            is AuthenticationRequest.ConfirmPin -> {
-                                AuthenticationViewState.ConfirmPin(
-                                    pinEntry.pinLengthStateFlow.value,
-                                    viewStateContainer.getPinPadChars(),
-                                    InputLockState.Unlocked
-                                )
-                            }
-                            is AuthenticationRequest.LogIn,
-                            is AuthenticationRequest.GetEncryptionKey -> {
-                                AuthenticationViewState.LogIn(
-                                    pinEntry.pinLengthStateFlow.value,
-                                    viewStateContainer.getPinPadChars(),
-                                    InputLockState.Unlocked
-                                )
-                            }
-                        }
-
-                        viewStateContainer.internalUpdateViewState(viewState)
-                    }
-                }
-            }
-
-            launch {
-                pinEntry.pinLengthStateFlow.collect { pinLength ->
-                    synchronized(viewStateUpdateLock) {
-                        if (pinLength == viewStateContainer.value.pinLength) {
-                            return@collect
-                        }
-
-                        viewStateContainer.updateCurrentViewState(pinLength)
-                    }
-                }
-            }
-
-            // Clear pin entry if moved to background
-            launch {
-                authenticationManager.foregroundStateFlow.collect { state ->
-                    if (state is ForegroundState.Background && confirmPressJob?.isActive != true) {
-                        pinEntry.clearPin()
-                    }
-                }
-            }
-        }
     }
 
     ////////////////////////////////
@@ -144,15 +77,15 @@ class AuthenticationViewModelContainer<T>(
 
     fun completeAuthentication(responses: List<AuthenticationResponse>) {
         if (
-            AuthenticationManager.authenticationStateFlow.value !is AuthenticationState.NotRequired ||
+            authenticationManager.authenticationStateFlow.value !is AuthenticationState.NotRequired ||
             authenticationRequestTracker.getRequestListSize() != responses.size
         ) {
             _authenticationFinishedStateFlow.value = null
-            pinEntry.clearPin()
+            userInput.clearInput()
             synchronized(viewStateUpdateLock) {
                 if (viewStateContainer.value.inputLockState !is InputLockState.Unlocked) {
                     viewStateContainer.updateCurrentViewState(
-                        pinLength = pinEntry.pinLengthStateFlow.value,
+                        pinLength = userInput.inputLengthStateFlow.value,
                         inputLockState = InputLockState.Unlocked
                     )
                 }
@@ -186,7 +119,7 @@ class AuthenticationViewModelContainer<T>(
 
     fun handleDeviceBackPress(): HandleBackPressResponse =
         when {
-            AuthenticationManager.authenticationStateFlow.value is AuthenticationState.Required -> {
+            authenticationManager.authenticationStateFlow.value is AuthenticationState.Required -> {
                 HandleBackPressResponse.Minimize
             }
             viewStateContainer.value is AuthenticationViewState.ResetPin.Step2 &&
@@ -223,7 +156,7 @@ class AuthenticationViewModelContainer<T>(
         }
 
         try {
-            pinEntry.dropLastCharacter()
+            userInput.dropLastCharacter()
         } catch (e: IllegalArgumentException) {
             // TODO: shake animation the pin hint container
         }
@@ -238,7 +171,7 @@ class AuthenticationViewModelContainer<T>(
         }
 
         return try {
-            pinEntry.addCharacter(c)
+            userInput.addCharacter(c)
             true
         } catch (e: IllegalArgumentException) {
             // TODO: shake animation the pin hint container
@@ -262,31 +195,42 @@ class AuthenticationViewModelContainer<T>(
                     is ConfirmPressAction.Action.Authenticate -> {
                         processResponseFlow(
                             authenticationManager.authenticate(
-                                pinEntry,
+                                userInput,
                                 authenticationRequestTracker.getRequestsList()
                             )
                         )
                     }
-                    is ConfirmPressAction.Action.ResetPin -> {
+                    is ConfirmPressAction.Action.ResetPassword -> {
                         when (viewStateContainer.value) {
                             is AuthenticationViewState.ResetPin.Step1 -> {
-                                action.flowResponseResetPin.setNewPinEntry(pinEntry)
-                                synchronized(viewStateUpdateLock) {
-                                    pinEntry.clearPin()
-                                    viewStateContainer.internalUpdateViewState(
-                                        AuthenticationViewState.ResetPin.Step2(
-                                            0,
-                                            viewStateContainer.getPinPadChars(),
-                                            InputLockState.Unlocked
+                                val inputSet: Boolean = try {
+                                    action.flowResponseResetPassword.storeNewPasswordToBeSet(userInput)
+                                    true
+                                } catch (e: ClassCastException) {
+                                    // TODO: re-work error handling
+                                    eventHandler.onPinDoesNotMatch()
+                                    userInput.clearInput()
+                                    false
+                                }
+
+                                if (inputSet) {
+                                    synchronized(viewStateUpdateLock) {
+                                        userInput.clearInput()
+                                        viewStateContainer.internalUpdateViewState(
+                                            AuthenticationViewState.ResetPin.Step2(
+                                                0,
+                                                viewStateContainer.getPinPadChars(),
+                                                InputLockState.Unlocked
+                                            )
                                         )
-                                    )
+                                    }
                                 }
                             }
                             is AuthenticationViewState.ResetPin.Step2 -> {
                                 processResponseFlow(
-                                    authenticationManager.resetPin(
-                                        action.flowResponseResetPin,
-                                        pinEntry,
+                                    authenticationManager.resetPassword(
+                                        action.flowResponseResetPassword,
+                                        userInput,
                                         authenticationRequestTracker.getRequestsList()
                                     )
                                 )
@@ -296,11 +240,11 @@ class AuthenticationViewModelContainer<T>(
                             }
                         }
                     }
-                    is ConfirmPressAction.Action.SetPinFirstTime -> {
+                    is ConfirmPressAction.Action.SetPasswordFirstTime -> {
                         processResponseFlow(
-                            authenticationManager.setPinFirstTime(
-                                action.flowResponseSetPinFirstTime,
-                                pinEntry,
+                            authenticationManager.setPasswordFirstTime(
+                                action.flowResponseConfirmInputToSetFirstTime,
+                                userInput,
                                 authenticationRequestTracker.getRequestsList()
                             )
                         )
@@ -319,33 +263,33 @@ class AuthenticationViewModelContainer<T>(
             @Exhaustive
             when (response) {
                 is AuthenticateFlowResponse.Success -> {
-                    _authenticationFinishedStateFlow.value = response.value
+                    _authenticationFinishedStateFlow.value = response.requests
                 }
-                is AuthenticateFlowResponse.ConfirmNewPinEntryToReset -> {
+                is AuthenticateFlowResponse.PasswordConfirmedForReset -> {
                     synchronized(viewStateUpdateLock) {
                         viewStateContainer.internalUpdateViewState(
                             AuthenticationViewState.ResetPin.Step1(
-                                pinEntry.pinLengthStateFlow.value,
+                                userInput.inputLengthStateFlow.value,
                                 viewStateContainer.getPinPadChars(),
                                 viewStateContainer.value.inputLockState
                             )
                         )
                         confirmPressAction.updateAction(
-                            ConfirmPressAction.Action.ResetPin.instantiate(response)
+                            ConfirmPressAction.Action.ResetPassword.instantiate(response)
                         )
                     }
                 }
-                is AuthenticateFlowResponse.ConfirmPinEntryToSetForFirstTime -> {
+                is AuthenticateFlowResponse.ConfirmInputToSetForFirstTime -> {
                     synchronized(viewStateUpdateLock) {
                         viewStateContainer.internalUpdateViewState(
                             AuthenticationViewState.ConfirmPin(
-                                pinEntry.pinLengthStateFlow.value,
+                                userInput.inputLengthStateFlow.value,
                                 viewStateContainer.getPinPadChars(),
                                 viewStateContainer.value.inputLockState
                             )
                         )
                         confirmPressAction.updateAction(
-                            ConfirmPressAction.Action.SetPinFirstTime.instantiate(response)
+                            ConfirmPressAction.Action.SetPasswordFirstTime.instantiate(response)
                         )
                     }
                 }
@@ -395,7 +339,7 @@ class AuthenticationViewModelContainer<T>(
 
         if (getAuthenticationFinishedStateFlow().value == null) {
             synchronized(viewStateUpdateLock) {
-                pinEntry.clearPin()
+                userInput.clearInput()
                 viewStateContainer.updateCurrentViewState(inputLockState = InputLockState.Unlocked)
             }
         }
@@ -471,6 +415,77 @@ class AuthenticationViewModelContainer<T>(
             }
             AuthenticateFlowResponse.Error.SetPinFirstTime.FailedToEncryptTestString -> {
                 // TODO: Implement
+            }
+        }
+    }
+
+    init {
+        viewModelScope.launch(dispatchers.default) {
+
+            // When the view model gets cancelled, so will the supervisor scope.
+            // Clean up.
+            launch {
+                getAuthenticationFinishedStateFlow().collect {}
+            }.invokeOnCompletion {
+                userInput.clearInput()
+                confirmPressAction.updateAction(ConfirmPressAction.Action.Authenticate)
+            }
+
+            launch {
+                coordinator.getAuthenticationRequestSharedFlow().collect { request ->
+                    if (!authenticationRequestTracker.addRequest(request)) {
+                        return@collect
+                    }
+
+                    confirmPressJob?.join()
+
+                    synchronized(viewStateUpdateLock) {
+                        userInput.clearInput()
+                        confirmPressAction.updateAction(ConfirmPressAction.Action.Authenticate)
+
+                        val viewState = when (request) {
+                            is AuthenticationRequest.ResetPin,
+                            is AuthenticationRequest.ConfirmPin -> {
+                                AuthenticationViewState.ConfirmPin(
+                                    userInput.inputLengthStateFlow.value,
+                                    viewStateContainer.getPinPadChars(),
+                                    InputLockState.Unlocked
+                                )
+                            }
+                            is AuthenticationRequest.LogIn,
+                            is AuthenticationRequest.GetEncryptionKey -> {
+                                AuthenticationViewState.LogIn(
+                                    userInput.inputLengthStateFlow.value,
+                                    viewStateContainer.getPinPadChars(),
+                                    InputLockState.Unlocked
+                                )
+                            }
+                        }
+
+                        viewStateContainer.internalUpdateViewState(viewState)
+                    }
+                }
+            }
+
+            launch {
+                userInput.inputLengthStateFlow.collect { pinLength ->
+                    synchronized(viewStateUpdateLock) {
+                        if (pinLength == viewStateContainer.value.pinLength) {
+                            return@collect
+                        }
+
+                        viewStateContainer.updateCurrentViewState(pinLength)
+                    }
+                }
+            }
+
+            // Clear pin entry if moved to background
+            launch {
+                authenticationManager.foregroundStateFlow.collect { state ->
+                    if (state is ForegroundState.Background && confirmPressJob?.isActive != true) {
+                        userInput.clearInput()
+                    }
+                }
             }
         }
     }
