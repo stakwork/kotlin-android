@@ -24,6 +24,7 @@ include ':kotlin:common:build-config'
 /// :kotlin:concepts ///
 ////////////////////////
 include ':kotlin:concepts:authentication:concept-authentication'
+include ':kotlin:concepts:authentication:concept-authentication-core'
 include ':kotlin:concepts:authentication:concept-encryption-key'
 include ':kotlin:concepts:concept-coroutines'
 include ':kotlin:concepts:concept-foreground-state'
