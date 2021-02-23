@@ -10,8 +10,8 @@ ext.KAversions = [
 //    'arch': '2.1.0',
     'coroutines': '1.4.2',
     'lifecycle': '2.3.0',
-    'hilt': '2.30.1-alpha',
-    'hiltJetpack': '1.0.0-alpha02',
+    'hilt': '2.32-alpha',
+    'hiltJetpack': '1.0.0-alpha03',
     'kotlin': '1.4.30',
 //    'moshi': '1.11.0',
     'navigation': '2.3.3',
@@ -30,7 +30,7 @@ ext.KAdeps = [
     androidx: [
         annotation: "androidx.annotation:annotation:1.1.0",
         appCompat: "androidx.appcompat:appcompat:1.2.0",
-        constraintLayout: "androidx.constraintlayout:constraintlayout:2.0.1",
+        constraintLayout: "androidx.constraintlayout:constraintlayout:2.0.4",
         core: "androidx.core:core-ktx:1.3.2",
         lifecycle: [
             commonJava8: "androidx.lifecycle:lifecycle-common-java8:${KAversions.lifecycle}",
