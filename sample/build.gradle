@@ -19,8 +19,6 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments disableAnalytics: 'true'
-
-//        multiDexEnabled true
     }
 
     // Gradle 4.0's introduction of Google analytics to Android App Developers.
