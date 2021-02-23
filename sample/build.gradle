@@ -14,8 +14,8 @@ android {
         applicationId "io.matthewnelson.kotlin_android"
         minSdkVersion 21
         targetSdkVersion KAversions.compileSdk
-        versionCode VERSION_CODE.toInteger()
-        versionName VERSION_NAME
+        versionCode KA_VERSION_CODE.toInteger()
+        versionName KA_VERSION_NAME
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments disableAnalytics: 'true'
