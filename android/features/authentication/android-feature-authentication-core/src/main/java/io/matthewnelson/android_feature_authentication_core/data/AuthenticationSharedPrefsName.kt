@@ -15,4 +15,10 @@
 * */
 package io.matthewnelson.android_feature_authentication_core.data
 
-inline class AuthenticationSharedPrefsName(val value: String)
+inline class AuthenticationSharedPrefsName(val value: String) {
+    init {
+        require(value.isNotEmpty()) {
+            "AuthenticationSharedPrefsName must not be empty."
+        }
+    }
+}
