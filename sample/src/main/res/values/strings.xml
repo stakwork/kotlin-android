@@ -1,3 +1,4 @@
 <resources>
 <!--    <string name="app_name">KotlinAndroid</string>-->
+    <string name="kotlin_android">Kotlin Android</string>
 </resources>
