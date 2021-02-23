@@ -24,18 +24,18 @@ import io.matthewnelson.concept_coroutines.CoroutineDispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
-class PersistentStorageAndroid(
+open class PersistentStorageAndroid(
     context: Context,
     masterKeyAlias: MasterKeyAlias,
     authenticationSharedPrefsName: AuthenticationSharedPrefsName,
-    private val dispatchers: CoroutineDispatchers
+    protected val dispatchers: CoroutineDispatchers
 ): PersistentStorage() {
 
-    private companion object {
-        private const val CREDENTIALS = "CREDENTIALS"
+    companion object {
+        protected const val CREDENTIALS = "CREDENTIALS"
     }
 
-    private val authenticationPrefs: SharedPreferences by lazy {
+    protected val authenticationPrefs: SharedPreferences by lazy {
         EncryptedSharedPreferences.create(
             context.applicationContext,
             authenticationSharedPrefsName.value,
