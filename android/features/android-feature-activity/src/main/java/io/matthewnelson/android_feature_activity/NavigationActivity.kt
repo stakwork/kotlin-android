@@ -23,6 +23,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.viewbinding.ViewBinding
 import io.matthewnelson.concept_navigation.NavigationRequest
+import io.matthewnelson.feature_navigation.NavigationDriver
 import kotlinx.coroutines.flow.collect
 
 /**
@@ -33,7 +34,8 @@ import kotlinx.coroutines.flow.collect
  * */
 abstract class NavigationActivity<
         VM: ViewModel,
-        NVM: NavigationViewModel,
+        D: NavigationDriver<NavController>,
+        NVM: NavigationViewModel<D>,
         VB: ViewBinding
         >(@LayoutRes layoutId: Int): AppCompatActivity(layoutId)
 {
