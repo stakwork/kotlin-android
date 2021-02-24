@@ -338,7 +338,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
                     when (request) {
                         is AuthenticationRequest.LogIn -> {
 
-                            AuthenticationCoreManager.getEncryptionKey() ?: let {
+                            authenticationCoreManager.getEncryptionKey() ?: let {
                                 authenticationCoreManager.setEncryptionKey(encryptionKey)
                             }
 
@@ -369,7 +369,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
                         }
                         is AuthenticationRequest.GetEncryptionKey -> {
 
-                            AuthenticationCoreManager.getEncryptionKey() ?: let {
+                            authenticationCoreManager.getEncryptionKey() ?: let {
                                 authenticationCoreManager.setEncryptionKey(encryptionKey)
                             }
 

@@ -66,7 +66,7 @@ abstract class AuthenticationCoreManager <T: AuthenticationManagerInitializer>(
         when (state) {
             is AuthenticationState.NotRequired -> {}
             is AuthenticationState.Required -> {
-                clearEncryptionKey()
+                setEncryptionKey(null)
             }
         }
         _authenticationStateFlow.value = state
@@ -209,22 +209,17 @@ abstract class AuthenticationCoreManager <T: AuthenticationManagerInitializer>(
             private set
         var maxUserInputLength: Int = 42
             private set
-
-        @Volatile
-        private var encryptionKey: EncryptionKey? = null
-        private val encryptionKeyLock = Object()
-
-        @JvmSynthetic
-        internal fun getEncryptionKey(): EncryptionKey? =
-            synchronized(encryptionKeyLock) {
-                encryptionKey
-            }
     }
+
+    @Volatile
+    private var encryptionKey: EncryptionKey? = null
+    private val encryptionKeyLock = Object()
 
     @JvmSynthetic
-    internal fun clearEncryptionKey() {
-        setEncryptionKey(null)
-    }
+    internal fun getEncryptionKey(): EncryptionKey? =
+        synchronized(encryptionKeyLock) {
+            encryptionKey
+        }
 
     @JvmSynthetic
     internal fun getEncryptionKeyCopy(): EncryptionKey? =
@@ -243,8 +238,8 @@ abstract class AuthenticationCoreManager <T: AuthenticationManagerInitializer>(
     @JvmSynthetic
     internal fun setEncryptionKey(encryptionKey: EncryptionKey?) {
         synchronized(encryptionKeyLock) {
-            Companion.encryptionKey?.password?.clear()
-            Companion.encryptionKey = encryptionKey
+            this.encryptionKey?.password?.clear()
+            this.encryptionKey = encryptionKey
         }
     }
 }

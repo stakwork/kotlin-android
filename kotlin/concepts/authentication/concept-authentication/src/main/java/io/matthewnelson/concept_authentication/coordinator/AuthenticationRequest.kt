@@ -44,7 +44,7 @@ sealed class AuthenticationRequest {
         override val priority: Int = 4
     }
 
-    class LogIn: AuthenticationRequest() {
+    class LogIn(val key: String? = null): AuthenticationRequest() {
         override val priority: Int = 1
     }
 
