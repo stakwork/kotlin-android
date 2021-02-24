@@ -15,6 +15,8 @@
 * */
 package io.matthewnelson.concept_authentication.coordinator
 
+import io.matthewnelson.k_openssl_common.clazzes.Password
+
 sealed class AuthenticationRequest {
 
     abstract val priority: Int
@@ -44,7 +46,17 @@ sealed class AuthenticationRequest {
         override val priority: Int = 4
     }
 
-    class LogIn(val key: String? = null): AuthenticationRequest() {
+    /**
+     * Optional [encryptionKey] argument allows for easier implementation of custom encrypted
+     * storage solution that will allow for logging the user in without sending them to the
+     * Authentication View. The [encryptionKey] will be validated against a test string that
+     * was encrypted using the originally set key. If successful, a **copy** of the key will be
+     * set and [io.matthewnelson.concept_authentication.state.AuthenticationState.NotRequired] will
+     * be set.
+     *
+     * Reminder: Passwords should never be stored clear text.
+     * */
+    class LogIn(val encryptionKey: Password? = null): AuthenticationRequest() {
         override val priority: Int = 1
     }
 
