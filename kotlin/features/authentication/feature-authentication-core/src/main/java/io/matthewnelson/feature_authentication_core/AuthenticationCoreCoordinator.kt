@@ -54,9 +54,19 @@ abstract class AuthenticationCoreCoordinator(
                             return flowOf(
                                 AuthenticationResponse.Success.Key(request, key)
                             )
+                        } ?: if (!request.navigateToAuthenticationViewOnFailure) {
+                            return flowOf(
+                                AuthenticationResponse.Failure(request)
+                            )
                         }
                     }
-                    else -> {}
+                    else -> {
+                        if (!request.navigateToAuthenticationViewOnFailure) {
+                            return flowOf(
+                                AuthenticationResponse.Failure(request)
+                            )
+                        }
+                    }
                 }
             }
             is AuthenticationRequest.LogIn -> {
