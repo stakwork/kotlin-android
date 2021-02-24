@@ -76,17 +76,9 @@ abstract class AuthenticationCoreManager <T: AuthenticationManagerInitializer>(
         updateAuthenticationState(state, null)
     }
 
-    @Suppress("RemoveExplicitTypeArguments")
-    private val authenticationProcessor: AuthenticationProcessor<T> by lazy {
-        AuthenticationProcessor.instantiate(
-            this,
-            dispatchers,
-            encryptionKeyHashIterations,
-            encryptionKeyHandler,
-            persistentStorage
-        )
-    }
-
+    //////////////////////
+    /// Initialization ///
+    //////////////////////
     @Volatile
     var isInitialized: Boolean = false
         private set
@@ -101,6 +93,27 @@ abstract class AuthenticationCoreManager <T: AuthenticationManagerInitializer>(
                 isInitialized = true
             }
         }
+    }
+
+    companion object {
+        var minUserInputLength: Int = 8
+            private set
+        var maxUserInputLength: Int = 42
+            private set
+    }
+
+    //////////////////////
+    /// Authentication ///
+    //////////////////////
+    @Suppress("RemoveExplicitTypeArguments")
+    private val authenticationProcessor: AuthenticationProcessor<T> by lazy {
+        AuthenticationProcessor.instantiate(
+            this,
+            dispatchers,
+            encryptionKeyHashIterations,
+            encryptionKeyHandler,
+            persistentStorage
+        )
     }
 
     override fun getNewUserInput(): UserInput {
@@ -204,12 +217,9 @@ abstract class AuthenticationCoreManager <T: AuthenticationManagerInitializer>(
             }
         }
 
-    companion object {
-        var minUserInputLength: Int = 8
-            private set
-        var maxUserInputLength: Int = 42
-            private set
-    }
+    //////////////////////
+    /// Encryption Key ///
+    //////////////////////
 
     @Volatile
     private var encryptionKey: EncryptionKey? = null
