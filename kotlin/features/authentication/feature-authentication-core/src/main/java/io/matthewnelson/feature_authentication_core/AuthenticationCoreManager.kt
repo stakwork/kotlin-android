@@ -176,7 +176,7 @@ abstract class AuthenticationCoreManager <T: AuthenticationManagerInitializer>(
 
     @Synchronized
     override fun setPasswordFirstTime(
-        setPasswordFirstTime: AuthenticateFlowResponse.ConfirmInputToSetForFirstTime,
+        setPasswordFirstTimeResponse: AuthenticateFlowResponse.ConfirmInputToSetForFirstTime,
         userInputConfirmation: UserInput,
         requests: List<AuthenticationRequest>
     ): Flow<AuthenticateFlowResponse> =
@@ -193,14 +193,14 @@ abstract class AuthenticationCoreManager <T: AuthenticationManagerInitializer>(
             } -> {
                 flowOf(AuthenticateFlowResponse.Error.SetPinFirstTime.InvalidNewPinEntrySize)
             }
-            !setPasswordFirstTime.compareInitialInputWithConfirmedInput(userInputConfirmation) -> {
+            !setPasswordFirstTimeResponse.compareInitialInputWithConfirmedInput(userInputConfirmation) -> {
                 flowOf(AuthenticateFlowResponse.Error.SetPinFirstTime.NewPinDoesNotMatchConfirmedPin)
             }
-            setPasswordFirstTime.initialUserInputHasBeenCleared -> {
+            setPasswordFirstTimeResponse.initialUserInputHasBeenCleared -> {
                 flowOf(AuthenticateFlowResponse.Error.SetPinFirstTime.NewPinEntryWasCleared)
             }
             else -> {
-                authenticationProcessor.setPasswordFirstTime(setPasswordFirstTime, requests)
+                authenticationProcessor.setPasswordFirstTime(setPasswordFirstTimeResponse, requests)
             }
         }
 
