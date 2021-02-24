@@ -74,6 +74,10 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
 //        }
     }
 
+    @JvmSynthetic
+    suspend fun isAnEncryptionKeySet(): Boolean =
+        persistentStorage.retrieveCredentials() != null
+
     ////////////////////
     /// Authenticate ///
     ////////////////////

@@ -20,6 +20,12 @@ import kotlinx.coroutines.flow.Flow
 abstract class AuthenticationCoordinator {
 
     /**
+     * Checks the persistent storage to se if a key exists. Does not decrypt the key or
+     * return it.
+     * */
+    abstract suspend fun isAnEncryptionKeySet(): Boolean
+
+    /**
      * Returns the corresponding response for the provided request, or
      * [AuthenticationResponse.Failure] in some instances.
      *

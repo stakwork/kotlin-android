@@ -42,6 +42,10 @@ abstract class AuthenticationCoreCoordinator<T: AuthenticationManagerInitializer
 
     protected abstract suspend fun navigateToAuthenticationView()
 
+    override suspend fun isAnEncryptionKeySet(): Boolean {
+        return authenticationManager.isAnEncryptionKeySet()
+    }
+
     override suspend fun submitAuthenticationRequest(
         request: AuthenticationRequest
     ): Flow<AuthenticationResponse> {

@@ -32,6 +32,8 @@ abstract class AuthenticationManager<
 {
     abstract fun getNewUserInput(): UserInput
 
+    abstract suspend fun isAnEncryptionKeySet(): Boolean
+
     abstract fun authenticate(
         userInput: UserInput,
         requests: List<AuthenticationRequest>

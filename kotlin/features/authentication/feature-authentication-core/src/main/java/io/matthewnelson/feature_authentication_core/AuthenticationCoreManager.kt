@@ -116,6 +116,10 @@ abstract class AuthenticationCoreManager <T: AuthenticationManagerInitializer>(
         )
     }
 
+    override suspend fun isAnEncryptionKeySet(): Boolean {
+        return authenticationProcessor.isAnEncryptionKeySet()
+    }
+
     override fun getNewUserInput(): UserInput {
         return UserInputWriter.instantiate()
     }
