@@ -291,7 +291,9 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
         try {
             emit(AuthenticateFlowResponse.Notify.GeneratingAndEncryptingEncryptionKey)
 
-            val newKey = encryptionKeyHandler.generateEncryptionKey()
+            val newKey = withContext(dispatchers.default) {
+                encryptionKeyHandler.generateEncryptionKey()
+            }
             val kOpenssl = AES256CBC_PBKDF2_HMAC_SHA256()
             val initialInput = setPasswordFirstTimeResponse.getInitialUserInput()
             val encryptedEncryptionKey = encryptEncryptionKey(

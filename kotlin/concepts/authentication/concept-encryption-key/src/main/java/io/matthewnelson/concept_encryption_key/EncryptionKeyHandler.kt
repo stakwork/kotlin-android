@@ -20,7 +20,10 @@ import io.matthewnelson.k_openssl_common.clazzes.Password
 
 abstract class EncryptionKeyHandler {
 
-    abstract fun generateEncryptionKey(): EncryptionKey
+    /**
+     * Work occurs on Dispatchers.Default when this method is called.
+     * */
+    abstract suspend fun generateEncryptionKey(): EncryptionKey
 
     @Throws(EncryptionKeyException::class)
     fun storeCopyOfEncryptionKey(key: CharArray): EncryptionKey =
