@@ -17,6 +17,7 @@ package io.matthewnelson.feature_authentication_core
 
 import app.cash.exhaustive.Exhaustive
 import io.matthewnelson.concept_authentication.coordinator.AuthenticationRequest
+import io.matthewnelson.concept_authentication.coordinator.AuthenticationResponse
 import io.matthewnelson.concept_authentication.state.AuthenticationState
 import io.matthewnelson.concept_authentication_core.AuthenticationManager
 import io.matthewnelson.concept_authentication_core.model.UserInput
@@ -31,6 +32,7 @@ import io.matthewnelson.feature_authentication_core.components.AuthenticationPro
 import io.matthewnelson.feature_authentication_core.model.UserInputWriter
 import io.matthewnelson.k_openssl_common.annotations.RawPasswordAccess
 import io.matthewnelson.k_openssl_common.clazzes.HashIterations
+import io.matthewnelson.k_openssl_common.clazzes.Password
 import io.matthewnelson.k_openssl_common.clazzes.clear
 import kotlinx.coroutines.flow.*
 
@@ -123,6 +125,22 @@ abstract class AuthenticationCoreManager <T: AuthenticationManagerInitializer>(
     override fun getNewUserInput(): UserInput {
         return UserInputWriter.instantiate()
     }
+
+    @Synchronized
+    @OptIn(RawPasswordAccess::class)
+    override fun authenticate(
+        request: AuthenticationRequest.LogIn
+    ): Flow<AuthenticationResponse> =
+        request.encryptionKey?.let { key ->
+            if (key.value.isEmpty()) {
+                flowOf(
+                    AuthenticationResponse.Failure(request)
+                )
+            }
+            authenticationProcessor.authenticate(key, request)
+        } ?: flowOf(
+            AuthenticationResponse.Failure(request)
+        )
 
     @Synchronized
     override fun authenticate(
