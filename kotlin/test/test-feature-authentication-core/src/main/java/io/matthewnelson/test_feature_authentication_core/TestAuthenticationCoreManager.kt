@@ -34,13 +34,24 @@ open class TestAuthenticationCoreManager<
         >(
     testCoroutineDispatchers: CoroutineTestHelper.TestCoroutineDispatchers,
     testEncryptionKeyHandler: S,
-    testAuthenticationCoreStorage: V
+    testAuthenticationCoreStorage: V,
+    encryptionKeyHashIterations: HashIterations = DEFAULT_ENCRYPTION_KEY_HASH_ITERATIONS
 ): AuthenticationCoreManager<T>(
     testCoroutineDispatchers,
-    HashIterations(2),
+    encryptionKeyHashIterations,
     testEncryptionKeyHandler,
     testAuthenticationCoreStorage
 ) {
+
+    companion object {
+        /**
+         * The default number of [HashIterations] used to encrypt/decrypt the
+         * raw Encryption Key with the user's password
+         * */
+        val DEFAULT_ENCRYPTION_KEY_HASH_ITERATIONS: HashIterations
+            get() = HashIterations(2)
+    }
+
     @Suppress("RemoveExplicitTypeArguments", "PropertyName")
     val _foregroundStateFlow: MutableStateFlow<ForegroundState> by lazy {
         // Is typically initialized in the Foreground.

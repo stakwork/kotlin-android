@@ -27,6 +27,13 @@ open class TestEncryptionKeyHandler: EncryptionKeyHandler() {
 
     companion object {
         const val TEST_ENCRYPTION_KEY_STRING = "TEST_ENCRYPTION_KEY_STRING"
+
+        /**
+         * The default number of [HashIterations] used to encrypt/decrypt
+         * the test string value
+         * */
+        val DEFAULT_TEST_STRING_ENCRYPT_HASH_ITERATIONS: HashIterations
+            get() = HashIterations(1)
     }
 
     override suspend fun generateEncryptionKey(): EncryptionKey {
@@ -42,7 +49,7 @@ open class TestEncryptionKeyHandler: EncryptionKeyHandler() {
         return copyAndStoreKey(key)
     }
 
-    override fun getHashIterations(key: EncryptionKey): HashIterations {
-        return HashIterations(1)
+    override fun getTestStringEncryptHashIterations(key: EncryptionKey): HashIterations {
+        return DEFAULT_TEST_STRING_ENCRYPT_HASH_ITERATIONS
     }
 }
