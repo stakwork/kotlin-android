@@ -44,9 +44,11 @@ abstract class EncryptionKeyHandler {
         EncryptionKey.instantiate(Password(key.copyOf()))
 
     /**
-     * The [HashIterations] used to encrypt/decrypt things when using the
-     * [EncryptionKey], not the [HashIterations] used to encrypt/decrypt the
-     * [EncryptionKey] with the user's password which is persisted to disk.
+     * The [HashIterations] used to encrypt/decrypt things using the
+     * [EncryptionKey] (a strong "password" not requiring a high number of iterations),
+     *
+     * This return value is *not* the [HashIterations] used to encrypt/decrypt the
+     * [EncryptionKey] with the user's password which is then persisted to disk.
      * */
-    abstract fun getHashIterations(key: EncryptionKey): HashIterations
+    abstract fun getTestStringEncryptHashIterations(key: EncryptionKey): HashIterations
 }

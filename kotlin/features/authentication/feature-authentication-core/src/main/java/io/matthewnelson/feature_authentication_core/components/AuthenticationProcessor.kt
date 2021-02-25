@@ -361,7 +361,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
         return try {
             kOpenSSL.encrypt(
                 key.password,
-                encryptionKeyHandler.getHashIterations(key),
+                encryptionKeyHandler.getTestStringEncryptHashIterations(key),
                 UnencryptedString(Credentials.ENCRYPTION_KEY_TEST_STRING_VALUE),
                 dispatchers.default
             )
