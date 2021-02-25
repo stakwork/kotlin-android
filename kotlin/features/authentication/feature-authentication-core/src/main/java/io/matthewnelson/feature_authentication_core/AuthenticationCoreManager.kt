@@ -21,7 +21,7 @@ import io.matthewnelson.concept_authentication.coordinator.AuthenticationRespons
 import io.matthewnelson.concept_authentication.state.AuthenticationState
 import io.matthewnelson.concept_authentication_core.AuthenticationManager
 import io.matthewnelson.concept_authentication_core.model.UserInput
-import io.matthewnelson.feature_authentication_core.data.PersistentStorage
+import io.matthewnelson.feature_authentication_core.data.AuthenticationCoreStorage
 import io.matthewnelson.feature_authentication_core.model.AuthenticateFlowResponse
 import io.matthewnelson.concept_coroutines.CoroutineDispatchers
 import io.matthewnelson.concept_encryption_key.EncryptionKey
@@ -32,7 +32,6 @@ import io.matthewnelson.feature_authentication_core.components.AuthenticationPro
 import io.matthewnelson.feature_authentication_core.model.UserInputWriter
 import io.matthewnelson.k_openssl_common.annotations.RawPasswordAccess
 import io.matthewnelson.k_openssl_common.clazzes.HashIterations
-import io.matthewnelson.k_openssl_common.clazzes.Password
 import io.matthewnelson.k_openssl_common.clazzes.clear
 import kotlinx.coroutines.flow.*
 
@@ -43,7 +42,7 @@ abstract class AuthenticationCoreManager <T: AuthenticationManagerInitializer>(
     dispatchers: CoroutineDispatchers,
     encryptionKeyHashIterations: HashIterations,
     encryptionKeyHandler: EncryptionKeyHandler,
-    persistentStorage: PersistentStorage
+    authenticationCoreStorage: AuthenticationCoreStorage
 ): AuthenticationManager<
         AuthenticateFlowResponse,
         AuthenticateFlowResponse.PasswordConfirmedForReset,
@@ -114,7 +113,7 @@ abstract class AuthenticationCoreManager <T: AuthenticationManagerInitializer>(
             dispatchers,
             encryptionKeyHashIterations,
             encryptionKeyHandler,
-            persistentStorage
+            authenticationCoreStorage
         )
     }
 

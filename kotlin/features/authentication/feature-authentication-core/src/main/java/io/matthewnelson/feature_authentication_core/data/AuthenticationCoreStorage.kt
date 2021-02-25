@@ -15,10 +15,11 @@
 * */
 package io.matthewnelson.feature_authentication_core.data
 
+import io.matthewnelson.concept_authentication.data.AuthenticationStorage
 import io.matthewnelson.feature_authentication_core.model.Credentials
 import kotlinx.coroutines.delay
 
-abstract class PersistentStorage {
+abstract class AuthenticationCoreStorage: AuthenticationStorage {
 
     protected inner class CredentialString(val value: String)
 

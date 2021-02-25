@@ -18,7 +18,7 @@ package io.matthewnelson.feature_authentication_core.components
 import app.cash.exhaustive.Exhaustive
 import io.matthewnelson.concept_authentication.coordinator.AuthenticationRequest
 import io.matthewnelson.concept_authentication.coordinator.AuthenticationResponse
-import io.matthewnelson.feature_authentication_core.data.PersistentStorage
+import io.matthewnelson.feature_authentication_core.data.AuthenticationCoreStorage
 import io.matthewnelson.concept_authentication.state.AuthenticationState
 import io.matthewnelson.concept_coroutines.CoroutineDispatchers
 import io.matthewnelson.concept_encryption_key.EncryptionKey
@@ -46,7 +46,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
     private val dispatchers: CoroutineDispatchers,
     private val encryptionKeyHashIterations: HashIterations,
     val encryptionKeyHandler: EncryptionKeyHandler,
-    private val persistentStorage: PersistentStorage
+    private val authenticationCoreStorage: AuthenticationCoreStorage
     // TODO: WrongPinLockout
 ) {
 
@@ -57,14 +57,14 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
             dispatchers: CoroutineDispatchers,
             encryptionKeyHashIterations: HashIterations,
             encryptionKeyHandler: EncryptionKeyHandler,
-            persistentStorage: PersistentStorage
+            authenticationCoreStorage: AuthenticationCoreStorage
         ): AuthenticationProcessor<T> =
             AuthenticationProcessor(
                 authenticationCoreManager,
                 dispatchers,
                 encryptionKeyHashIterations,
                 encryptionKeyHandler,
-                persistentStorage
+                authenticationCoreStorage
             )
     }
 
@@ -77,7 +77,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
 
     @JvmSynthetic
     suspend fun isAnEncryptionKeySet(): Boolean =
-        persistentStorage.retrieveCredentials() != null
+        authenticationCoreStorage.retrieveCredentials() != null
 
     ////////////////////
     /// Authenticate ///
@@ -96,7 +96,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
             }
 
             storedKey?.let { key ->
-                persistentStorage.retrieveCredentials()?.let { credsString ->
+                authenticationCoreStorage.retrieveCredentials()?.let { credsString ->
                     val creds: Credentials? = try {
                         Credentials.fromString(credsString)
                     } catch (e: IllegalArgumentException) {
@@ -167,7 +167,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
         kOpenSSL: KOpenSSL,
         pinEntry: UserInputWriter
     ): PinValidationResponse =
-        persistentStorage.retrieveCredentials()?.let { credsString ->
+        authenticationCoreStorage.retrieveCredentials()?.let { credsString ->
             val creds = try {
                 Credentials.fromString(credsString)
             } catch (e: IllegalArgumentException) {
@@ -213,7 +213,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
         try {
             val kOpenSSL = AES256CBC_PBKDF2_HMAC_SHA256()
             val key: EncryptionKey = authenticationCoreManager
-                .getEncryptionKeyCopy() ?: persistentStorage.retrieveCredentials()
+                .getEncryptionKeyCopy() ?: authenticationCoreStorage.retrieveCredentials()
                 ?.let { credsString ->
                     val creds = try {
                         Credentials.fromString(credsString)
@@ -261,7 +261,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
                 )
             }
 
-            persistentStorage.saveCredentials(creds)
+            authenticationCoreStorage.saveCredentials(creds)
 
             resetPasswordResponse.onPasswordResetCompletion()
             emitAll(
@@ -310,7 +310,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
                 encryptedTestString
             )
 
-            persistentStorage.saveCredentials(creds)
+            authenticationCoreStorage.saveCredentials(creds)
 
             emitAll(
                 processValidPinEntryResponse(newKey, setPasswordFirstTimeResponse.getInitialUserInput(), requests)

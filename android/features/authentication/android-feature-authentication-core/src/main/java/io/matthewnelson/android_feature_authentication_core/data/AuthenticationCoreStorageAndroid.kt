@@ -19,21 +19,18 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
-import io.matthewnelson.feature_authentication_core.data.PersistentStorage
+import io.matthewnelson.concept_authentication.data.AuthenticationStorage.Companion.CREDENTIALS
+import io.matthewnelson.feature_authentication_core.data.AuthenticationCoreStorage
 import io.matthewnelson.concept_coroutines.CoroutineDispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
-open class PersistentStorageAndroid(
+open class AuthenticationCoreStorageAndroid(
     context: Context,
     masterKeyAlias: MasterKeyAlias,
     authenticationSharedPrefsName: AuthenticationSharedPrefsName,
     protected val dispatchers: CoroutineDispatchers
-): PersistentStorage() {
-
-    companion object {
-        protected const val CREDENTIALS = "CREDENTIALS"
-    }
+): AuthenticationCoreStorage() {
 
     protected val authenticationPrefs: SharedPreferences by lazy {
         EncryptedSharedPreferences.create(
@@ -55,7 +52,7 @@ open class PersistentStorageAndroid(
                 .let { editor ->
                     if (!editor.commit()) {
                         editor.apply()
-                        delay(250L)
+                        delay(100L)
                     }
                 }
         }

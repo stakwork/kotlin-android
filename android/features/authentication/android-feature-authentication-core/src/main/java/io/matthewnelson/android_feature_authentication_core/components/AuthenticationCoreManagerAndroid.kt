@@ -23,7 +23,7 @@ import androidx.annotation.MainThread
 import io.matthewnelson.feature_authentication_core.AuthenticationCoreManager
 import io.matthewnelson.concept_authentication.state.AuthenticationState
 import io.matthewnelson.concept_foreground_state.ForegroundState
-import io.matthewnelson.android_feature_authentication_core.data.PersistentStorageAndroid
+import io.matthewnelson.android_feature_authentication_core.data.AuthenticationCoreStorageAndroid
 import io.matthewnelson.concept_coroutines.CoroutineDispatchers
 import io.matthewnelson.concept_encryption_key.EncryptionKeyHandler
 import io.matthewnelson.k_openssl_common.clazzes.HashIterations
@@ -35,7 +35,7 @@ abstract class AuthenticationCoreManagerAndroid(
     dispatchers: CoroutineDispatchers,
     encryptionKeyHashIterations: HashIterations,
     encryptionKeyHandler: EncryptionKeyHandler,
-    persistentStorage: PersistentStorageAndroid
+    persistentStorage: AuthenticationCoreStorageAndroid
 ): AuthenticationCoreManager<AuthenticationManagerInitializerAndroid>(
     dispatchers,
     encryptionKeyHashIterations,
