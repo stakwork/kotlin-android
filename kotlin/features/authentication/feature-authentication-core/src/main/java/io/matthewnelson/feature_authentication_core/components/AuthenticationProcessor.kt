@@ -22,6 +22,7 @@ import io.matthewnelson.feature_authentication_core.data.PersistentStorage
 import io.matthewnelson.concept_authentication.state.AuthenticationState
 import io.matthewnelson.concept_coroutines.CoroutineDispatchers
 import io.matthewnelson.concept_encryption_key.EncryptionKey
+import io.matthewnelson.concept_encryption_key.EncryptionKeyException
 import io.matthewnelson.concept_encryption_key.EncryptionKeyHandler
 import io.matthewnelson.feature_authentication_core.AuthenticationCoreManager
 import io.matthewnelson.feature_authentication_core.model.*
@@ -81,6 +82,49 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
     ////////////////////
     /// Authenticate ///
     ////////////////////
+    @JvmSynthetic
+    @OptIn(RawPasswordAccess::class)
+    fun authenticate(
+        encryptionKey: Password,
+        request: AuthenticationRequest.LogIn
+    ): Flow<AuthenticationResponse> =
+        flow {
+            val storedKey: EncryptionKey? = try {
+                encryptionKeyHandler.storeCopyOfEncryptionKey(encryptionKey.value)
+            } catch (e: EncryptionKeyException) {
+                null
+            }
+
+            storedKey?.let { key ->
+                persistentStorage.retrieveCredentials()?.let { credsString ->
+                    val creds: Credentials? = try {
+                        Credentials.fromString(credsString)
+                    } catch (e: IllegalArgumentException) {
+                        null
+                    }
+
+                    creds?.let { nnCreds ->
+                        val validation = nnCreds.validateTestString(
+                            dispatchers,
+                            key,
+                            encryptionKeyHandler,
+                            AES256CBC_PBKDF2_HMAC_SHA256()
+                        )
+
+                        if (validation) {
+                            authenticationCoreManager.setEncryptionKey(key)
+                            authenticationCoreManager.updateAuthenticationState(
+                                AuthenticationState.NotRequired, null
+                            )
+                            flowOf(AuthenticationResponse.Success.Key(request, key))
+                        } else {
+                            flowOf(AuthenticationResponse.Failure(request))
+                        }
+                    } ?: flowOf(AuthenticationResponse.Failure(request))
+                } ?: flowOf(AuthenticationResponse.Failure(request))
+            } ?: flowOf(AuthenticationResponse.Failure(request))
+        }
+
     @JvmSynthetic
     fun authenticate(
         pinEntry: UserInputWriter,
