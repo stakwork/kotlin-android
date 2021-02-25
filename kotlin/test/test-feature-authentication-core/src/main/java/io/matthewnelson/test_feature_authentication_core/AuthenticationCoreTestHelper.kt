@@ -36,6 +36,12 @@ abstract class AuthenticationCoreTestHelper<
         )
     }
 
+    protected open val testCoordinator: TestAuthenticationCoreCoordinator<T, S, V> by lazy {
+        TestAuthenticationCoreCoordinator(
+            testCoreManager
+        )
+    }
+
     /**
      * Call from @Before to set up everything needed. Also sets up the coroutine test helper.
      * */
