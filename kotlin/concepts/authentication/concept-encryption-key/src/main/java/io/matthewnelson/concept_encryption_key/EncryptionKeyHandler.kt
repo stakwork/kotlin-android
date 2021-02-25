@@ -26,6 +26,11 @@ abstract class EncryptionKeyHandler {
     fun storeCopyOfEncryptionKey(key: CharArray): EncryptionKey =
         validateEncryptionKey(key)
 
+    /**
+     * After validation of the key for correctness of your specified parameters,
+     * returning [copyAndStoreKey] allows you the ability to clear the character
+     * array to mitigate heap dump analysis.
+     * */
     @Throws(EncryptionKeyException::class)
     protected abstract fun validateEncryptionKey(key: CharArray): EncryptionKey
 
@@ -38,8 +43,7 @@ abstract class EncryptionKeyHandler {
     /**
      * The [HashIterations] used to encrypt/decrypt things when using the
      * [EncryptionKey], not the [HashIterations] used to encrypt/decrypt the
-     * actual key that gets set as a constructor argument for
-     * [io.matthewnelson.feature_authentication_core.components.AuthenticationManagerImpl]
+     * [EncryptionKey] with the user's password which is persisted to disk.
      * */
     abstract fun getHashIterations(key: EncryptionKey): HashIterations
 }
