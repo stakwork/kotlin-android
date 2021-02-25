@@ -72,7 +72,7 @@ open class AuthenticationCoreStorageAndroid(
         }
     }
 
-    override suspend fun putString(key: String, value: String) {
+    override suspend fun putString(key: String, value: String?) {
         if (key == CREDENTIALS) {
             throw IllegalArgumentException(
                 "The value for key $CREDENTIALS cannot be overwritten from this method"

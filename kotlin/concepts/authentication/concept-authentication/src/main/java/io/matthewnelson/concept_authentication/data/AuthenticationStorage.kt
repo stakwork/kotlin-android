@@ -28,5 +28,5 @@ interface AuthenticationStorage {
      * overwriting of the key value pair used by the AuthenticationManager.
      * */
     @Throws(IllegalArgumentException::class)
-    suspend fun putString(key: String, value: String)
+    suspend fun putString(key: String, value: String?)
 }
