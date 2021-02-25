@@ -21,6 +21,7 @@ import io.matthewnelson.concept_authentication.coordinator.AuthenticationRequest
 import io.matthewnelson.concept_authentication.coordinator.AuthenticationResponse
 import io.matthewnelson.concept_authentication.state.AuthenticationState
 import io.matthewnelson.feature_authentication_core.components.AuthenticationManagerInitializer
+import io.matthewnelson.k_openssl_common.clazzes.compare
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -74,7 +75,36 @@ abstract class AuthenticationCoreCoordinator<T: AuthenticationManagerInitializer
                 }
             }
             is AuthenticationRequest.LogIn -> {
-                when (authenticationManager.authenticationStateFlow.value) {
+
+                // If encryptionKey value is null, proceed with the regular checks and send
+                // user to Authentication View if needed, otherwise try logging in here
+                // w/o sending the user to the Authentication View.
+                request.encryptionKey?.let { requestPassword ->
+
+                    authenticationManager.getEncryptionKey()?.let { alreadySetKey ->
+
+                        // Ensure an already set key is compared first before returning success
+                        if (!alreadySetKey.password.compare(requestPassword)) {
+                            return flowOf(
+                                AuthenticationResponse.Failure(request)
+                            )
+                        }
+
+                        // If the AuthenticationState doesn't need to be updated, can return
+                        // success here with the already set key.
+                        if (
+                            authenticationManager.authenticationStateFlow.value
+                                    is AuthenticationState.NotRequired
+                        ) {
+                            return flowOf(
+                                AuthenticationResponse.Success.Key(request, alreadySetKey)
+                            )
+                        }
+                    }
+
+                    return authenticationManager.authenticate(request)
+
+                } ?: when (authenticationManager.authenticationStateFlow.value) {
                     is AuthenticationState.NotRequired -> {
                         authenticationManager.getEncryptionKey()?.let {
                             return flowOf(
