@@ -26,7 +26,7 @@ abstract class CoroutineTestHelper {
 
     protected val testDispatcher = TestCoroutineDispatcher()
 
-    private class TestCoroutineDispatchers(
+    class TestCoroutineDispatchers(
         default: CoroutineDispatcher,
         io: CoroutineDispatcher,
         main: CoroutineDispatcher,
@@ -46,9 +46,6 @@ abstract class CoroutineTestHelper {
 
     /**
      * Call from @Before to set application wide dispatchers to that of your test
-     *
-     * can send it a dispatcher if you don't want to use [testDispatcher] as the
-     * default.
      * */
     protected fun setupCoroutineTestHelper() {
         Dispatchers.setMain(testDispatcher)
