@@ -65,4 +65,27 @@ open class AuthenticationCoreStorageAndroid(
             CredentialString(string)
         }
     }
+
+    override suspend fun getString(key: String, defaultValue: String?): String? {
+        return withContext(dispatchers.io) {
+            authenticationPrefs.getString(key, defaultValue)
+        }
+    }
+
+    override suspend fun putString(key: String, value: String) {
+        if (key == CREDENTIALS) {
+            throw IllegalArgumentException(
+                "The value for key $CREDENTIALS cannot be overwritten from this method"
+            )
+        }
+        withContext(dispatchers.io) {
+            authenticationPrefs.edit().putString(key, value)
+                .let { editor ->
+                    if (!editor.commit()) {
+                        editor.apply()
+                        delay(100L)
+                    }
+                }
+        }
+    }
 }
