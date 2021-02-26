@@ -15,8 +15,15 @@
 * */
 package io.matthewnelson.test_feature_authentication_core
 
+import io.matthewnelson.concept_authentication.coordinator.AuthenticationRequest
+import io.matthewnelson.concept_authentication.coordinator.AuthenticationResponse
+import io.matthewnelson.concept_authentication.state.AuthenticationState
 import io.matthewnelson.feature_authentication_core.components.AuthenticationManagerInitializer
+import io.matthewnelson.feature_authentication_core.model.AuthenticateFlowResponse
 import io.matthewnelson.test_concept_coroutines.CoroutineTestHelper
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
+import org.junit.Assert
 
 abstract class AuthenticationCoreTestHelper<
         T: AuthenticationManagerInitializer,
@@ -55,5 +62,39 @@ abstract class AuthenticationCoreTestHelper<
      * */
     fun tearDownAuthenticationCoreTestHelper() {
         tearDownCoroutineTestHelper()
+    }
+
+    /**
+     * Logs in and sets the EncryptionKey
+     * */
+    protected suspend fun login(): AuthenticationResponse {
+        val writer = testCoreManager.getNewUserInput()
+        repeat(8) {
+            writer.addCharacter('0')
+        }
+
+        val request = AuthenticationRequest.LogIn()
+
+        var confirmToSetResponse: AuthenticateFlowResponse.ConfirmInputToSetForFirstTime? = null
+        testCoreManager.authenticate(writer, listOf(request)).collect { flowResponse ->
+            if (flowResponse is AuthenticateFlowResponse.ConfirmInputToSetForFirstTime) {
+                confirmToSetResponse = flowResponse
+            }
+        }
+        delay(500L)
+        Assert.assertNotNull(confirmToSetResponse)
+
+        var completedResponses: List<AuthenticationResponse>? = null
+        testCoreManager.setPasswordFirstTime(confirmToSetResponse!!, writer, listOf(request))
+            .collect { flowResponse ->
+                if (flowResponse is AuthenticateFlowResponse.Success) {
+                    completedResponses = flowResponse.requests
+                }
+            }
+        delay(500L)
+        Assert.assertNotNull(completedResponses)
+        Assert.assertTrue(testCoreManager.authenticationStateFlow.value is AuthenticationState.NotRequired)
+        Assert.assertTrue(testCoreManager.isAnEncryptionKeySet())
+        return completedResponses!![0]
     }
 }

@@ -121,6 +121,7 @@ abstract class AuthenticationCoreCoordinator<T: AuthenticationManagerInitializer
 
         navigateToAuthenticationView()
 
+        // TODO: Add a timeout that can be expressed in arguments
         while (
             currentCoroutineContext().isActive &&
             _authenticationRequestSharedFlow.subscriptionCount.value == 0

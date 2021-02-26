@@ -15,8 +15,12 @@
 * */
 package io.matthewnelson.test_feature_authentication_core
 
+import io.matthewnelson.concept_authentication.coordinator.AuthenticationRequest
+import io.matthewnelson.concept_authentication.coordinator.AuthenticationResponse
 import io.matthewnelson.feature_authentication_core.AuthenticationCoreCoordinator
 import io.matthewnelson.feature_authentication_core.components.AuthenticationManagerInitializer
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 
 open class TestAuthenticationCoreCoordinator<
         T: AuthenticationManagerInitializer,
@@ -26,6 +30,21 @@ open class TestAuthenticationCoreCoordinator<
     testManager: TestAuthenticationCoreManager<T, S, V>
 ): AuthenticationCoreCoordinator<T>(testManager)
 {
+    val requestSharedFlow: SharedFlow<AuthenticationRequest>
+        get() = _authenticationRequestSharedFlow.asSharedFlow()
+
+    val requestFlowSubs: Int
+        get() = _authenticationRequestSharedFlow.subscriptionCount.value
+
+    val responseFlowSubs: Int
+        get() = _authenticationResponseSharedFlow.subscriptionCount.value
+
+    suspend fun completeAuthentication(responses: List<AuthenticationResponse>) {
+        for (response in responses) {
+            _authenticationResponseSharedFlow.emit(response)
+        }
+    }
+
     var navigationCalled = false
     override suspend fun navigateToAuthenticationView() {
         navigationCalled = true
