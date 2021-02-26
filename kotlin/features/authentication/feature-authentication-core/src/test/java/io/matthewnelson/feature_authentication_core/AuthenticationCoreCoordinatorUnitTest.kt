@@ -32,7 +32,7 @@ class AuthenticationCoreCoordinatorUnitTest: AuthenticationCoreDefaultsTestHelpe
                 .delay10()
             Assert.assertEquals(1, observer.values.size)
             Assert.assertTrue(observer.values.last() is AuthenticationResponse.Failure)
-            Assert.assertFalse(testCoordinator.navigationCalled)
+            Assert.assertEquals(0, testCoordinator.navigationCalled)
             observer.finish()
         }
 
@@ -53,7 +53,7 @@ class AuthenticationCoreCoordinatorUnitTest: AuthenticationCoreDefaultsTestHelpe
                     throw AssertionError()
                 }
             }
-            Assert.assertFalse(testCoordinator.navigationCalled)
+            Assert.assertEquals(0, testCoordinator.navigationCalled)
         }
 
     /////////////////////
@@ -69,7 +69,7 @@ class AuthenticationCoreCoordinatorUnitTest: AuthenticationCoreDefaultsTestHelpe
                     Assert.fail()
                 }
             }
-            Assert.assertFalse(testCoordinator.navigationCalled)
+            Assert.assertEquals(0, testCoordinator.navigationCalled)
         }
 
     @Test
@@ -86,7 +86,7 @@ class AuthenticationCoreCoordinatorUnitTest: AuthenticationCoreDefaultsTestHelpe
                     Assert.fail()
                 }
             }
-            Assert.assertFalse(testCoordinator.navigationCalled)
+            Assert.assertEquals(0, testCoordinator.navigationCalled)
         }
 
     @Test
@@ -109,8 +109,7 @@ class AuthenticationCoreCoordinatorUnitTest: AuthenticationCoreDefaultsTestHelpe
                     Assert.fail()
                 }
             }
-
-            Assert.assertFalse(testCoordinator.navigationCalled)
+            Assert.assertEquals(0, testCoordinator.navigationCalled)
         }
 
     /////////////////////////////////////////

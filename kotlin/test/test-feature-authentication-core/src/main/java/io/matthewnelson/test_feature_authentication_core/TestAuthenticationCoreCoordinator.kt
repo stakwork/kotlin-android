@@ -45,8 +45,9 @@ open class TestAuthenticationCoreCoordinator<
         }
     }
 
-    var navigationCalled = false
+    var navigationCalled = 0
+        private set
     override suspend fun navigateToAuthenticationView() {
-        navigationCalled = true
+        navigationCalled++
     }
 }
