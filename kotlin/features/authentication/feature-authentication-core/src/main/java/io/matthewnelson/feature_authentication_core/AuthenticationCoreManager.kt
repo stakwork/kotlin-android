@@ -154,10 +154,10 @@ abstract class AuthenticationCoreManager <T: AuthenticationManagerInitializer>(
                 (userInput as UserInputWriter).size() < minUserInputLength ||
                 userInput.size() > maxUserInputLength
             } catch(e: ClassCastException) {
-                // TODO: create new error to submit back instead of InvalidPinEntrySize
+                // TODO: create new error to submit back instead of InvalidPasswordEntrySize
                 true
             } -> {
-                flowOf(AuthenticateFlowResponse.Error.Authenticate.InvalidPinEntrySize)
+                flowOf(AuthenticateFlowResponse.Error.Authenticate.InvalidPasswordEntrySize)
             }
             else -> {
                 authenticationProcessor.authenticate(userInput as UserInputWriter, requests)
@@ -175,33 +175,33 @@ abstract class AuthenticationCoreManager <T: AuthenticationManagerInitializer>(
                 flowOf(AuthenticateFlowResponse.Error.RequestListEmpty)
             }
             resetPasswordResponse.getNewPasswordToBeSet() == null -> {
-                flowOf(AuthenticateFlowResponse.Error.ResetPin.NewPinEntryWasNull)
+                flowOf(AuthenticateFlowResponse.Error.ResetPassword.NewPasswordEntryWasNull)
             }
 
             resetPasswordResponse.getNewPasswordToBeSet()?.size() ?: 0
                     < minUserInputLength ||
             resetPasswordResponse.getNewPasswordToBeSet()?.size() ?: maxUserInputLength + 1
                     > maxUserInputLength -> {
-                        flowOf(AuthenticateFlowResponse.Error.ResetPin.InvalidNewPinEntrySize)
+                        flowOf(AuthenticateFlowResponse.Error.ResetPassword.InvalidNewPasswordEntrySize)
                     }
 
             try {
                 (userInputConfirmation as UserInputWriter).size() < minUserInputLength ||
                         userInputConfirmation.size() > maxUserInputLength
             } catch (e: ClassCastException) {
-                // TODO: create new error to submit back instead of InvalidPinEntrySize
+                // TODO: create new error to submit back instead of InvalidPasswordEntrySize
                 true
             } -> {
-                flowOf(AuthenticateFlowResponse.Error.ResetPin.InvalidConfirmedPinEntrySize)
+                flowOf(AuthenticateFlowResponse.Error.ResetPassword.InvalidConfirmedPasswordEntrySize)
             }
             resetPasswordResponse.originalValidatedUserInputHasBeenCleared -> {
-                flowOf(AuthenticateFlowResponse.Error.ResetPin.CurrentPinEntryWasCleared)
+                flowOf(AuthenticateFlowResponse.Error.ResetPassword.CurrentPasswordEntryWasCleared)
             }
             resetPasswordResponse.newPasswordHasBeenCleared -> {
-                flowOf(AuthenticateFlowResponse.Error.ResetPin.NewPinEntryWasCleared)
+                flowOf(AuthenticateFlowResponse.Error.ResetPassword.NewPasswordEntryWasCleared)
             }
             resetPasswordResponse.compareNewPasswordWithConfirmationInput(userInputConfirmation) != true -> {
-                flowOf(AuthenticateFlowResponse.Error.ResetPin.NewPinDoesNotMatchConfirmedPin)
+                flowOf(AuthenticateFlowResponse.Error.ResetPassword.NewPinDoesNotMatchConfirmedPassword)
             }
             else -> {
                 authenticationProcessor.resetPassword(resetPasswordResponse, requests)
@@ -222,16 +222,16 @@ abstract class AuthenticationCoreManager <T: AuthenticationManagerInitializer>(
                 (userInputConfirmation as UserInputWriter).size() < minUserInputLength ||
                         userInputConfirmation.size() > maxUserInputLength
             } catch (e: ClassCastException) {
-                // TODO: create new error to submit back instead of InvalidPinEntrySize
+                // TODO: create new error to submit back instead of InvalidPasswordEntrySize
                 true
             } -> {
-                flowOf(AuthenticateFlowResponse.Error.SetPinFirstTime.InvalidNewPinEntrySize)
+                flowOf(AuthenticateFlowResponse.Error.SetPasswordFirstTime.InvalidNewPasswordEntrySize)
             }
             !setPasswordFirstTimeResponse.compareInitialInputWithConfirmedInput(userInputConfirmation) -> {
-                flowOf(AuthenticateFlowResponse.Error.SetPinFirstTime.NewPinDoesNotMatchConfirmedPin)
+                flowOf(AuthenticateFlowResponse.Error.SetPasswordFirstTime.NewPasswordDoesNotMatchConfirmedPassword)
             }
             setPasswordFirstTimeResponse.initialUserInputHasBeenCleared -> {
-                flowOf(AuthenticateFlowResponse.Error.SetPinFirstTime.NewPinEntryWasCleared)
+                flowOf(AuthenticateFlowResponse.Error.SetPasswordFirstTime.NewPasswordEntryWasCleared)
             }
             else -> {
                 authenticationProcessor.setPasswordFirstTime(setPasswordFirstTimeResponse, requests)

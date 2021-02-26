@@ -235,7 +235,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
 
                 } ?: throw AuthenticationException(
                 // TODO: Rename to Credentials from persistent storage
-                AuthenticateFlowResponse.Error.ResetPin.CredentialsFromPrefsReturnedNull
+                AuthenticateFlowResponse.Error.ResetPassword.CredentialsFromPrefsReturnedNull
             )
 
             val encryptedEncryptionKey = encryptEncryptionKey(
@@ -243,7 +243,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
                 resetPasswordResponse.getNewPasswordToBeSet() ?: let {
                     key.password.clear()
                     throw AuthenticationException(
-                        AuthenticateFlowResponse.Error.ResetPin.NewPinEntryWasNull
+                        AuthenticateFlowResponse.Error.ResetPassword.NewPasswordEntryWasNull
                     )
                 },
                 kOpenSSL
@@ -257,7 +257,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
 
             if (resetPasswordResponse.newPasswordHasBeenCleared) {
                 throw AuthenticationException(
-                    AuthenticateFlowResponse.Error.ResetPin.NewPinEntryWasCleared
+                    AuthenticateFlowResponse.Error.ResetPassword.NewPasswordEntryWasCleared
                 )
             }
 
@@ -268,7 +268,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
                 processValidPinEntryResponse(
                     key,
                     resetPasswordResponse.getNewPasswordToBeSet() ?: throw AuthenticationException(
-                        AuthenticateFlowResponse.Error.ResetPin.NewPinEntryWasNull
+                        AuthenticateFlowResponse.Error.ResetPassword.NewPasswordEntryWasNull
                     ),
                     requests
                 )
@@ -304,7 +304,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
             val encryptedTestString = encryptTestString(newKey, kOpenssl)
 
             if (setPasswordFirstTimeResponse.initialUserInputHasBeenCleared) {
-                throw AuthenticationException(AuthenticateFlowResponse.Error.SetPinFirstTime.NewPinEntryWasCleared)
+                throw AuthenticationException(AuthenticateFlowResponse.Error.SetPasswordFirstTime.NewPasswordEntryWasCleared)
             }
 
             val creds = Credentials.instantiate(
@@ -368,7 +368,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
         } catch (e: Exception) {
             key.password.clear()
             throw AuthenticationException(
-                AuthenticateFlowResponse.Error.SetPinFirstTime.FailedToEncryptTestString
+                AuthenticateFlowResponse.Error.SetPasswordFirstTime.FailedToEncryptTestString
             )
         }
     }
@@ -399,7 +399,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
                                 AuthenticationResponse.Success.Authenticated(request)
                             )
                         }
-                        is AuthenticationRequest.ResetPin -> {
+                        is AuthenticationRequest.ResetPassword -> {
 
                             AuthenticateFlowResponse.PasswordConfirmedForReset
                                 .generate(userInput, request)

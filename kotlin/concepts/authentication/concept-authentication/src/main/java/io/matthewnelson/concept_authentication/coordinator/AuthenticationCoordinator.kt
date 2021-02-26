@@ -47,7 +47,7 @@ abstract class AuthenticationCoordinator {
      *   - [AuthenticationResponse.Success.Key]
      *   - [AuthenticationResponse.Failure]
      *
-     * Responses for [AuthenticationRequest.ResetPin] submission:
+     * Responses for [AuthenticationRequest.ResetPassword] submission:
      *   - [AuthenticationResponse.Success.Authenticated]
      *   - [AuthenticationResponse.Failure]
      * */

@@ -60,7 +60,7 @@ sealed class AuthenticationRequest {
         override val priority: Int = 1
     }
 
-    class ResetPin: AuthenticationRequest() {
+    class ResetPassword: AuthenticationRequest() {
         override val priority: Int = 2
     }
 }

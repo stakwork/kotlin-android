@@ -116,7 +116,7 @@ abstract class AuthenticationCoreCoordinator<T: AuthenticationManagerInitializer
                 }
             }
             is AuthenticationRequest.ConfirmPin,
-            is AuthenticationRequest.ResetPin -> {}
+            is AuthenticationRequest.ResetPassword -> {}
         }
 
         navigateToAuthenticationView()
