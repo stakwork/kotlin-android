@@ -28,19 +28,20 @@ import kotlinx.coroutines.flow.asStateFlow
  * Extend and implement your own overrides if desired.
  * */
 open class TestAuthenticationCoreManager<
-        T: AuthenticationManagerInitializer,
         S: TestEncryptionKeyHandler,
         V: TestAuthenticationCoreStorage
         >(
     testCoroutineDispatchers: CoroutineTestHelper.TestCoroutineDispatchers,
     testEncryptionKeyHandler: S,
     testAuthenticationCoreStorage: V,
+    authenticationManagerInitializer: AuthenticationManagerInitializer,
     encryptionKeyHashIterations: HashIterations = DEFAULT_ENCRYPTION_KEY_HASH_ITERATIONS
-): AuthenticationCoreManager<T>(
+): AuthenticationCoreManager(
     testCoroutineDispatchers,
     encryptionKeyHashIterations,
     testEncryptionKeyHandler,
-    testAuthenticationCoreStorage
+    testAuthenticationCoreStorage,
+    authenticationManagerInitializer
 ) {
 
     companion object {

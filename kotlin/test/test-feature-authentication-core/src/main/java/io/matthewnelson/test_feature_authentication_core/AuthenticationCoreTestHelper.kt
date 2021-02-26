@@ -35,15 +35,16 @@ abstract class AuthenticationCoreTestHelper<
     protected abstract val testHandler: S
     protected abstract val testStorage: V
 
-    protected open val testCoreManager: TestAuthenticationCoreManager<T, S, V> by lazy {
+    protected open val testCoreManager: TestAuthenticationCoreManager<S, V> by lazy {
         TestAuthenticationCoreManager(
             dispatchers as TestCoroutineDispatchers,
             testHandler,
-            testStorage
+            testStorage,
+            testInitializer
         )
     }
 
-    protected open val testCoordinator: TestAuthenticationCoreCoordinator<T, S, V> by lazy {
+    protected open val testCoordinator: TestAuthenticationCoreCoordinator<S, V> by lazy {
         TestAuthenticationCoreCoordinator(
             testCoreManager
         )
@@ -54,7 +55,6 @@ abstract class AuthenticationCoreTestHelper<
      * */
     fun setupAuthenticationCoreTestHelper() {
         setupCoroutineTestHelper()
-        testCoreManager.initialize(testInitializer)
     }
 
     /**

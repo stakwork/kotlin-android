@@ -27,8 +27,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.isActive
 
-abstract class AuthenticationCoreCoordinator<T: AuthenticationManagerInitializer>(
-    protected val authenticationManager: AuthenticationCoreManager<T>
+abstract class AuthenticationCoreCoordinator(
+    protected val authenticationManager: AuthenticationCoreManager
 ): AuthenticationCoordinator() {
 
     @Suppress("RemoveExplicitTypeArguments", "PropertyName")

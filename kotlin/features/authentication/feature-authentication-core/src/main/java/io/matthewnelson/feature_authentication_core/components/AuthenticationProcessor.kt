@@ -41,38 +41,34 @@ import kotlinx.coroutines.withContext
  * TODO: Really need to implement a "login with encryption key" response to better handle
  *  errors.
  * */
-internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> private constructor(
-    private val authenticationCoreManager: AuthenticationCoreManager<T>,
+internal class AuthenticationProcessor private constructor(
+    private val authenticationCoreManager: AuthenticationCoreManager,
     private val dispatchers: CoroutineDispatchers,
     private val encryptionKeyHashIterations: HashIterations,
     val encryptionKeyHandler: EncryptionKeyHandler,
-    private val authenticationCoreStorage: AuthenticationCoreStorage
+    private val authenticationCoreStorage: AuthenticationCoreStorage,
+    private val authenticationManagerInitializer: AuthenticationManagerInitializer
     // TODO: WrongPinLockout
 ) {
 
     companion object {
         @JvmSynthetic
-        fun <T: AuthenticationManagerInitializer> instantiate(
-            authenticationCoreManager: AuthenticationCoreManager<T>,
+        fun instantiate(
+            authenticationCoreManager: AuthenticationCoreManager,
             dispatchers: CoroutineDispatchers,
             encryptionKeyHashIterations: HashIterations,
             encryptionKeyHandler: EncryptionKeyHandler,
-            authenticationCoreStorage: AuthenticationCoreStorage
-        ): AuthenticationProcessor<T> =
+            authenticationCoreStorage: AuthenticationCoreStorage,
+            authenticationManagerInitializer: AuthenticationManagerInitializer
+        ): AuthenticationProcessor =
             AuthenticationProcessor(
                 authenticationCoreManager,
                 dispatchers,
                 encryptionKeyHashIterations,
                 encryptionKeyHandler,
-                authenticationCoreStorage
+                authenticationCoreStorage,
+                authenticationManagerInitializer
             )
-    }
-
-    @JvmSynthetic
-    fun initializeWrongPinLockout(value: T) {
-//        if (!authenticationCoreManager.isInitialized) {
-            // TODO: Implement
-//        }
     }
 
     @JvmSynthetic

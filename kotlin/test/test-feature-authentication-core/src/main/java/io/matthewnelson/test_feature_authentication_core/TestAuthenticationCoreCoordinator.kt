@@ -23,12 +23,11 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
 open class TestAuthenticationCoreCoordinator<
-        T: AuthenticationManagerInitializer,
         S: TestEncryptionKeyHandler,
         V: TestAuthenticationCoreStorage
         >(
-    testManager: TestAuthenticationCoreManager<T, S, V>
-): AuthenticationCoreCoordinator<T>(testManager)
+    testManager: TestAuthenticationCoreManager<S, V>
+): AuthenticationCoreCoordinator(testManager)
 {
     val requestSharedFlow: SharedFlow<AuthenticationRequest>
         get() = _authenticationRequestSharedFlow.asSharedFlow()

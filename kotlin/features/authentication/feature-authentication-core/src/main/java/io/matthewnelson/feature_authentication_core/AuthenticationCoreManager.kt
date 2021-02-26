@@ -38,11 +38,12 @@ import kotlinx.coroutines.flow.*
 /**
  * Extend this class and implement
  * */
-abstract class AuthenticationCoreManager <T: AuthenticationManagerInitializer>(
+abstract class AuthenticationCoreManager(
     dispatchers: CoroutineDispatchers,
     encryptionKeyHashIterations: HashIterations,
     encryptionKeyHandler: EncryptionKeyHandler,
-    authenticationCoreStorage: AuthenticationCoreStorage
+    authenticationCoreStorage: AuthenticationCoreStorage,
+    authenticationManagerInitializer: AuthenticationManagerInitializer
 ): AuthenticationManager<
         AuthenticateFlowResponse,
         AuthenticateFlowResponse.PasswordConfirmedForReset,
@@ -80,20 +81,9 @@ abstract class AuthenticationCoreManager <T: AuthenticationManagerInitializer>(
     //////////////////////
     /// Initialization ///
     //////////////////////
-    @Volatile
-    var isInitialized: Boolean = false
-        private set
-    private val initializeLock = Object()
-
-    open fun initialize(value: T) {
-        synchronized(initializeLock) {
-            if (!isInitialized) {
-                minUserInputLength = value.minimumUserInputLength
-                maxUserInputLength = value.maximumUserInputLength
-                authenticationProcessor.initializeWrongPinLockout(value)
-                isInitialized = true
-            }
-        }
+    init {
+        minUserInputLength = authenticationManagerInitializer.minimumUserInputLength
+        maxUserInputLength = authenticationManagerInitializer.maximumUserInputLength
     }
 
     companion object {
@@ -107,13 +97,14 @@ abstract class AuthenticationCoreManager <T: AuthenticationManagerInitializer>(
     /// Authentication ///
     //////////////////////
     @Suppress("RemoveExplicitTypeArguments")
-    private val authenticationProcessor: AuthenticationProcessor<T> by lazy {
+    private val authenticationProcessor: AuthenticationProcessor by lazy {
         AuthenticationProcessor.instantiate(
             this,
             dispatchers,
             encryptionKeyHashIterations,
             encryptionKeyHandler,
-            authenticationCoreStorage
+            authenticationCoreStorage,
+            authenticationManagerInitializer
         )
     }
 
@@ -241,7 +232,6 @@ abstract class AuthenticationCoreManager <T: AuthenticationManagerInitializer>(
     //////////////////////
     /// Encryption Key ///
     //////////////////////
-
     @Volatile
     private var encryptionKey: EncryptionKey? = null
     private val encryptionKeyLock = Object()

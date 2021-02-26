@@ -18,7 +18,9 @@ class UserInputWriterUnitTest: AuthenticationCoreDefaultsTestHelper() {
     override val testInitializer: TestAuthenticationManagerInitializer =
         TestAuthenticationManagerInitializer(minimumUserInputLength = 4, maximumUserInputLength = 4)
 
-    private val input: UserInputWriter = UserInputWriter.instantiate()
+    // Have to call testCoreManager here to initialize it such that the input lengths are
+    // set, just like we would if in production.
+    private val input: UserInputWriter = testCoreManager.getNewUserInput() as UserInputWriter
 
     @Test
     fun `input length state flow updates properly when adding and removing characters`() {

@@ -24,10 +24,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
-abstract class AuthenticationViewCoordinator<T, V: AuthenticationManagerInitializer>(
+abstract class AuthenticationViewCoordinator<T>(
     private val authenticationNavigator: AuthenticationNavigator<T>,
-    authenticationManager: AuthenticationCoreManager<V>
-): AuthenticationCoreCoordinator<V>(authenticationManager) {
+    authenticationManager: AuthenticationCoreManager
+): AuthenticationCoreCoordinator(authenticationManager) {
 
     @JvmSynthetic
     internal fun getAuthenticationRequestSharedFlow(): SharedFlow<AuthenticationRequest> =
