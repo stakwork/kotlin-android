@@ -23,6 +23,30 @@ inline fun Password.clear(char: Char = '0') {
     value.fill(char)
 }
 
+@Suppress("NOTHING_TO_INLINE")
+@OptIn(RawPasswordAccess::class)
+inline fun Password.compare(password: Password): Boolean {
+    if (value.hashCode() == password.value.hashCode()) {
+        return true
+    }
+
+    if (value.size != password.value.size) {
+        return false
+    }
+
+    try {
+        for (i in value.indices) {
+            if (password.value[i] != value[i]) {
+                return false
+            }
+        }
+    } catch (e: Exception) {
+        return false
+    }
+
+    return true
+}
+
 inline class Password(@property: RawPasswordAccess val value: CharArray) {
 
     @Throws(IllegalAccessException::class)

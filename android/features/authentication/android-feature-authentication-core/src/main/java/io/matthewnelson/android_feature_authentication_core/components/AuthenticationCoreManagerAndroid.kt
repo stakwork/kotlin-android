@@ -23,7 +23,7 @@ import androidx.annotation.MainThread
 import io.matthewnelson.feature_authentication_core.AuthenticationCoreManager
 import io.matthewnelson.concept_authentication.state.AuthenticationState
 import io.matthewnelson.concept_foreground_state.ForegroundState
-import io.matthewnelson.android_feature_authentication_core.data.PersistentStorageAndroid
+import io.matthewnelson.android_feature_authentication_core.data.AuthenticationCoreStorageAndroid
 import io.matthewnelson.concept_coroutines.CoroutineDispatchers
 import io.matthewnelson.concept_encryption_key.EncryptionKeyHandler
 import io.matthewnelson.k_openssl_common.clazzes.HashIterations
@@ -35,12 +35,14 @@ abstract class AuthenticationCoreManagerAndroid(
     dispatchers: CoroutineDispatchers,
     encryptionKeyHashIterations: HashIterations,
     encryptionKeyHandler: EncryptionKeyHandler,
-    persistentStorage: PersistentStorageAndroid
-): AuthenticationCoreManager<AuthenticationManagerInitializerAndroid>(
+    persistentStorage: AuthenticationCoreStorageAndroid,
+    authenticationManagerInitializerAndroid: AuthenticationManagerInitializerAndroid
+): AuthenticationCoreManager(
     dispatchers,
     encryptionKeyHashIterations,
     encryptionKeyHandler,
-    persistentStorage
+    persistentStorage,
+    authenticationManagerInitializerAndroid
 ), Application.ActivityLifecycleCallbacks {
 
     @Suppress("ObjectPropertyName", "RemoveExplicitTypeArguments")
@@ -51,8 +53,16 @@ abstract class AuthenticationCoreManagerAndroid(
     override val foregroundStateFlow: StateFlow<ForegroundState>
         get() = _foregroundStateFlow.asStateFlow()
 
-    var backgroundLogOutTime: Long = 0L
+    var backgroundLogOutTime: Long = authenticationManagerInitializerAndroid.backgroundLogOutTime
         protected set
+
+    private fun registerCallbacks(application: Application) {
+        application.registerActivityLifecycleCallbacks(this)
+    }
+
+    init {
+        registerCallbacks(authenticationManagerInitializerAndroid.application)
+    }
 
     /**
      * If the user swipes the application from the recent apps tray, [onActivityDestroyed]
@@ -66,17 +76,6 @@ abstract class AuthenticationCoreManagerAndroid(
      * state in memory even after the user swipes it out of the recent apps tray.
      * */
     protected abstract val logOutWhenApplicationIsClearedFromRecentsTray: Boolean
-
-    @MainThread
-    override fun initialize(value: AuthenticationManagerInitializerAndroid) {
-        synchronized(this) {
-            if (!isInitialized) {
-                backgroundLogOutTime = value.backgroundLogOutTime
-                super.initialize(value)
-                value.application.registerActivityLifecycleCallbacks(this)
-            }
-        }
-    }
 
     var timeMovedToBackground: Long = SystemClock.uptimeMillis()
         private set

@@ -18,10 +18,11 @@ package io.matthewnelson.feature_authentication_core.components
 import app.cash.exhaustive.Exhaustive
 import io.matthewnelson.concept_authentication.coordinator.AuthenticationRequest
 import io.matthewnelson.concept_authentication.coordinator.AuthenticationResponse
-import io.matthewnelson.feature_authentication_core.data.PersistentStorage
+import io.matthewnelson.feature_authentication_core.data.AuthenticationCoreStorage
 import io.matthewnelson.concept_authentication.state.AuthenticationState
 import io.matthewnelson.concept_coroutines.CoroutineDispatchers
 import io.matthewnelson.concept_encryption_key.EncryptionKey
+import io.matthewnelson.concept_encryption_key.EncryptionKeyException
 import io.matthewnelson.concept_encryption_key.EncryptionKeyHandler
 import io.matthewnelson.feature_authentication_core.AuthenticationCoreManager
 import io.matthewnelson.feature_authentication_core.model.*
@@ -40,43 +41,86 @@ import kotlinx.coroutines.withContext
  * TODO: Really need to implement a "login with encryption key" response to better handle
  *  errors.
  * */
-internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> private constructor(
-    private val authenticationCoreManager: AuthenticationCoreManager<T>,
+internal class AuthenticationProcessor private constructor(
+    private val authenticationCoreManager: AuthenticationCoreManager,
     private val dispatchers: CoroutineDispatchers,
     private val encryptionKeyHashIterations: HashIterations,
     val encryptionKeyHandler: EncryptionKeyHandler,
-    private val persistentStorage: PersistentStorage
+    private val authenticationCoreStorage: AuthenticationCoreStorage,
+    private val authenticationManagerInitializer: AuthenticationManagerInitializer
     // TODO: WrongPinLockout
 ) {
 
     companion object {
         @JvmSynthetic
-        fun <T: AuthenticationManagerInitializer> instantiate(
-            authenticationCoreManager: AuthenticationCoreManager<T>,
+        fun instantiate(
+            authenticationCoreManager: AuthenticationCoreManager,
             dispatchers: CoroutineDispatchers,
             encryptionKeyHashIterations: HashIterations,
             encryptionKeyHandler: EncryptionKeyHandler,
-            persistentStorage: PersistentStorage
-        ): AuthenticationProcessor<T> =
+            authenticationCoreStorage: AuthenticationCoreStorage,
+            authenticationManagerInitializer: AuthenticationManagerInitializer
+        ): AuthenticationProcessor =
             AuthenticationProcessor(
                 authenticationCoreManager,
                 dispatchers,
                 encryptionKeyHashIterations,
                 encryptionKeyHandler,
-                persistentStorage
+                authenticationCoreStorage,
+                authenticationManagerInitializer
             )
     }
 
     @JvmSynthetic
-    fun initializeWrongPinLockout(value: T) {
-//        if (!authenticationCoreManager.isInitialized) {
-            // TODO: Implement
-//        }
-    }
+    suspend fun isAnEncryptionKeySet(): Boolean =
+        authenticationCoreStorage.retrieveCredentials() != null
 
     ////////////////////
     /// Authenticate ///
     ////////////////////
+    @JvmSynthetic
+    @OptIn(RawPasswordAccess::class)
+    fun authenticate(
+        encryptionKey: Password,
+        request: AuthenticationRequest.LogIn
+    ): Flow<AuthenticationResponse> =
+        flow {
+            val storedKey: EncryptionKey? = try {
+                encryptionKeyHandler.storeCopyOfEncryptionKey(encryptionKey.value)
+            } catch (e: EncryptionKeyException) {
+                null
+            }
+
+            storedKey?.let { key ->
+                authenticationCoreStorage.retrieveCredentials()?.let { credsString ->
+                    val creds: Credentials? = try {
+                        Credentials.fromString(credsString)
+                    } catch (e: IllegalArgumentException) {
+                        null
+                    }
+
+                    creds?.let { nnCreds ->
+                        val validation = nnCreds.validateTestString(
+                            dispatchers,
+                            key,
+                            encryptionKeyHandler,
+                            AES256CBC_PBKDF2_HMAC_SHA256()
+                        )
+
+                        if (validation) {
+                            authenticationCoreManager.setEncryptionKey(key)
+                            authenticationCoreManager.updateAuthenticationState(
+                                AuthenticationState.NotRequired, null
+                            )
+                            flowOf(AuthenticationResponse.Success.Key(request, key))
+                        } else {
+                            flowOf(AuthenticationResponse.Failure(request))
+                        }
+                    } ?: flowOf(AuthenticationResponse.Failure(request))
+                } ?: flowOf(AuthenticationResponse.Failure(request))
+            } ?: flowOf(AuthenticationResponse.Failure(request))
+        }
+
     @JvmSynthetic
     fun authenticate(
         pinEntry: UserInputWriter,
@@ -119,7 +163,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
         kOpenSSL: KOpenSSL,
         pinEntry: UserInputWriter
     ): PinValidationResponse =
-        persistentStorage.retrieveCredentials()?.let { credsString ->
+        authenticationCoreStorage.retrieveCredentials()?.let { credsString ->
             val creds = try {
                 Credentials.fromString(credsString)
             } catch (e: IllegalArgumentException) {
@@ -165,7 +209,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
         try {
             val kOpenSSL = AES256CBC_PBKDF2_HMAC_SHA256()
             val key: EncryptionKey = authenticationCoreManager
-                .getEncryptionKeyCopy() ?: persistentStorage.retrieveCredentials()
+                .getEncryptionKeyCopy() ?: authenticationCoreStorage.retrieveCredentials()
                 ?.let { credsString ->
                     val creds = try {
                         Credentials.fromString(credsString)
@@ -187,7 +231,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
 
                 } ?: throw AuthenticationException(
                 // TODO: Rename to Credentials from persistent storage
-                AuthenticateFlowResponse.Error.ResetPin.CredentialsFromPrefsReturnedNull
+                AuthenticateFlowResponse.Error.ResetPassword.CredentialsFromPrefsReturnedNull
             )
 
             val encryptedEncryptionKey = encryptEncryptionKey(
@@ -195,7 +239,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
                 resetPasswordResponse.getNewPasswordToBeSet() ?: let {
                     key.password.clear()
                     throw AuthenticationException(
-                        AuthenticateFlowResponse.Error.ResetPin.NewPinEntryWasNull
+                        AuthenticateFlowResponse.Error.ResetPassword.NewPasswordEntryWasNull
                     )
                 },
                 kOpenSSL
@@ -209,18 +253,18 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
 
             if (resetPasswordResponse.newPasswordHasBeenCleared) {
                 throw AuthenticationException(
-                    AuthenticateFlowResponse.Error.ResetPin.NewPinEntryWasCleared
+                    AuthenticateFlowResponse.Error.ResetPassword.NewPasswordEntryWasCleared
                 )
             }
 
-            persistentStorage.saveCredentials(creds)
+            authenticationCoreStorage.saveCredentials(creds)
 
             resetPasswordResponse.onPasswordResetCompletion()
             emitAll(
                 processValidPinEntryResponse(
                     key,
                     resetPasswordResponse.getNewPasswordToBeSet() ?: throw AuthenticationException(
-                        AuthenticateFlowResponse.Error.ResetPin.NewPinEntryWasNull
+                        AuthenticateFlowResponse.Error.ResetPassword.NewPasswordEntryWasNull
                     ),
                     requests
                 )
@@ -243,7 +287,9 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
         try {
             emit(AuthenticateFlowResponse.Notify.GeneratingAndEncryptingEncryptionKey)
 
-            val newKey = encryptionKeyHandler.generateEncryptionKey()
+            val newKey = withContext(dispatchers.default) {
+                encryptionKeyHandler.generateEncryptionKey()
+            }
             val kOpenssl = AES256CBC_PBKDF2_HMAC_SHA256()
             val initialInput = setPasswordFirstTimeResponse.getInitialUserInput()
             val encryptedEncryptionKey = encryptEncryptionKey(
@@ -254,7 +300,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
             val encryptedTestString = encryptTestString(newKey, kOpenssl)
 
             if (setPasswordFirstTimeResponse.initialUserInputHasBeenCleared) {
-                throw AuthenticationException(AuthenticateFlowResponse.Error.SetPinFirstTime.NewPinEntryWasCleared)
+                throw AuthenticationException(AuthenticateFlowResponse.Error.SetPasswordFirstTime.NewPasswordEntryWasCleared)
             }
 
             val creds = Credentials.instantiate(
@@ -262,7 +308,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
                 encryptedTestString
             )
 
-            persistentStorage.saveCredentials(creds)
+            authenticationCoreStorage.saveCredentials(creds)
 
             emitAll(
                 processValidPinEntryResponse(newKey, setPasswordFirstTimeResponse.getInitialUserInput(), requests)
@@ -311,14 +357,14 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
         return try {
             kOpenSSL.encrypt(
                 key.password,
-                encryptionKeyHandler.getHashIterations(key),
+                encryptionKeyHandler.getTestStringEncryptHashIterations(key),
                 UnencryptedString(Credentials.ENCRYPTION_KEY_TEST_STRING_VALUE),
                 dispatchers.default
             )
         } catch (e: Exception) {
             key.password.clear()
             throw AuthenticationException(
-                AuthenticateFlowResponse.Error.SetPinFirstTime.FailedToEncryptTestString
+                AuthenticateFlowResponse.Error.SetPasswordFirstTime.FailedToEncryptTestString
             )
         }
     }
@@ -338,7 +384,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
                     when (request) {
                         is AuthenticationRequest.LogIn -> {
 
-                            AuthenticationCoreManager.getEncryptionKey() ?: let {
+                            authenticationCoreManager.getEncryptionKey() ?: let {
                                 authenticationCoreManager.setEncryptionKey(encryptionKey)
                             }
 
@@ -349,7 +395,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
                                 AuthenticationResponse.Success.Authenticated(request)
                             )
                         }
-                        is AuthenticationRequest.ResetPin -> {
+                        is AuthenticationRequest.ResetPassword -> {
 
                             AuthenticateFlowResponse.PasswordConfirmedForReset
                                 .generate(userInput, request)
@@ -369,7 +415,7 @@ internal class AuthenticationProcessor<T: AuthenticationManagerInitializer> priv
                         }
                         is AuthenticationRequest.GetEncryptionKey -> {
 
-                            AuthenticationCoreManager.getEncryptionKey() ?: let {
+                            authenticationCoreManager.getEncryptionKey() ?: let {
                                 authenticationCoreManager.setEncryptionKey(encryptionKey)
                             }
 

@@ -121,7 +121,7 @@ internal class Credentials private constructor(
         return try {
             kOpenSSL.decrypt(
                 encryptionKey.password,
-                encryptionKeyHandler.getHashIterations(encryptionKey),
+                encryptionKeyHandler.getTestStringEncryptHashIterations(encryptionKey),
                 encryptionKeyTestString,
                 dispatchers.default
             ).let { result ->

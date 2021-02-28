@@ -13,36 +13,40 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 * */
-package io.matthewnelson.feature_authentication_view.navigation
+package io.matthewnelson.test_feature_authentication_core
 
 import io.matthewnelson.concept_authentication.coordinator.AuthenticationRequest
 import io.matthewnelson.concept_authentication.coordinator.AuthenticationResponse
 import io.matthewnelson.feature_authentication_core.AuthenticationCoreCoordinator
-import io.matthewnelson.feature_authentication_core.AuthenticationCoreManager
 import io.matthewnelson.feature_authentication_core.components.AuthenticationManagerInitializer
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
-abstract class AuthenticationViewCoordinator<T>(
-    private val authenticationNavigator: AuthenticationNavigator<T>,
-    authenticationManager: AuthenticationCoreManager
-): AuthenticationCoreCoordinator(authenticationManager) {
+open class TestAuthenticationCoreCoordinator<
+        S: TestEncryptionKeyHandler,
+        V: TestAuthenticationCoreStorage
+        >(
+    testManager: TestAuthenticationCoreManager<S, V>
+): AuthenticationCoreCoordinator(testManager)
+{
+    val requestSharedFlow: SharedFlow<AuthenticationRequest>
+        get() = _authenticationRequestSharedFlow.asSharedFlow()
 
-    @JvmSynthetic
-    internal fun getAuthenticationRequestSharedFlow(): SharedFlow<AuthenticationRequest> =
-        _authenticationRequestSharedFlow.asSharedFlow()
+    val requestFlowSubs: Int
+        get() = _authenticationRequestSharedFlow.subscriptionCount.value
 
-    override suspend fun navigateToAuthenticationView() {
-        authenticationNavigator.toAuthenticationView()
-    }
+    val responseFlowSubs: Int
+        get() = _authenticationResponseSharedFlow.subscriptionCount.value
 
-    @JvmSynthetic
-    internal suspend fun completeAuthentication(responses: List<AuthenticationResponse>) {
+    suspend fun completeAuthentication(responses: List<AuthenticationResponse>) {
         for (response in responses) {
             _authenticationResponseSharedFlow.emit(response)
         }
-        authenticationNavigator.popBackStack()
-        delay(300L)
+    }
+
+    var navigationCalled = 0
+        private set
+    override suspend fun navigateToAuthenticationView() {
+        navigationCalled++
     }
 }
