@@ -47,16 +47,16 @@ sealed class AuthenticationRequest {
     }
 
     /**
-     * Optional [encryptionKey] argument allows for easier implementation of custom encrypted
+     * Optional [privateKey] argument allows for easier implementation of custom encrypted
      * storage solution that will allow for logging the user in without sending them to the
-     * Authentication View. The [encryptionKey] will be validated against a test string that
+     * Authentication View. The [privateKey] will be validated against a test string that
      * was encrypted using the originally set key. If successful, a **copy** of the key will be
      * set and [io.matthewnelson.concept_authentication.state.AuthenticationState.NotRequired] will
      * be set.
      *
      * Reminder: Passwords should never be stored clear text.
      * */
-    class LogIn(val encryptionKey: Password? = null): AuthenticationRequest() {
+    class LogIn(val privateKey: Password? = null): AuthenticationRequest() {
         override val priority: Int = 1
     }
 

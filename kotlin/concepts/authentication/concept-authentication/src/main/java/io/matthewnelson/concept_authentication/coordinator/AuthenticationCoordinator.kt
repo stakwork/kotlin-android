@@ -38,12 +38,12 @@ abstract class AuthenticationCoordinator {
      *   - [AuthenticationResponse.Failure]
      *
      * Responses for [AuthenticationRequest.LogIn] submission where
-     * [AuthenticationRequest.LogIn.encryptionKey] is `null`:
+     * [AuthenticationRequest.LogIn.privateKey] is `null`:
      *   - [AuthenticationResponse.Success.Authenticated]
      *   - [AuthenticationResponse.Failure]
      *
      * Responses for [AuthenticationRequest.LogIn] submission where
-     * [AuthenticationRequest.LogIn.encryptionKey] is **not** `null`:
+     * [AuthenticationRequest.LogIn.privateKey] is **not** `null`:
      *   - [AuthenticationResponse.Success.Key]
      *   - [AuthenticationResponse.Failure]
      *

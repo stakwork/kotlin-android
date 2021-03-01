@@ -26,8 +26,9 @@ abstract class EncryptionKeyHandler {
     abstract suspend fun generateEncryptionKey(): EncryptionKey
 
     @Throws(EncryptionKeyException::class)
-    fun storeCopyOfEncryptionKey(key: CharArray): EncryptionKey =
-        validateEncryptionKey(key)
+    fun storeCopyOfEncryptionKey(privateKey: CharArray, publicKey: CharArray): EncryptionKey {
+        return validateEncryptionKey(privateKey, publicKey)
+    }
 
     /**
      * After validation of the key for correctness of your specified parameters,
@@ -35,13 +36,13 @@ abstract class EncryptionKeyHandler {
      * array to mitigate heap dump analysis.
      * */
     @Throws(EncryptionKeyException::class)
-    protected abstract fun validateEncryptionKey(key: CharArray): EncryptionKey
+    protected abstract fun validateEncryptionKey(privateKey: CharArray, publicKey: CharArray): EncryptionKey
 
     /**
      * Call from [validateEncryptionKey] if everything checks out.
      * */
-    protected fun copyAndStoreKey(key: CharArray): EncryptionKey =
-        EncryptionKey.instantiate(Password(key.copyOf()))
+    protected fun copyAndStoreKey(privateKey: CharArray, publicKey: CharArray): EncryptionKey =
+        EncryptionKey.instantiate(Password(privateKey.copyOf()), Password(publicKey.copyOf()))
 
     /**
      * The [HashIterations] used to encrypt/decrypt things using the
@@ -50,5 +51,5 @@ abstract class EncryptionKeyHandler {
      * This return value is *not* the [HashIterations] used to encrypt/decrypt the
      * [EncryptionKey] with the user's password which is then persisted to disk.
      * */
-    abstract fun getTestStringEncryptHashIterations(key: EncryptionKey): HashIterations
+    abstract fun getTestStringEncryptHashIterations(privateKey: Password): HashIterations
 }

@@ -19,6 +19,7 @@ import io.matthewnelson.concept_encryption_key.EncryptionKey
 import io.matthewnelson.concept_encryption_key.EncryptionKeyException
 import io.matthewnelson.concept_encryption_key.EncryptionKeyHandler
 import io.matthewnelson.k_openssl_common.clazzes.HashIterations
+import io.matthewnelson.k_openssl_common.clazzes.Password
 
 /**
  * Extend and implement your own overrides if desired.
@@ -37,19 +38,19 @@ open class TestEncryptionKeyHandler: EncryptionKeyHandler() {
     }
 
     override suspend fun generateEncryptionKey(): EncryptionKey {
-        return copyAndStoreKey(TEST_ENCRYPTION_KEY_STRING.toCharArray())
+        return copyAndStoreKey(TEST_ENCRYPTION_KEY_STRING.toCharArray(), CharArray(0))
     }
 
-    override fun validateEncryptionKey(key: CharArray): EncryptionKey {
-        val keyString = key.joinToString("")
+    override fun validateEncryptionKey(privateKey: CharArray, publicKey: CharArray): EncryptionKey {
+        val keyString = privateKey.joinToString("")
         if (keyString != TEST_ENCRYPTION_KEY_STRING) {
             throw EncryptionKeyException("EncryptionKey: $keyString != $TEST_ENCRYPTION_KEY_STRING")
         }
 
-        return copyAndStoreKey(key)
+        return copyAndStoreKey(privateKey, publicKey)
     }
 
-    override fun getTestStringEncryptHashIterations(key: EncryptionKey): HashIterations {
+    override fun getTestStringEncryptHashIterations(privateKey: Password): HashIterations {
         return DEFAULT_TEST_STRING_ENCRYPT_HASH_ITERATIONS
     }
 }

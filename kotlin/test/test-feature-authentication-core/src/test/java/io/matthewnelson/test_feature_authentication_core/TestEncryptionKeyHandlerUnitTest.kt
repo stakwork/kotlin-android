@@ -31,10 +31,10 @@ class TestEncryptionKeyHandlerUnitTest: CoroutineTestHelper() {
             val key = testHandler.generateEncryptionKey()
             Assert.assertEquals(
                 TestEncryptionKeyHandler.TEST_ENCRYPTION_KEY_STRING,
-                key.password.value.joinToString("")
+                key.privateKey.value.joinToString("")
             )
 
-            key.password.clear('*')
-            testHandler.storeCopyOfEncryptionKey(key.password.value)
+            key.privateKey.clear('*')
+            testHandler.storeCopyOfEncryptionKey(key.privateKey.value, key.publicKey.value)
         }
 }

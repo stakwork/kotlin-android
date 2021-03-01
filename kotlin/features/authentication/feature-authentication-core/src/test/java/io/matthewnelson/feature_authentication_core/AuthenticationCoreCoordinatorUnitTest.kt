@@ -46,7 +46,7 @@ class AuthenticationCoreCoordinatorUnitTest: AuthenticationCoreDefaultsTestHelpe
             testCoordinator.submitAuthenticationRequest(request).first().let { response ->
                 if (response is AuthenticationResponse.Success.Key) {
                     Assert.assertEquals(
-                        response.encryptionKey.password.value.joinToString(""),
+                        response.encryptionKey.privateKey.value.joinToString(""),
                         TestEncryptionKeyHandler.TEST_ENCRYPTION_KEY_STRING
                     )
                 } else {
@@ -63,7 +63,7 @@ class AuthenticationCoreCoordinatorUnitTest: AuthenticationCoreDefaultsTestHelpe
     fun `login returns success immediately if already logged in`() =
         testDispatcher.runBlockingTest {
             login()
-            val request = AuthenticationRequest.LogIn(encryptionKey = null)
+            val request = AuthenticationRequest.LogIn(privateKey = null)
             testCoordinator.submitAuthenticationRequest(request).first().let { response ->
                 if (response !is AuthenticationResponse.Success.Authenticated) {
                     Assert.fail()
@@ -77,7 +77,7 @@ class AuthenticationCoreCoordinatorUnitTest: AuthenticationCoreDefaultsTestHelpe
         testDispatcher.runBlockingTest {
             login()
             val request = AuthenticationRequest.LogIn(
-                encryptionKey = Password(
+                privateKey = Password(
                     (TestEncryptionKeyHandler.TEST_ENCRYPTION_KEY_STRING + "a").toCharArray()
                 )
             )
@@ -94,7 +94,7 @@ class AuthenticationCoreCoordinatorUnitTest: AuthenticationCoreDefaultsTestHelpe
         testDispatcher.runBlockingTest {
             login()
             val request = AuthenticationRequest.LogIn(
-                encryptionKey = Password(
+                privateKey = Password(
                     TestEncryptionKeyHandler.TEST_ENCRYPTION_KEY_STRING.toCharArray()
                 )
             )
@@ -102,7 +102,7 @@ class AuthenticationCoreCoordinatorUnitTest: AuthenticationCoreDefaultsTestHelpe
             testCoordinator.submitAuthenticationRequest(request).first().let { response ->
                 if (response is AuthenticationResponse.Success.Key) {
                     Assert.assertEquals(
-                        response.encryptionKey.password.value.joinToString(""),
+                        response.encryptionKey.privateKey.value.joinToString(""),
                         TestEncryptionKeyHandler.TEST_ENCRYPTION_KEY_STRING
                     )
                 } else {
