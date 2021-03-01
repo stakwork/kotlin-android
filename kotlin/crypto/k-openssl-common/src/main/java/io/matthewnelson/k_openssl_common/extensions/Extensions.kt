@@ -50,8 +50,8 @@ inline fun CharArray.toByteArray(fill: Char = '0'): ByteArray =
     }
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun String.encodeToByteArray(): ByteArray =
-    toByteArray(charset("UTF-8"))
+inline fun String.encodeToByteArray(charset: Charset = charset("UTF-8")): ByteArray =
+    toByteArray(charset)
 
 @Suppress("NOTHING_TO_INLINE")
 inline fun ByteArray.decodeToString(charset: Charset = charset("UTF-8")): String =
