@@ -22,7 +22,6 @@ import io.matthewnelson.concept_authentication_core.model.ConfirmUserInputToRese
 import io.matthewnelson.concept_authentication_core.model.ConfirmUserInputToSetForFirstTime
 import io.matthewnelson.concept_authentication_core.model.UserInput
 import io.matthewnelson.concept_foreground_state.ForegroundStateManager
-import io.matthewnelson.k_openssl_common.clazzes.Password
 import kotlinx.coroutines.flow.Flow
 
 abstract class AuthenticationManager<
@@ -40,7 +39,7 @@ abstract class AuthenticationManager<
      * Primarily used by the
      * [io.matthewnelson.concept_authentication.coordinator.AuthenticationCoordinator] for
      * logging in without the need to send the user to the Authentication View. This API will
-     * check the [request] for if [AuthenticationRequest.LogIn.encryptionKey] is not null, and
+     * check the [request] for if [AuthenticationRequest.LogIn.privateKey] is not null, and
      * then attempt to log in. See [AuthenticationRequest.LogIn] for more information.
      * */
     abstract fun authenticate(
