@@ -121,13 +121,14 @@ abstract class AuthenticationCoreManager(
     override fun authenticate(
         request: AuthenticationRequest.LogIn
     ): Flow<AuthenticationResponse> =
-        request.encryptionKey?.let { key ->
-            if (key.value.isEmpty()) {
+        request.privateKey?.let { privateKey ->
+            if (privateKey.value.isEmpty()) {
                 flowOf(
                     AuthenticationResponse.Failure(request)
                 )
+            } else {
+                authenticationProcessor.authenticate(privateKey, request)
             }
-            authenticationProcessor.authenticate(key, request)
         } ?: flowOf(
             AuthenticationResponse.Failure(request)
         )
@@ -249,7 +250,7 @@ abstract class AuthenticationCoreManager(
                 try {
                     @OptIn(RawPasswordAccess::class)
                     authenticationProcessor.encryptionKeyHandler
-                        .storeCopyOfEncryptionKey(key.password.value)
+                        .storeCopyOfEncryptionKey(key.privateKey.value, key.publicKey.value)
                 } catch (e: EncryptionKeyException) {
                     null
                 }
@@ -259,7 +260,8 @@ abstract class AuthenticationCoreManager(
     @JvmSynthetic
     internal fun setEncryptionKey(encryptionKey: EncryptionKey?) {
         synchronized(encryptionKeyLock) {
-            this.encryptionKey?.password?.clear()
+            this.encryptionKey?.privateKey?.clear()
+            this.encryptionKey?.publicKey?.clear()
             this.encryptionKey = encryptionKey
         }
     }
