@@ -17,11 +17,12 @@ package io.matthewnelson.k_openssl_common.extensions
 
 import java.nio.ByteBuffer
 import java.nio.CharBuffer
+import java.nio.charset.Charset
 
 /** securely converts a ByteArray to a CharArray */
 @Suppress("NOTHING_TO_INLINE")
 inline fun ByteArray.toCharArray(fill: Char = '0'): CharArray =
-    this.copyOf().let { copyByteArray ->
+    copyOf().let { copyByteArray ->
         ByteBuffer.wrap(copyByteArray).let { byteBuffer ->
             charset("UTF-8").newDecoder().decode(byteBuffer).let { charBuffer ->
                 charBuffer.array().copyOf(charBuffer.limit()).let { charArray ->
@@ -36,7 +37,7 @@ inline fun ByteArray.toCharArray(fill: Char = '0'): CharArray =
 /** securely converts a CharArray to a ByteArray */
 @Suppress("NOTHING_TO_INLINE")
 inline fun CharArray.toByteArray(fill: Char = '0'): ByteArray =
-    this.copyOf().let { copyCharArray ->
+    copyOf().let { copyCharArray ->
         CharBuffer.wrap(copyCharArray).let { charBuffer ->
             charset("UTF-8").newEncoder().encode(charBuffer).let { byteBuffer ->
                 byteBuffer.array().copyOf(byteBuffer.limit()).let { byteArray ->
@@ -50,11 +51,15 @@ inline fun CharArray.toByteArray(fill: Char = '0'): ByteArray =
 
 @Suppress("NOTHING_TO_INLINE")
 inline fun String.encodeToByteArray(): ByteArray =
-    this.toByteArray(charset("UTF-8"))
+    toByteArray(charset("UTF-8"))
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun ByteArray.decodeToString(charset: Charset = charset("UTF-8")): String =
+    toString(charset)
 
 @Suppress("NOTHING_TO_INLINE")
 inline fun ByteArray.toHex(): String =
-    StringBuilder(this.size * 2).let { hex ->
+    StringBuilder(size * 2).let { hex ->
         for (b in this) {
             hex.append(String.format("%02x", b, 0xFF))
         }
