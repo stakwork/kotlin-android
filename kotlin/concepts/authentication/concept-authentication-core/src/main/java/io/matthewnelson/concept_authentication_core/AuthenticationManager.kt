@@ -22,6 +22,7 @@ import io.matthewnelson.concept_authentication_core.model.ConfirmUserInputToRese
 import io.matthewnelson.concept_authentication_core.model.ConfirmUserInputToSetForFirstTime
 import io.matthewnelson.concept_authentication_core.model.UserInput
 import io.matthewnelson.concept_foreground_state.ForegroundStateManager
+import io.matthewnelson.k_openssl_common.clazzes.Password
 import kotlinx.coroutines.flow.Flow
 
 abstract class AuthenticationManager<
@@ -43,6 +44,7 @@ abstract class AuthenticationManager<
      * then attempt to log in. See [AuthenticationRequest.LogIn] for more information.
      * */
     abstract fun authenticate(
+        privateKey: Password,
         request: AuthenticationRequest.LogIn
     ): Flow<AuthenticationResponse>
 

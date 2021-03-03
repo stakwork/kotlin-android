@@ -83,68 +83,67 @@ internal class AuthenticationProcessor private constructor(
     fun authenticate(
         privateKey: Password,
         request: AuthenticationRequest.LogIn
-    ): Flow<AuthenticationResponse> =
-        flow {
+    ): Flow<AuthenticationResponse> = flow {
 
-            authenticationCoreStorage.retrieveCredentials()?.let { credsString ->
+        authenticationCoreStorage.retrieveCredentials()?.let { credsString ->
 
-                val creds: Credentials? = try {
-                    Credentials.fromString(credsString)
-                } catch (e: IllegalArgumentException) {
-                    null
-                }
+            val creds: Credentials? = try {
+                Credentials.fromString(credsString)
+            } catch (e: IllegalArgumentException) {
+                null
+            }
 
-                creds?.let { nnCreds ->
+            creds?.let { nnCreds ->
 
-                    val kOpenssl = AES256CBC_PBKDF2_HMAC_SHA256()
+                val kOpenssl = AES256CBC_PBKDF2_HMAC_SHA256()
 
-                    val validation = nnCreds.validateTestString(
-                        dispatchers,
-                        privateKey,
-                        encryptionKeyHandler,
-                        kOpenssl
-                    )
+                val validation = nnCreds.validateTestString(
+                    dispatchers,
+                    privateKey,
+                    encryptionKeyHandler,
+                    kOpenssl
+                )
 
-                    if (validation) {
+                if (validation) {
 
-                        try {
-                            val publicKey = nnCreds.decryptPublicKey(
-                                dispatchers,
-                                privateKey,
-                                encryptionKeyHandler,
-                                kOpenssl
-                            )
+                    try {
+                        val publicKey = nnCreds.decryptPublicKey(
+                            dispatchers,
+                            privateKey,
+                            encryptionKeyHandler,
+                            kOpenssl
+                        )
 
-                            val key = encryptionKeyHandler.storeCopyOfEncryptionKey(
-                                privateKey.value,
-                                publicKey.value
-                            )
+                        val key = encryptionKeyHandler.storeCopyOfEncryptionKey(
+                            privateKey.value,
+                            publicKey.value
+                        )
 
-                            authenticationCoreManager.setEncryptionKey(key)
-                            authenticationCoreManager.updateAuthenticationState(
-                                AuthenticationState.NotRequired,
-                                null
-                            )
+                        authenticationCoreManager.setEncryptionKey(key)
+                        authenticationCoreManager.updateAuthenticationState(
+                            AuthenticationState.NotRequired,
+                            null
+                        )
 
-                            flowOf(AuthenticationResponse.Success.Key(request, key))
+                        flowOf(AuthenticationResponse.Success.Key(request, key))
 
-                        } catch (e: AuthenticationException) {
-                            flowOf(AuthenticationResponse.Failure(request))
-                        } catch (e: EncryptionKeyException) {
-                            flowOf(AuthenticationResponse.Failure(request))
-                        }
-
-                    } else {
-
+                    } catch (e: AuthenticationException) {
                         flowOf(AuthenticationResponse.Failure(request))
-
+                    } catch (e: EncryptionKeyException) {
+                        flowOf(AuthenticationResponse.Failure(request))
                     }
 
-                } ?: flowOf(AuthenticationResponse.Failure(request))
+                } else {
+
+                    flowOf(AuthenticationResponse.Failure(request))
+
+                }
 
             } ?: flowOf(AuthenticationResponse.Failure(request))
 
-        }
+        } ?: flowOf(AuthenticationResponse.Failure(request))
+
+    }
 
     @JvmSynthetic
     fun authenticate(

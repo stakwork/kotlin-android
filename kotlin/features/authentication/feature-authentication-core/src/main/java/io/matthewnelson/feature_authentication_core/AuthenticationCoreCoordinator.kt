@@ -78,30 +78,9 @@ abstract class AuthenticationCoreCoordinator(
                 // If encryptionKey value is null, proceed with the regular checks and send
                 // user to Authentication View if needed, otherwise try logging in here
                 // w/o sending the user to the Authentication View.
-                request.privateKey?.let { requestPassword ->
+                request.privateKey?.let { privateKey ->
 
-                    authenticationManager.getEncryptionKey()?.let { alreadySetKey ->
-
-                        // Ensure an already set key is compared first before returning success
-                        if (!alreadySetKey.privateKey.compare(requestPassword)) {
-                            return flowOf(
-                                AuthenticationResponse.Failure(request)
-                            )
-                        }
-
-                        // If the AuthenticationState doesn't need to be updated, can return
-                        // success here with the already set key.
-                        if (
-                            authenticationManager.authenticationStateFlow.value
-                                    is AuthenticationState.NotRequired
-                        ) {
-                            return flowOf(
-                                AuthenticationResponse.Success.Key(request, alreadySetKey)
-                            )
-                        }
-                    }
-
-                    return authenticationManager.authenticate(request)
+                    return authenticationManager.authenticate(privateKey, request)
 
                 } ?: when (authenticationManager.authenticationStateFlow.value) {
                     is AuthenticationState.NotRequired -> {

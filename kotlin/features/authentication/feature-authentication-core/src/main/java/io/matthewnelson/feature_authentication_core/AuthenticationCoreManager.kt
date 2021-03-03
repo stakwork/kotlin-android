@@ -32,7 +32,9 @@ import io.matthewnelson.feature_authentication_core.components.AuthenticationPro
 import io.matthewnelson.feature_authentication_core.model.UserInputWriter
 import io.matthewnelson.k_openssl_common.annotations.RawPasswordAccess
 import io.matthewnelson.k_openssl_common.clazzes.HashIterations
+import io.matthewnelson.k_openssl_common.clazzes.Password
 import io.matthewnelson.k_openssl_common.clazzes.clear
+import io.matthewnelson.k_openssl_common.clazzes.compare
 import kotlinx.coroutines.flow.*
 
 /**
@@ -119,19 +121,25 @@ abstract class AuthenticationCoreManager(
     @Synchronized
     @OptIn(RawPasswordAccess::class)
     override fun authenticate(
+        privateKey: Password,
         request: AuthenticationRequest.LogIn
     ): Flow<AuthenticationResponse> =
-        request.privateKey?.let { privateKey ->
-            if (privateKey.value.isEmpty()) {
-                flowOf(
+        getEncryptionKey()?.let { alreadySetKey ->
+
+            if (!alreadySetKey.privateKey.compare(privateKey)) {
+                return flowOf(
                     AuthenticationResponse.Failure(request)
                 )
-            } else {
-                authenticationProcessor.authenticate(privateKey, request)
             }
-        } ?: flowOf(
-            AuthenticationResponse.Failure(request)
-        )
+
+            if (authenticationStateFlow.value is AuthenticationState.NotRequired) {
+                return flowOf(
+                    AuthenticationResponse.Success.Key(request, alreadySetKey)
+                )
+            }
+
+            authenticationProcessor.authenticate(privateKey, request)
+        } ?: authenticationProcessor.authenticate(privateKey, request)
 
     @Synchronized
     override fun authenticate(
