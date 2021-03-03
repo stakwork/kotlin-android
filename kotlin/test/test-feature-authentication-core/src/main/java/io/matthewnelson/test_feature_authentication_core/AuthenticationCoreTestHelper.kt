@@ -69,7 +69,7 @@ abstract class AuthenticationCoreTestHelper<
      * */
     protected suspend fun login(): AuthenticationResponse {
         val writer = testCoreManager.getNewUserInput()
-        repeat(8) {
+        repeat(testInitializer.minimumUserInputLength) {
             writer.addCharacter('0')
         }
 
