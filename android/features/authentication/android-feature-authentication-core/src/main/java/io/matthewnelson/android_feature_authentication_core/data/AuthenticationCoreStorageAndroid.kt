@@ -32,7 +32,7 @@ open class AuthenticationCoreStorageAndroid(
     protected val dispatchers: CoroutineDispatchers
 ): AuthenticationCoreStorage() {
 
-    protected val authenticationPrefs: SharedPreferences by lazy {
+    protected open val authenticationPrefs: SharedPreferences by lazy {
         EncryptedSharedPreferences.create(
             context.applicationContext,
             authenticationSharedPrefsName.value,
