@@ -245,8 +245,7 @@ abstract class AuthenticationCoreManager(
     private var encryptionKey: EncryptionKey? = null
     private val encryptionKeyLock = Object()
 
-    @JvmSynthetic
-    internal fun getEncryptionKey(): EncryptionKey? =
+    fun getEncryptionKey(): EncryptionKey? =
         synchronized(encryptionKeyLock) {
             encryptionKey
         }
