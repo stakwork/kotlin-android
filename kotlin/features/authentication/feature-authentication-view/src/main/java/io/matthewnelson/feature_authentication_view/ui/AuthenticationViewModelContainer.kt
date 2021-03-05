@@ -188,9 +188,11 @@ class AuthenticationViewModelContainer<T>(
         }
     }
 
-    fun confirmPress() {
-        viewModelScope.launch(dispatchers.mainImmediate) {
-            eventHandler.produceHapticFeedback()
+    fun confirmPress(produceHapticFeedback: Boolean = true) {
+        if (produceHapticFeedback) {
+            viewModelScope.launch(dispatchers.mainImmediate) {
+                eventHandler.produceHapticFeedback()
+            }
         }
 
         if (confirmPressJob?.isActive == true) {
