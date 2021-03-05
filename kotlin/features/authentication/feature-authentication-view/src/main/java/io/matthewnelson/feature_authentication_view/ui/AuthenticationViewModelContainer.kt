@@ -156,6 +156,10 @@ class AuthenticationViewModelContainer<T>(
             eventHandler.produceHapticFeedback()
         }
 
+        if (viewStateContainer.value.inputLockState.show) {
+            return
+        }
+
         try {
             userInput.dropLastCharacter()
         } catch (e: IllegalArgumentException) {
@@ -171,6 +175,10 @@ class AuthenticationViewModelContainer<T>(
             eventHandler.produceHapticFeedback()
         }
 
+        if (viewStateContainer.value.inputLockState.show) {
+            return false
+        }
+
         return try {
             userInput.addCharacter(c)
             true
@@ -180,9 +188,11 @@ class AuthenticationViewModelContainer<T>(
         }
     }
 
-    fun confirmPress() {
-        viewModelScope.launch(dispatchers.mainImmediate) {
-            eventHandler.produceHapticFeedback()
+    fun confirmPress(produceHapticFeedback: Boolean = true) {
+        if (produceHapticFeedback) {
+            viewModelScope.launch(dispatchers.mainImmediate) {
+                eventHandler.produceHapticFeedback()
+            }
         }
 
         if (confirmPressJob?.isActive == true) {
