@@ -156,6 +156,10 @@ class AuthenticationViewModelContainer<T>(
             eventHandler.produceHapticFeedback()
         }
 
+        if (viewStateContainer.value.inputLockState.show) {
+            return
+        }
+
         try {
             userInput.dropLastCharacter()
         } catch (e: IllegalArgumentException) {
@@ -169,6 +173,10 @@ class AuthenticationViewModelContainer<T>(
     fun numPadPress(c: Char): Boolean {
         viewModelScope.launch(dispatchers.mainImmediate) {
             eventHandler.produceHapticFeedback()
+        }
+
+        if (viewStateContainer.value.inputLockState.show) {
+            return false
         }
 
         return try {
