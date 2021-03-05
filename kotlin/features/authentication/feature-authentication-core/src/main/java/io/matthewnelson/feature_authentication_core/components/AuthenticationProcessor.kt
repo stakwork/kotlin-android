@@ -518,56 +518,62 @@ internal class AuthenticationProcessor private constructor(
         userInput: UserInputWriter,
         requests: List<AuthenticationRequest>
     ): Flow<AuthenticateFlowResponse> = flow {
-        withContext(dispatchers.default) {
-            ArrayList<AuthenticationResponse>(requests.size).let { responses ->
-                for (request in requests.sortedBy { it.priority }) {
-                    @Exhaustive
-                    when (request) {
-                        is AuthenticationRequest.LogIn -> {
+        ArrayList<AuthenticationResponse>(requests.size).let { responses ->
 
-                            authenticationCoreManager.getEncryptionKey() ?: let {
-                                authenticationCoreManager.setEncryptionKey(encryptionKey)
-                            }
+            var stopProcessing: Boolean = false
+            for (request in requests.sortedBy { it.priority }) {
+                if (stopProcessing) {
+                    break
+                }
 
-                            authenticationCoreManager.updateAuthenticationState(
-                                AuthenticationState.NotRequired, null
-                            )
-                            responses.add(
-                                AuthenticationResponse.Success.Authenticated(request)
-                            )
+                @Exhaustive
+                when (request) {
+                    is AuthenticationRequest.LogIn -> {
+
+                        authenticationCoreManager.getEncryptionKey() ?: let {
+                            authenticationCoreManager.setEncryptionKey(encryptionKey)
                         }
-                        is AuthenticationRequest.ResetPassword -> {
 
-                            AuthenticateFlowResponse.PasswordConfirmedForReset
-                                .generate(userInput, request)
-                                ?.let { flowResponseToConfirmNewPinEntryToReset ->
-                                    emit(flowResponseToConfirmNewPinEntryToReset)
-                                    return@withContext
-                                }
+                        authenticationCoreManager.updateAuthenticationState(
+                            AuthenticationState.NotRequired, null
+                        )
+                        responses.add(
+                            AuthenticationResponse.Success.Authenticated(request)
+                        )
+                    }
+                    is AuthenticationRequest.ResetPassword -> {
 
-                            responses.add(
-                                AuthenticationResponse.Success.Authenticated(request)
-                            )
+                        AuthenticateFlowResponse
+                            .PasswordConfirmedForReset
+                            .generate(userInput, request)
+                            ?.let { confirmNewPinEntryToReset ->
+                                stopProcessing = true
+                                emit(confirmNewPinEntryToReset)
+                            } ?: responses.add(
+                                    AuthenticationResponse.Success.Authenticated(request)
+                                )
+                    }
+                    is AuthenticationRequest.ConfirmPin -> {
+                        responses.add(
+                            AuthenticationResponse.Success.Authenticated(request)
+                        )
+                    }
+                    is AuthenticationRequest.GetEncryptionKey -> {
+
+                        authenticationCoreManager.getEncryptionKey() ?: let {
+                            authenticationCoreManager.setEncryptionKey(encryptionKey)
                         }
-                        is AuthenticationRequest.ConfirmPin -> {
-                            responses.add(
-                                AuthenticationResponse.Success.Authenticated(request)
-                            )
-                        }
-                        is AuthenticationRequest.GetEncryptionKey -> {
 
-                            authenticationCoreManager.getEncryptionKey() ?: let {
-                                authenticationCoreManager.setEncryptionKey(encryptionKey)
-                            }
-
-                            responses.add(
-                                AuthenticationResponse.Success.Key(request, encryptionKey)
-                            )
-                        }
+                        responses.add(
+                            AuthenticationResponse.Success.Key(request, encryptionKey)
+                        )
                     }
                 }
+            }
+
+            if (!stopProcessing) {
                 emit(AuthenticateFlowResponse.Success.instantiate(responses))
             }
         }
-    }
+    }.flowOn(dispatchers.default)
 }
