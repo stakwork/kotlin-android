@@ -18,6 +18,7 @@ package io.matthewnelson.test_feature_authentication_core
 import io.matthewnelson.concept_encryption_key.EncryptionKey
 import io.matthewnelson.concept_encryption_key.EncryptionKeyException
 import io.matthewnelson.concept_encryption_key.EncryptionKeyHandler
+import io.matthewnelson.k_openssl_common.annotations.RawPasswordAccess
 import io.matthewnelson.k_openssl_common.clazzes.HashIterations
 import io.matthewnelson.k_openssl_common.clazzes.Password
 
@@ -37,13 +38,20 @@ open class TestEncryptionKeyHandler: EncryptionKeyHandler() {
             get() = HashIterations(1)
     }
 
+    var keysToRestore: RestoreKeyHolder? = null
+
+    class RestoreKeyHolder(val privateKey: Password, val publicKey: Password)
+
+    @OptIn(RawPasswordAccess::class)
     override suspend fun generateEncryptionKey(): EncryptionKey {
-        return copyAndStoreKey(TEST_ENCRYPTION_KEY_STRING.toCharArray(), CharArray(0))
+        return keysToRestore?.let { keys ->
+            copyAndStoreKey(keys.privateKey.value, keys.publicKey.value)
+        } ?: copyAndStoreKey(TEST_ENCRYPTION_KEY_STRING.toCharArray(), CharArray(0))
     }
 
     override fun validateEncryptionKey(privateKey: CharArray, publicKey: CharArray): EncryptionKey {
         val keyString = privateKey.joinToString("")
-        if (keyString != TEST_ENCRYPTION_KEY_STRING) {
+        if (keysToRestore == null && keyString != TEST_ENCRYPTION_KEY_STRING) {
             throw EncryptionKeyException("EncryptionKey: $keyString != $TEST_ENCRYPTION_KEY_STRING")
         }
 
