@@ -6,15 +6,15 @@ ext.KAversions = [
     'compileSdk': 30,
     'minSdk': 16,
 
-    'androidGradle': '4.1.2',
+    'androidGradle': '4.1.3',
 //    'arch': '2.1.0',
     'coroutines': '1.4.3',
     'lifecycle': '2.3.0',
     'hilt': '2.33-beta',
     'hiltJetpack': '1.0.0-alpha03',
-    'kotlin': '1.4.31',
+    'kotlin': '1.4.32',
 //    'moshi': '1.11.0',
-    'navigation': '2.3.3',
+    'navigation': '2.3.4',
 //    'sqlDelight': '1.4.4',
 //    'toplAndroid': '2.1.0'
 ]
@@ -78,7 +78,7 @@ ext.KAdeps = [
 //        sqlDelightJvm: "com.squareup.sqldelight:sqlite-driver:${KAversions.sqlDelight}",
 //        sqlDelightNative: "com.squareup.sqldelight:native-driver:${KAversions.sqlDelight}",
     ],
-    viewBindingDelegateNoReflect: "com.kirich1409.viewbindingpropertydelegate:vbpd-noreflection:1.4.2",
+    viewBindingDelegateNoReflect: "com.github.kirich1409:viewbindingpropertydelegate-noreflection:1.4.5",
 ]
 
 /**
@@ -128,14 +128,14 @@ ext.KAtestDeps = [
     ],
     google: [
         hilt: "com.google.dagger:hilt-android-testing:${KAversions.hilt}",
-        guava: "com.google.guava:guava:30.1-jre",
+        guava: "com.google.guava:guava:30.1.1-jre",
     ],
     junit: "junit:junit:4.12",
     kotlin: [
         coroutines: "org.jetbrains.kotlinx:kotlinx-coroutines-test:${KAversions.coroutines}",
     ],
 //    robolectric: "org.robolectric:robolectric:4.5.1",
-    turbine: "app.cash.turbine:turbine:0.4.0",
+    turbine: "app.cash.turbine:turbine:0.4.1",
 ]
 
 /**
