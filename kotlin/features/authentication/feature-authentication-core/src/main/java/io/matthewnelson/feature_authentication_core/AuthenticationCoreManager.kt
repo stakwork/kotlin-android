@@ -65,10 +65,25 @@ abstract class AuthenticationCoreManager(
 
     @JvmSynthetic
     @Suppress("UNUSED_PARAMETER")
-    internal fun updateAuthenticationState(state: AuthenticationState, any: Any?) {
+    @Throws(IllegalArgumentException::class)
+    internal fun updateAuthenticationState(
+        state: AuthenticationState,
+        encryptionKey: EncryptionKey?
+    ) {
         @Exhaustive
         when (state) {
-            is AuthenticationState.NotRequired -> {}
+            is AuthenticationState.NotRequired -> {
+                encryptionKey?.let { nnKey ->
+                    setEncryptionKey(nnKey)
+
+                    if (_authenticationStateFlow.value == AuthenticationState.Required.InitialLogIn) {
+                        onInitialLoginSuccess(nnKey)
+                    }
+
+                } ?: throw IllegalArgumentException(
+                    "An EncryptionKey is required when setting AuthenticationState to NotRequired "
+                )
+            }
             is AuthenticationState.Required -> {
                 setEncryptionKey(null)
             }
@@ -76,7 +91,13 @@ abstract class AuthenticationCoreManager(
         _authenticationStateFlow.value = state
     }
 
-    protected fun updateAuthenticationState(state: AuthenticationState) {
+    /**
+     * Called when [AuthenticationState] transitions from [AuthenticationState.Required.InitialLogIn]
+     * to [AuthenticationState.NotRequired]
+     * */
+    protected open fun onInitialLoginSuccess(encryptionKey: EncryptionKey) {}
+
+    protected fun setAuthenticationStateRequired(state: AuthenticationState.Required) {
         updateAuthenticationState(state, null)
     }
 
@@ -264,12 +285,38 @@ abstract class AuthenticationCoreManager(
             }
         }
 
-    @JvmSynthetic
-    internal fun setEncryptionKey(encryptionKey: EncryptionKey?) {
+    private fun setEncryptionKey(encryptionKey: EncryptionKey?) {
         synchronized(encryptionKeyLock) {
-            this.encryptionKey?.privateKey?.clear()
-            this.encryptionKey?.publicKey?.clear()
-            this.encryptionKey = encryptionKey
+
+            // clear key if passed value is null
+            if (encryptionKey == null) {
+                this.encryptionKey?.privateKey?.clear()
+                this.encryptionKey?.publicKey?.clear()
+                this.encryptionKey = null
+                return
+            }
+
+            this.encryptionKey?.let { currentKey ->
+                // if current key is not null, compare with the passed key
+                if (
+                    !currentKey.privateKey.compare(encryptionKey.privateKey) ||
+                    !currentKey.publicKey.compare(encryptionKey.publicKey)
+                ) {
+
+                    // if provided key was not the same, clear the current key and set
+                    currentKey.privateKey.clear()
+                    currentKey.publicKey.clear()
+                    this.encryptionKey = encryptionKey
+                }
+
+                // otherwise do nothing
+
+            } ?: let {
+
+                // if no encryption key is set, set it to the provided key
+                this.encryptionKey = encryptionKey
+
+            }
         }
     }
 }

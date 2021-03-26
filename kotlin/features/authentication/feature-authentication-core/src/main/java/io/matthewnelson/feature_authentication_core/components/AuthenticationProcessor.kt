@@ -119,10 +119,10 @@ internal class AuthenticationProcessor private constructor(
                             publicKey.value
                         )
 
-                        authenticationCoreManager.setEncryptionKey(key)
+//                        authenticationCoreManager.setEncryptionKey(key)
                         authenticationCoreManager.updateAuthenticationState(
                             AuthenticationState.NotRequired,
-                            null
+                            key
                         )
 
                         flowOf(AuthenticationResponse.Success.Key(request, key))
@@ -530,12 +530,12 @@ internal class AuthenticationProcessor private constructor(
                 when (request) {
                     is AuthenticationRequest.LogIn -> {
 
-                        authenticationCoreManager.getEncryptionKey() ?: let {
-                            authenticationCoreManager.setEncryptionKey(encryptionKey)
-                        }
+//                        authenticationCoreManager.getEncryptionKey() ?: let {
+//                            authenticationCoreManager.setEncryptionKey(encryptionKey)
+//                        }
 
                         authenticationCoreManager.updateAuthenticationState(
-                            AuthenticationState.NotRequired, null
+                            AuthenticationState.NotRequired, encryptionKey
                         )
                         responses.add(
                             AuthenticationResponse.Success.Authenticated(request)
@@ -560,9 +560,12 @@ internal class AuthenticationProcessor private constructor(
                     }
                     is AuthenticationRequest.GetEncryptionKey -> {
 
-                        authenticationCoreManager.getEncryptionKey() ?: let {
-                            authenticationCoreManager.setEncryptionKey(encryptionKey)
-                        }
+//                        authenticationCoreManager.getEncryptionKey() ?: let {
+//                            authenticationCoreManager.setEncryptionKey(encryptionKey)
+//                        }
+                        authenticationCoreManager.updateAuthenticationState(
+                            AuthenticationState.NotRequired, encryptionKey
+                        )
 
                         responses.add(
                             AuthenticationResponse.Success.Key(request, encryptionKey)
