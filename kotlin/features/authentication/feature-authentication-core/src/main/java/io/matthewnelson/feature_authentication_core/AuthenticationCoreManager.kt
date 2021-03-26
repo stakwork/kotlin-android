@@ -97,7 +97,7 @@ abstract class AuthenticationCoreManager(
      * */
     protected open fun onInitialLoginSuccess(encryptionKey: EncryptionKey) {}
 
-    protected fun updateAuthenticationState(state: AuthenticationState) {
+    protected fun setAuthenticationStateRequired(state: AuthenticationState.Required) {
         updateAuthenticationState(state, null)
     }
 
