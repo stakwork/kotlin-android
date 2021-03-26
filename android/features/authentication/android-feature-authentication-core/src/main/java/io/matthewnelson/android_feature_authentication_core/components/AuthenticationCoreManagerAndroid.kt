@@ -19,7 +19,6 @@ import android.app.Activity
 import android.app.Application
 import android.os.Bundle
 import android.os.SystemClock
-import androidx.annotation.MainThread
 import io.matthewnelson.feature_authentication_core.AuthenticationCoreManager
 import io.matthewnelson.concept_authentication.state.AuthenticationState
 import io.matthewnelson.concept_foreground_state.ForegroundState
@@ -97,7 +96,7 @@ abstract class AuthenticationCoreManagerAndroid(
                 backgroundLogOutTime > 0L &&
                 (SystemClock.uptimeMillis() - timeMovedToBackground) > backgroundLogOutTime
             ) {
-                updateAuthenticationState(AuthenticationState.Required.LoggedOut)
+                setAuthenticationStateRequired(AuthenticationState.Required.LoggedOut)
             }
         }
         changingConfigurations = false
@@ -131,7 +130,7 @@ abstract class AuthenticationCoreManagerAndroid(
         ) {
             onApplicationClearedFromRecentsTray(activity)
             if (logOutWhenApplicationIsClearedFromRecentsTray) {
-                updateAuthenticationState(AuthenticationState.Required.InitialLogIn)
+                setAuthenticationStateRequired(AuthenticationState.Required.InitialLogIn)
             }
         }
     }
