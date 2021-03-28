@@ -39,9 +39,9 @@ sealed class Base64 {
     }
 }
 
-fun String.decodeBase64ToArray(): ByteArray? {
+fun CharArray.decodeBase64ToArray(): ByteArray? {
     // Ignore trailing '=' padding and whitespace from the input.
-    var limit = length
+    var limit = size
     while (limit > 0) {
         val c = this[limit - 1]
         if (c != '=' && c != '\n' && c != '\r' && c != ' ' && c != '\t') {
@@ -121,6 +121,11 @@ fun String.decodeBase64ToArray(): ByteArray? {
 
     // Copy the decoded bytes to a new, right-sized array.
     return out.copyOf(outCount)
+}
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun String.decodeBase64ToArray(): ByteArray? {
+    return toCharArray().decodeBase64ToArray()
 }
 
 @Suppress("NOTHING_TO_INLINE")
