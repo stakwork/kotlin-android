@@ -123,7 +123,12 @@ fun String.decodeBase64ToArray(): ByteArray? {
     return out.copyOf(outCount)
 }
 
-fun ByteArray.encodeBase64(type: Base64 = Base64.Default): String {
+@Suppress("NOTHING_TO_INLINE")
+inline fun ByteArray.encodeBase64(type: Base64 = Base64.Default): String {
+    return encodeBase64ToByteArray(type).toString(charset("UTF-8"))
+}
+
+fun ByteArray.encodeBase64ToByteArray(type: Base64 = Base64.Default): ByteArray {
     val map = type.encodingTable
     val length = (size + 2) / 3 * 4
     val out = ByteArray(length)
@@ -156,5 +161,5 @@ fun ByteArray.encodeBase64(type: Base64 = Base64.Default): String {
             out[index] = '='.toByte()
         }
     }
-    return out.toString(charset("UTF-8"))
+    return out
 }
