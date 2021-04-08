@@ -15,11 +15,10 @@
 * */
 package io.matthewnelson.k_openssl.algos
 
-import io.matthewnelson.k_openssl_common.annotations.UnencryptedDataAccess
+import io.matthewnelson.crypto_common.annotations.UnencryptedDataAccess
 import io.matthewnelson.k_openssl.KOpenSSL
-import io.matthewnelson.k_openssl_common.clazzes.*
-import io.matthewnelson.k_openssl_common.extensions.encodeToByteArray
-import io.matthewnelson.k_openssl_common.extensions.isValidUTF8
+import io.matthewnelson.crypto_common.clazzes.*
+import io.matthewnelson.crypto_common.extensions.isValidUTF8
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext

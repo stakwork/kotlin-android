@@ -13,10 +13,8 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 * */
-package io.matthewnelson.k_openssl_common.exceptions
+package io.matthewnelson.crypto_common.annotations
 
-class DecryptionException: Exception {
-    constructor(cause: Throwable?) : super(cause) {}
-    constructor(message: String?) : super(message) {}
-    constructor(message: String?, cause: Throwable) : super(message, cause) {}
-}
+@RequiresOptIn(level = RequiresOptIn.Level.ERROR)
+@Retention(AnnotationRetention.BINARY)
+annotation class RawPasswordAccess

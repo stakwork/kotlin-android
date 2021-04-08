@@ -15,10 +15,10 @@
 * */
 package io.matthewnelson.k_openssl
 
-import io.matthewnelson.k_openssl_common.annotations.RawPasswordAccess
-import io.matthewnelson.k_openssl_common.clazzes.*
-import io.matthewnelson.k_openssl_common.extensions.encodeToByteArray
-import io.matthewnelson.k_openssl_common.extensions.toByteArray
+import io.matthewnelson.crypto_common.annotations.RawPasswordAccess
+import io.matthewnelson.crypto_common.clazzes.*
+import io.matthewnelson.crypto_common.extensions.encodeToByteArray
+import io.matthewnelson.crypto_common.extensions.toByteArray
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +26,6 @@ import okio.base64.decodeBase64ToArray
 import okio.base64.encodeBase64
 import org.bouncycastle_ktx.crypto.generators.PKCS5S2ParametersGenerator
 import org.bouncycastle_ktx.crypto.params.KeyParameter
-import java.nio.ByteBuffer
 import java.security.InvalidAlgorithmParameterException
 import java.security.InvalidKeyException
 import java.security.NoSuchAlgorithmException

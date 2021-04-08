@@ -13,10 +13,10 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 * */
-package io.matthewnelson.k_openssl_common.clazzes
+package io.matthewnelson.crypto_common.clazzes
 
-import io.matthewnelson.k_openssl_common.extensions.encodeToByteArray
-import io.matthewnelson.k_openssl_common.extensions.toHex
+import io.matthewnelson.crypto_common.extensions.encodeToByteArray
+import io.matthewnelson.crypto_common.extensions.toHex
 import java.security.MessageDigest
 
 @Suppress("NOTHING_TO_INLINE")

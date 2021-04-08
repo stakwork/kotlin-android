@@ -25,7 +25,7 @@ import io.matthewnelson.concept_foreground_state.ForegroundState
 import io.matthewnelson.android_feature_authentication_core.data.AuthenticationCoreStorageAndroid
 import io.matthewnelson.concept_coroutines.CoroutineDispatchers
 import io.matthewnelson.concept_encryption_key.EncryptionKeyHandler
-import io.matthewnelson.k_openssl_common.clazzes.HashIterations
+import io.matthewnelson.crypto_common.clazzes.HashIterations
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

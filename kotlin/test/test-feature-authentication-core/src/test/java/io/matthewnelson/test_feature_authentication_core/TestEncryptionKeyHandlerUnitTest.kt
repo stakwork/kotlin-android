@@ -1,8 +1,8 @@
 package io.matthewnelson.test_feature_authentication_core
 
 import io.matthewnelson.concept_encryption_key.EncryptionKeyException
-import io.matthewnelson.k_openssl_common.annotations.RawPasswordAccess
-import io.matthewnelson.k_openssl_common.clazzes.clear
+import io.matthewnelson.crypto_common.annotations.RawPasswordAccess
+import io.matthewnelson.crypto_common.clazzes.clear
 import io.matthewnelson.test_concept_coroutines.CoroutineTestHelper
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After

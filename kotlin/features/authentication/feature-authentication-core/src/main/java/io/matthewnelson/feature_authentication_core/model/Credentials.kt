@@ -19,8 +19,8 @@ import io.matthewnelson.concept_coroutines.CoroutineDispatchers
 import io.matthewnelson.concept_encryption_key.EncryptionKeyHandler
 import io.matthewnelson.k_openssl.KOpenSSL
 import io.matthewnelson.k_openssl.isSalted
-import io.matthewnelson.k_openssl_common.annotations.UnencryptedDataAccess
-import io.matthewnelson.k_openssl_common.clazzes.*
+import io.matthewnelson.crypto_common.annotations.UnencryptedDataAccess
+import io.matthewnelson.crypto_common.clazzes.*
 
 /**
  * [encryptedPrivateKey] is encrypted with the User's PIN + application specified [HashIterations]

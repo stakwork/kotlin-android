@@ -15,7 +15,7 @@
 * */
 package io.matthewnelson.concept_authentication.coordinator
 
-import io.matthewnelson.k_openssl_common.clazzes.Password
+import io.matthewnelson.crypto_common.clazzes.Password
 
 sealed class AuthenticationRequest {
 

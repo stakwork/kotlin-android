@@ -30,11 +30,11 @@ import io.matthewnelson.concept_encryption_key.EncryptionKeyHandler
 import io.matthewnelson.feature_authentication_core.components.AuthenticationManagerInitializer
 import io.matthewnelson.feature_authentication_core.components.AuthenticationProcessor
 import io.matthewnelson.feature_authentication_core.model.UserInputWriter
-import io.matthewnelson.k_openssl_common.annotations.RawPasswordAccess
-import io.matthewnelson.k_openssl_common.clazzes.HashIterations
-import io.matthewnelson.k_openssl_common.clazzes.Password
-import io.matthewnelson.k_openssl_common.clazzes.clear
-import io.matthewnelson.k_openssl_common.clazzes.compare
+import io.matthewnelson.crypto_common.annotations.RawPasswordAccess
+import io.matthewnelson.crypto_common.clazzes.HashIterations
+import io.matthewnelson.crypto_common.clazzes.Password
+import io.matthewnelson.crypto_common.clazzes.clear
+import io.matthewnelson.crypto_common.clazzes.compare
 import kotlinx.coroutines.flow.*
 
 /**

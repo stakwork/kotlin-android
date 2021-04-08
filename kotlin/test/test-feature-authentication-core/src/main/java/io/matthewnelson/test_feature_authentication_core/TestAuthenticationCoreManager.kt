@@ -18,7 +18,7 @@ package io.matthewnelson.test_feature_authentication_core
 import io.matthewnelson.concept_foreground_state.ForegroundState
 import io.matthewnelson.feature_authentication_core.AuthenticationCoreManager
 import io.matthewnelson.feature_authentication_core.components.AuthenticationManagerInitializer
-import io.matthewnelson.k_openssl_common.clazzes.HashIterations
+import io.matthewnelson.crypto_common.clazzes.HashIterations
 import io.matthewnelson.test_concept_coroutines.CoroutineTestHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
