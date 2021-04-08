@@ -15,8 +15,8 @@
 * */
 package io.matthewnelson.concept_encryption_key
 
-import io.matthewnelson.k_openssl_common.clazzes.HashIterations
-import io.matthewnelson.k_openssl_common.clazzes.Password
+import io.matthewnelson.crypto_common.clazzes.HashIterations
+import io.matthewnelson.crypto_common.clazzes.Password
 
 abstract class EncryptionKeyHandler {
 

@@ -13,6 +13,10 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 * */
-package io.matthewnelson.k_openssl_common.clazzes
+package io.matthewnelson.crypto_common.exceptions
 
-inline class HashIterations(val value: Int)
+class EncryptionException: Exception {
+    constructor(cause: Throwable?) : super(cause) {}
+    constructor(message: String?) : super(message) {}
+    constructor(message: String?, cause: Throwable) : super(message, cause) {}
+}

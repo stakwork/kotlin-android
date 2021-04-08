@@ -18,8 +18,9 @@ package io.matthewnelson.feature_authentication_core.model
 import io.matthewnelson.concept_coroutines.CoroutineDispatchers
 import io.matthewnelson.concept_encryption_key.EncryptionKeyHandler
 import io.matthewnelson.k_openssl.KOpenSSL
-import io.matthewnelson.k_openssl_common.annotations.UnencryptedDataAccess
-import io.matthewnelson.k_openssl_common.clazzes.*
+import io.matthewnelson.k_openssl.isSalted
+import io.matthewnelson.crypto_common.annotations.UnencryptedDataAccess
+import io.matthewnelson.crypto_common.clazzes.*
 
 /**
  * [encryptedPrivateKey] is encrypted with the User's PIN + application specified [HashIterations]
@@ -55,9 +56,9 @@ internal class Credentials private constructor(
             string.split(DELIMITER).let { list ->
                 if (
                     list.size != 3 ||
-                    !KOpenSSL.isSalted(list[0]) ||
-                    !KOpenSSL.isSalted(list[1]) ||
-                    !KOpenSSL.isSalted(list[2])
+                    !list[0].isSalted ||
+                    !list[1].isSalted ||
+                    !list[2].isSalted
                 ) {
                     throw IllegalArgumentException(
                         "String value did not meet requirements for creating Credentials"

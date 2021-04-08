@@ -15,12 +15,12 @@
 * */
 package io.matthewnelson.k_openssl
 
-import io.matthewnelson.k_openssl_common.annotations.UnencryptedDataAccess
+import io.matthewnelson.crypto_common.annotations.UnencryptedDataAccess
 import io.matthewnelson.k_openssl.algos.AES256CBC_PBKDF2_HMAC_SHA256
-import io.matthewnelson.k_openssl_common.clazzes.EncryptedString
-import io.matthewnelson.k_openssl_common.clazzes.HashIterations
-import io.matthewnelson.k_openssl_common.clazzes.Password
-import io.matthewnelson.k_openssl_common.clazzes.UnencryptedString
+import io.matthewnelson.crypto_common.clazzes.EncryptedString
+import io.matthewnelson.crypto_common.clazzes.HashIterations
+import io.matthewnelson.crypto_common.clazzes.Password
+import io.matthewnelson.crypto_common.clazzes.UnencryptedString
 import io.matthewnelson.test_k_openssl.OpenSSLTestHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.resetMain
@@ -295,12 +295,11 @@ class KOpenSSLUnitTest: OpenSSLTestHelper() {
                 iterations = HASH_ITERATIONS,
                 password = PASSWORD
             )
-            Assert.assertTrue(KOpenSSL.isSalted(encryptedResultFromKotlin.value))
-            Assert.assertTrue(KOpenSSL.isSalted(encryptedResultFromOpenSSL!!))
-            Assert.assertTrue(KOpenSSL.isSalted(KOpenSSL.SALTED.toByteArray().encodeBase64()))
-            Assert.assertFalse(KOpenSSL.isSalted(KOpenSSL.SALTED.dropLast(1).toByteArray().encodeBase64()))
-            Assert.assertFalse(KOpenSSL.isSalted(KOpenSSL.SALTED))
-
+            Assert.assertTrue(encryptedResultFromKotlin.value.isSalted)
+            Assert.assertTrue(encryptedResultFromOpenSSL!!.isSalted)
+            Assert.assertTrue(KOpenSSL.SALTED.toByteArray().encodeBase64().isSalted)
+            Assert.assertFalse(KOpenSSL.SALTED.dropLast(1).toByteArray().encodeBase64().isSalted)
+            Assert.assertFalse(KOpenSSL.SALTED.isSalted)
 
             val encryptedMultiLineResultFromKotlin = aes256cbc.encrypt(
                 Password(PASSWORD.toCharArray()),
@@ -315,10 +314,10 @@ class KOpenSSLUnitTest: OpenSSLTestHelper() {
                 iterations = HASH_ITERATIONS,
                 password = PASSWORD
             )
-            Assert.assertTrue(KOpenSSL.isSalted(encryptedMultiLineResultFromKotlin.value))
-            Assert.assertTrue(KOpenSSL.isSalted(encryptedMultiLineResultFromOpenSSL!!))
-            Assert.assertTrue(KOpenSSL.isSalted(KOpenSSL.SALTED.toByteArray().encodeBase64()))
-            Assert.assertFalse(KOpenSSL.isSalted(KOpenSSL.SALTED.dropLast(1).toByteArray().encodeBase64()))
-            Assert.assertFalse(KOpenSSL.isSalted(KOpenSSL.SALTED))
+            Assert.assertTrue(encryptedMultiLineResultFromKotlin.value.isSalted)
+            Assert.assertTrue(encryptedMultiLineResultFromOpenSSL!!.isSalted)
+            Assert.assertTrue(KOpenSSL.SALTED.toByteArray().encodeBase64().isSalted)
+            Assert.assertFalse(KOpenSSL.SALTED.dropLast(1).toByteArray().encodeBase64().isSalted)
+            Assert.assertFalse(KOpenSSL.SALTED.isSalted)
         }
 }

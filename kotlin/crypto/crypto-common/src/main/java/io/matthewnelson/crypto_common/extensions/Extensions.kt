@@ -13,7 +13,7 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 * */
-package io.matthewnelson.k_openssl_common.extensions
+package io.matthewnelson.crypto_common.extensions
 
 import java.nio.ByteBuffer
 import java.nio.CharBuffer
@@ -32,6 +32,14 @@ inline fun ByteArray.toCharArray(fill: Char = '0'): CharArray =
                 }
             }
         }
+    }
+
+inline val ByteArray.isValidUTF8: Boolean
+    get() = try {
+        charset("UTF-8").newDecoder().decode(ByteBuffer.wrap(this))
+        true
+    } catch (e: CharacterCodingException) {
+        false
     }
 
 /** securely converts a CharArray to a ByteArray */
