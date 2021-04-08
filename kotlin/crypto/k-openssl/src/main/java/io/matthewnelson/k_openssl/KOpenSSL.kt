@@ -37,21 +37,21 @@ import javax.crypto.NoSuchPaddingException
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
+inline val CharSequence.isSalted: Boolean
+    get() = try {
+        lines().joinToString("")
+            .decodeBase64ToArray()
+            ?.copyOfRange(0, 8)
+            ?.contentEquals(KOpenSSL.SALTED.encodeToByteArray())
+            ?: false
+    } catch (e: Exception) {
+        false
+    }
+
 abstract class KOpenSSL {
 
     companion object {
         const val SALTED = "Salted__"
-
-        fun isSalted(chars: CharSequence): Boolean =
-            try {
-                chars.lines().joinToString("")
-                    .decodeBase64ToArray()
-                    ?.copyOfRange(0, 8)
-                    ?.contentEquals(SALTED.encodeToByteArray())
-                    ?: false
-            } catch (e: Exception) {
-                false
-            }
     }
 
     /**

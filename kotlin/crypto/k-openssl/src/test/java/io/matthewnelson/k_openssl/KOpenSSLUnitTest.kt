@@ -295,12 +295,11 @@ class KOpenSSLUnitTest: OpenSSLTestHelper() {
                 iterations = HASH_ITERATIONS,
                 password = PASSWORD
             )
-            Assert.assertTrue(KOpenSSL.isSalted(encryptedResultFromKotlin.value))
-            Assert.assertTrue(KOpenSSL.isSalted(encryptedResultFromOpenSSL!!))
-            Assert.assertTrue(KOpenSSL.isSalted(KOpenSSL.SALTED.toByteArray().encodeBase64()))
-            Assert.assertFalse(KOpenSSL.isSalted(KOpenSSL.SALTED.dropLast(1).toByteArray().encodeBase64()))
-            Assert.assertFalse(KOpenSSL.isSalted(KOpenSSL.SALTED))
-
+            Assert.assertTrue(encryptedResultFromKotlin.value.isSalted)
+            Assert.assertTrue(encryptedResultFromOpenSSL!!.isSalted)
+            Assert.assertTrue(KOpenSSL.SALTED.toByteArray().encodeBase64().isSalted)
+            Assert.assertFalse(KOpenSSL.SALTED.dropLast(1).toByteArray().encodeBase64().isSalted)
+            Assert.assertFalse(KOpenSSL.SALTED.isSalted)
 
             val encryptedMultiLineResultFromKotlin = aes256cbc.encrypt(
                 Password(PASSWORD.toCharArray()),
@@ -315,10 +314,10 @@ class KOpenSSLUnitTest: OpenSSLTestHelper() {
                 iterations = HASH_ITERATIONS,
                 password = PASSWORD
             )
-            Assert.assertTrue(KOpenSSL.isSalted(encryptedMultiLineResultFromKotlin.value))
-            Assert.assertTrue(KOpenSSL.isSalted(encryptedMultiLineResultFromOpenSSL!!))
-            Assert.assertTrue(KOpenSSL.isSalted(KOpenSSL.SALTED.toByteArray().encodeBase64()))
-            Assert.assertFalse(KOpenSSL.isSalted(KOpenSSL.SALTED.dropLast(1).toByteArray().encodeBase64()))
-            Assert.assertFalse(KOpenSSL.isSalted(KOpenSSL.SALTED))
+            Assert.assertTrue(encryptedMultiLineResultFromKotlin.value.isSalted)
+            Assert.assertTrue(encryptedMultiLineResultFromOpenSSL!!.isSalted)
+            Assert.assertTrue(KOpenSSL.SALTED.toByteArray().encodeBase64().isSalted)
+            Assert.assertFalse(KOpenSSL.SALTED.dropLast(1).toByteArray().encodeBase64().isSalted)
+            Assert.assertFalse(KOpenSSL.SALTED.isSalted)
         }
 }
