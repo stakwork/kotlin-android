@@ -34,6 +34,14 @@ inline fun ByteArray.toCharArray(fill: Char = '0'): CharArray =
         }
     }
 
+inline val ByteArray.isValidUTF8: Boolean
+    get() = try {
+        charset("UTF-8").newDecoder().decode(ByteBuffer.wrap(this))
+        true
+    } catch (e: CharacterCodingException) {
+        false
+    }
+
 /** securely converts a CharArray to a ByteArray */
 @Suppress("NOTHING_TO_INLINE")
 inline fun CharArray.toByteArray(fill: Char = '0'): ByteArray =

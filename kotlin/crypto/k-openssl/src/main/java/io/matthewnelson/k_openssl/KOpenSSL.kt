@@ -52,15 +52,6 @@ abstract class KOpenSSL {
             } catch (e: Exception) {
                 false
             }
-
-        fun isValidUTF8(input: ByteArray): Boolean {
-            return try {
-                charset("UTF-8").newDecoder().decode(ByteBuffer.wrap(input))
-                true
-            } catch (e: CharacterCodingException) {
-                false
-            }
-        }
     }
 
     /**
