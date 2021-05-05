@@ -29,4 +29,10 @@ interface AuthenticationStorage {
      * */
     @Throws(IllegalArgumentException::class)
     suspend fun putString(key: String, value: String?)
+
+    /**
+     * If the [key] is [CREDENTIALS], an [IllegalArgumentException] is thrown.
+     * */
+    @Throws(IllegalArgumentException::class)
+    suspend fun removeString(key: String)
 }
