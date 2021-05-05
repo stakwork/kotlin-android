@@ -88,4 +88,21 @@ open class AuthenticationCoreStorageAndroid(
                 }
         }
     }
+
+    override suspend fun removeString(key: String) {
+        if (key == CREDENTIALS) {
+            throw IllegalArgumentException(
+                "The value for key $CREDENTIALS cannot be removed from this method"
+            )
+        }
+        withContext(dispatchers.io) {
+            authenticationPrefs.edit().remove(key)
+                .let { editor ->
+                    if (!editor.commit()) {
+                        editor.apply()
+                        delay(100L)
+                    }
+                }
+        }
+    }
 }

@@ -51,4 +51,14 @@ open class TestAuthenticationCoreStorage: AuthenticationCoreStorage() {
 
         storage[key] = value
     }
+
+    override suspend fun removeString(key: String) {
+        if (key == CREDENTIALS) {
+            throw IllegalArgumentException(
+                "value stored for key: $CREDENTIALS cannot be removed from this method"
+            )
+        }
+
+        storage.remove(key)
+    }
 }
