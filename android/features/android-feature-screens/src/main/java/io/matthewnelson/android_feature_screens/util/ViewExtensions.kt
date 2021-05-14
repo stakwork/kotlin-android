@@ -27,11 +27,21 @@ inline fun Int.pxToDp(): Int =
     (this / Resources.getSystem().displayMetrics.density).toInt()
 
 @Suppress("NOTHING_TO_INLINE")
+inline fun View.invisibleIfTrue(boolean: Boolean) {
+    this.visibility = if (boolean) View.INVISIBLE else View.VISIBLE
+}
+
+@Suppress("NOTHING_TO_INLINE")
 inline fun View.invisibleIfFalse(boolean: Boolean) {
-    this.visibility = if (boolean) View.VISIBLE else View.INVISIBLE
+    this.invisibleIfTrue(!boolean)
+}
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun View.goneIfTrue(boolean: Boolean) {
+    this.visibility = if (boolean) View.GONE else View.VISIBLE
 }
 
 @Suppress("NOTHING_TO_INLINE")
 inline fun View.goneIfFalse(boolean: Boolean) {
-    this.visibility = if (boolean) View.VISIBLE else View.GONE
+    this.goneIfTrue(!boolean)
 }
