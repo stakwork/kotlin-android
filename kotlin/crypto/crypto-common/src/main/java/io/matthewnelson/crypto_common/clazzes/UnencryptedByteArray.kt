@@ -31,8 +31,8 @@ inline fun UnencryptedByteArray.toUnencryptedCharArray(): UnencryptedCharArray =
 
 @Suppress("NOTHING_TO_INLINE")
 @OptIn(UnencryptedDataAccess::class)
-inline fun UnencryptedByteArray.toUnencryptedString(): UnencryptedString =
-    UnencryptedString(value.toString(charset("UTF-8")).trim())
+inline fun UnencryptedByteArray.toUnencryptedString(trim: Boolean = true): UnencryptedString =
+    UnencryptedString(value.toString(charset("UTF-8")).let { if (trim) it.trim() else it})
 
 inline class UnencryptedByteArray(@property: UnencryptedDataAccess val value: ByteArray) {
 
