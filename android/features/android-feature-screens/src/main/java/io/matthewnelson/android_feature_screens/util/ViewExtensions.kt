@@ -26,22 +26,36 @@ inline fun Int.dpToPX(): Int =
 inline fun Int.pxToDp(): Int =
     (this / Resources.getSystem().displayMetrics.density).toInt()
 
-@Suppress("NOTHING_TO_INLINE")
-inline fun View.invisibleIfTrue(boolean: Boolean) {
-    this.visibility = if (boolean) View.INVISIBLE else View.VISIBLE
-}
+inline val <T: View> T.visible: T
+    get() {
+        visibility = View.VISIBLE
+        return this
+    }
+
+inline val <T: View> T.invisible: T
+    get() {
+        visibility = View.INVISIBLE
+        return this
+    }
+
+inline val <T: View> T.gone: T
+    get() {
+        visibility = View.GONE
+        return this
+    }
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun View.invisibleIfFalse(boolean: Boolean) {
-    this.invisibleIfTrue(!boolean)
-}
+inline fun <T: View> T.invisibleIfTrue(boolean: Boolean): T =
+    if (boolean) invisible else visible
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun View.goneIfTrue(boolean: Boolean) {
-    this.visibility = if (boolean) View.GONE else View.VISIBLE
-}
+inline fun <T: View> T.invisibleIfFalse(boolean: Boolean): T =
+    invisibleIfTrue(!boolean)
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun View.goneIfFalse(boolean: Boolean) {
-    this.goneIfTrue(!boolean)
-}
+inline fun <T: View> T.goneIfTrue(boolean: Boolean): T =
+    if (boolean) gone else visible
+
+@Suppress("NOTHING_TO_INLINE")
+inline fun <T: View> T.goneIfFalse(boolean: Boolean): T =
+    goneIfTrue(!boolean)
