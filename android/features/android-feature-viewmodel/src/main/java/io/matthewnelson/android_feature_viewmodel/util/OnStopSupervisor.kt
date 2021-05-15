@@ -5,7 +5,7 @@ import androidx.lifecycle.LifecycleOwner
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 
-class OnStopSupervisorScope: DefaultLifecycleObserver {
+class OnStopSupervisor: DefaultLifecycleObserver {
     private var supervisor = SupervisorJob()
     private var scope = CoroutineScope(supervisor)
 
@@ -23,7 +23,7 @@ class OnStopSupervisorScope: DefaultLifecycleObserver {
     /**
      * Call from fragment's onViewCreated
      * */
-    fun observe(owner: LifecycleOwner): OnStopSupervisorScope {
+    fun observe(owner: LifecycleOwner): OnStopSupervisor {
         owner.lifecycle.addObserver(this)
         return this
     }
