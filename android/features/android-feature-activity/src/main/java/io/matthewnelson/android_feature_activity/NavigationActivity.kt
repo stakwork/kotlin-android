@@ -63,7 +63,7 @@ abstract class NavigationActivity<
 
     override fun onStart() {
         super.onStart()
-        onStopSupervisor.scope().launch(navigationViewModel.dispatchers.mainImmediate) {
+        onStopSupervisor.scope.launch(navigationViewModel.dispatchers.mainImmediate) {
             navigationViewModel
                 .navigationDriver
                 .navigationRequestSharedFlow

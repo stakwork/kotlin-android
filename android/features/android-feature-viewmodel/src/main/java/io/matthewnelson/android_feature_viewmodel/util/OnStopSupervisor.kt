@@ -7,10 +7,8 @@ import kotlinx.coroutines.SupervisorJob
 
 class OnStopSupervisor: DefaultLifecycleObserver {
     private var supervisor = SupervisorJob()
-    private var scope = CoroutineScope(supervisor)
-
-    fun scope(): CoroutineScope =
-        scope
+    var scope = CoroutineScope(supervisor)
+        private set
 
     override fun onStop(owner: LifecycleOwner) {
         supervisor.cancel()

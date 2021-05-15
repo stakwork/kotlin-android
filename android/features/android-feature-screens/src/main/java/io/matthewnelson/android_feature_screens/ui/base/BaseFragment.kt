@@ -53,7 +53,7 @@ abstract class BaseFragment<
      * Called from [onStart] and cancelled from [onStop]
      * */
     protected open fun subscribeToViewStateFlow() {
-        onStopSupervisor.scope().launch(viewModel.mainImmediate) {
+        onStopSupervisor.scope.launch(viewModel.mainImmediate) {
             viewModel.collectViewState { viewState ->
                 if (currentViewState != viewState) {
                     currentViewState = viewState
