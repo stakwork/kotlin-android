@@ -16,10 +16,12 @@
 package io.matthewnelson.android_feature_viewmodel
 
 import androidx.lifecycle.ViewModel
+import io.matthewnelson.concept_coroutines.CoroutineDispatchers
 import io.matthewnelson.concept_views.viewstate.ViewState
 import io.matthewnelson.concept_views.viewstate.ViewStateContainer
 import io.matthewnelson.concept_views.viewstate.collect
 import io.matthewnelson.concept_views.viewstate.value
+import kotlinx.coroutines.CoroutineDispatcher
 
 suspend inline fun <VS: ViewState<VS>> BaseViewModel<VS>.collectViewState(
     crossinline action: suspend (value: VS) -> Unit
@@ -38,7 +40,8 @@ inline fun <VS: ViewState<VS>> BaseViewModel<VS>.updateViewState(viewState: VS) 
  * */
 abstract class BaseViewModel<
         VS: ViewState<VS>
-        >(initialViewState: VS): ViewModel()
+        >(val dispatchers: CoroutineDispatchers, initialViewState: VS)
+    : ViewModel(), CoroutineDispatchers by dispatchers
 {
     @Suppress("RemoveExplicitTypeArguments")
     open val viewStateContainer: ViewStateContainer<VS> by lazy {
