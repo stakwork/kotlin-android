@@ -21,7 +21,6 @@ import io.matthewnelson.concept_views.viewstate.ViewState
 import io.matthewnelson.concept_views.viewstate.ViewStateContainer
 import io.matthewnelson.concept_views.viewstate.collect
 import io.matthewnelson.concept_views.viewstate.value
-import kotlinx.coroutines.CoroutineDispatcher
 
 suspend inline fun <VS: ViewState<VS>> BaseViewModel<VS>.collectViewState(
     crossinline action: suspend (value: VS) -> Unit

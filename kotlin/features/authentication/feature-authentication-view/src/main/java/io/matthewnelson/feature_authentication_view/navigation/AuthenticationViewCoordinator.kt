@@ -19,7 +19,6 @@ import io.matthewnelson.concept_authentication.coordinator.AuthenticationRequest
 import io.matthewnelson.concept_authentication.coordinator.AuthenticationResponse
 import io.matthewnelson.feature_authentication_core.AuthenticationCoreCoordinator
 import io.matthewnelson.feature_authentication_core.AuthenticationCoreManager
-import io.matthewnelson.feature_authentication_core.components.AuthenticationManagerInitializer
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow

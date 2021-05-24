@@ -26,7 +26,7 @@ inline fun ByteArray.toCharArray(fill: Char = '0'): CharArray =
         ByteBuffer.wrap(copyByteArray).let { byteBuffer ->
             charset("UTF-8").newDecoder().decode(byteBuffer).let { charBuffer ->
                 charBuffer.array().copyOf(charBuffer.limit()).let { charArray ->
-                    byteBuffer.array().fill(fill.toByte())
+                    byteBuffer.array().fill(fill.code.toByte())
                     charBuffer.array().fill(fill)
                     charArray
                 }
@@ -50,7 +50,7 @@ inline fun CharArray.toByteArray(fill: Char = '0'): ByteArray =
             charset("UTF-8").newEncoder().encode(charBuffer).let { byteBuffer ->
                 byteBuffer.array().copyOf(byteBuffer.limit()).let { byteArray ->
                     charBuffer.array().fill(fill)
-                    byteBuffer.array().fill(fill.toByte())
+                    byteBuffer.array().fill(fill.code.toByte())
                     byteArray
                 }
             }

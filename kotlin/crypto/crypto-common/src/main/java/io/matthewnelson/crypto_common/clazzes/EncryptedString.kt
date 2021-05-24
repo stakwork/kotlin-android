@@ -15,4 +15,5 @@
 * */
 package io.matthewnelson.crypto_common.clazzes
 
-inline class EncryptedString(val value: String)
+@JvmInline
+value class EncryptedString(val value: String)

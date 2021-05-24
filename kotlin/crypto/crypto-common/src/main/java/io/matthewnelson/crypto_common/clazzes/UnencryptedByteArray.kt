@@ -21,7 +21,7 @@ import io.matthewnelson.crypto_common.extensions.toCharArray
 @Suppress("NOTHING_TO_INLINE")
 @OptIn(UnencryptedDataAccess::class)
 inline fun UnencryptedByteArray.clear(char: Char = '0') {
-    value.fill(char.toByte())
+    value.fill(char.code.toByte())
 }
 
 @Suppress("NOTHING_TO_INLINE")
@@ -34,7 +34,8 @@ inline fun UnencryptedByteArray.toUnencryptedCharArray(): UnencryptedCharArray =
 inline fun UnencryptedByteArray.toUnencryptedString(trim: Boolean = true): UnencryptedString =
     UnencryptedString(value.toString(charset("UTF-8")).let { if (trim) it.trim() else it})
 
-inline class UnencryptedByteArray(@property: UnencryptedDataAccess val value: ByteArray) {
+@JvmInline
+value class UnencryptedByteArray(@property: UnencryptedDataAccess val value: ByteArray) {
 
     @Throws(IllegalAccessException::class)
     override fun toString(): String {

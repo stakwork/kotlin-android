@@ -34,7 +34,8 @@ inline fun UnencryptedCharArray.toUnencryptedByteArray(): UnencryptedByteArray =
 inline fun UnencryptedCharArray.toUnencryptedString(): UnencryptedString =
     UnencryptedString(value.joinToString(""))
 
-inline class UnencryptedCharArray(@property: UnencryptedDataAccess val value: CharArray) {
+@JvmInline
+value class UnencryptedCharArray(@property: UnencryptedDataAccess val value: CharArray) {
 
     @Throws(IllegalAccessException::class)
     override fun toString(): String {

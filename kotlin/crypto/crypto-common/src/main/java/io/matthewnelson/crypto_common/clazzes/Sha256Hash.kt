@@ -32,7 +32,8 @@ inline fun ByteArray.toSha256Hash(): Sha256Hash {
 inline fun String.toSha256Hash(): Sha256Hash =
     encodeToByteArray().toSha256Hash()
 
-inline class Sha256Hash(val value: String) {
+@JvmInline
+value class Sha256Hash(val value: String) {
 
     init {
         require(isValid(value)) {
