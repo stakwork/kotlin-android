@@ -195,12 +195,12 @@ abstract class KOpenSSL {
                         // Input Vector is bytes 32 - 47 of the derived secret key
                         iv = secretKey.copyOfRange(32, secretKey.size)
                     ).also {
-                        secretKey.fill('*'.toByte())
+                        secretKey.fill('*'.code.toByte())
                     }
 
                 }
             } finally {
-                generator.password?.fill('*'.toByte())
+                generator.password?.fill('*'.code.toByte())
             }
         }
 
@@ -215,8 +215,8 @@ abstract class KOpenSSL {
             IvParameterSpec(iv)
 
         fun clearValues() {
-            key.fill('*'.toByte())
-            iv.fill('*'.toByte())
+            key.fill('*'.code.toByte())
+            iv.fill('*'.code.toByte())
         }
     }
 }

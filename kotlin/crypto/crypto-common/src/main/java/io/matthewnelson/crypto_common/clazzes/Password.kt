@@ -47,7 +47,8 @@ inline fun Password.compare(password: Password): Boolean {
     return true
 }
 
-inline class Password(@property: RawPasswordAccess val value: CharArray) {
+@JvmInline
+value class Password(@property: RawPasswordAccess val value: CharArray) {
 
     @Throws(IllegalAccessException::class)
     override fun toString(): String {

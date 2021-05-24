@@ -28,4 +28,5 @@ inline fun UnencryptedString.toUnencryptedByteArray(): UnencryptedByteArray =
 inline fun UnencryptedString.toUnencryptedCharArray(): UnencryptedCharArray =
     UnencryptedCharArray(value.toCharArray())
 
-inline class UnencryptedString(@property: UnencryptedDataAccess val value: String)
+@JvmInline
+value class UnencryptedString(@property: UnencryptedDataAccess val value: String)

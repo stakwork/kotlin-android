@@ -141,7 +141,7 @@ class AES256CBC_PBKDF2_HMAC_SHA256: KOpenSSL() {
             }
 
             if (!decrypted.isValidUTF8) {
-                decrypted.fill('*'.toByte())
+                decrypted.fill('*'.code.toByte())
                 throw CharacterCodingException()
             }
 
@@ -149,7 +149,7 @@ class AES256CBC_PBKDF2_HMAC_SHA256: KOpenSSL() {
             UnencryptedByteArray(
                 decrypted.copyOfRange(0, decrypted.size - decrypted.last().toInt())
             ).also {
-                decrypted.fill('*'.toByte())
+                decrypted.fill('*'.code.toByte())
             }
         }
 

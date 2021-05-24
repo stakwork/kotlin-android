@@ -15,4 +15,5 @@
 * */
 package io.matthewnelson.crypto_common.clazzes
 
-inline class HashIterations(val value: Int)
+@JvmInline
+value class HashIterations(val value: Int)
