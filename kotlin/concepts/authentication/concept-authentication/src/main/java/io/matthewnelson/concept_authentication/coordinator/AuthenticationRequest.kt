@@ -17,11 +17,25 @@ package io.matthewnelson.concept_authentication.coordinator
 
 import io.matthewnelson.crypto_common.clazzes.Password
 
+abstract class ConfirmedPinListener {
+    /**
+     * Called from Dispatchers.Default
+     * */
+    abstract suspend fun doWithConfirmedPassword(password: Password)
+}
+
 sealed class AuthenticationRequest {
 
     abstract val priority: Int
 
-    class ConfirmPin: AuthenticationRequest() {
+    /**
+     * Sending a [ConfirmedPinListener] along with the request will give access to the
+     * user's PIN value after it has been confirmed, prior to the [AuthenticationResponse]
+     * being returned.
+     * */
+    class ConfirmPin(
+        val listener: ConfirmedPinListener? = null
+    ): AuthenticationRequest() {
         override val priority: Int = 3
     }
 
