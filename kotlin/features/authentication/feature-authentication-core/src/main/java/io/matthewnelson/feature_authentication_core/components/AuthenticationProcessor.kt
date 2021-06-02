@@ -554,6 +554,12 @@ internal class AuthenticationProcessor private constructor(
                                 )
                     }
                     is AuthenticationRequest.ConfirmPin -> {
+                        try {
+                            request
+                                .listener
+                                ?.doWithConfirmedPassword(Password(userInput.toCharArray()))
+                        } catch (e: Exception) {}
+
                         responses.add(
                             AuthenticationResponse.Success.Authenticated(request)
                         )
