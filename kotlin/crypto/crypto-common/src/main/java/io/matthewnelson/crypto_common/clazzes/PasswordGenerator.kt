@@ -15,7 +15,6 @@
 * */
 package io.matthewnelson.crypto_common.clazzes
 
-import java.io.CharArrayWriter
 import java.security.SecureRandom
 
 class PasswordGenerator(passwordLength: Int, chars: Set<Char> = DEFAULT_CHARS) {
@@ -76,17 +75,12 @@ class PasswordGenerator(passwordLength: Int, chars: Set<Char> = DEFAULT_CHARS) {
     }
 
     val password: Password = SecureRandom().let { random ->
-        CharArrayWriter(passwordLength).let { writer ->
-            repeat(passwordLength) {
-                writer.append(chars.elementAt(random.nextInt(chars.size)))
+        CharArray(passwordLength).let { array ->
+            repeat(passwordLength) { index ->
+                array[index] = chars.elementAt(random.nextInt(chars.size))
             }
 
-            Password(writer.toCharArray()).also {
-                writer.reset()
-                repeat(passwordLength) {
-                    writer.append('0')
-                }
-            }
+            Password(array)
         }
     }
 }
