@@ -2,7 +2,6 @@ plugins {
     id 'com.android.application'
     id 'dagger.hilt.android.plugin'
     id 'kotlin-android'
-    id 'kotlin-kapt'
 }
 
 android {
@@ -66,7 +65,7 @@ dependencies {
 
     implementation KAdeps.androidx.lifecycle.hilt
     implementation KAdeps.google.hilt
-    kapt KAkaptDeps.google.hilt
+    implementation KAdeps.google.hiltCompiler
 
 //    debugImplementation KAdebugDeps.square.leakCanary
 

@@ -44,6 +44,7 @@ ext.KAdeps = [
 //    bouncyCastle: "org.bouncycastle:bcprov-jdk15on:1.65",
     google: [
         hilt: "com.google.dagger:hilt-android:${KAversions.hilt}",
+        hiltCompiler: "com.google.dagger:hilt-android-compiler:${KAversions.hilt}"
     ],
     kotlin: [
         coroutinesAndroid: "org.jetbrains.kotlinx:kotlinx-coroutines-android:${KAversions.coroutines}",
@@ -117,8 +118,4 @@ ext.KAtestDeps = [
  *     kaptTest kaptDeps.distributor.libName
  * }
  * */
-ext.KAkaptDeps = [
-    google: [
-        hilt: "com.google.dagger:hilt-android-compiler:${KAversions.hilt}",
-    ],
-]
+
