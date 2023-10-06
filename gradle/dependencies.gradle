@@ -5,13 +5,12 @@ ext.KAversions = [
     'buildTools': "30.0.3",
     'compileSdk': 30,
     'minSdk': 16,
-
-    'androidGradle': '4.2.2',
+    'androidGradle': '7.4.2',
     'coroutines': '1.5.1',
     'lifecycle': '2.3.1',
     'hilt': '2.37',
     'hiltJetpack': '1.0.0-alpha03',
-    'kotlin': '1.5.21',
+    'kotlin': '1.5.31',
     'navigation': '2.3.5',
 ]
 
@@ -70,7 +69,7 @@ ext.KAplugin = [
     google: [
         hilt: "com.google.dagger:hilt-android-gradle-plugin:${KAversions.hilt}",
     ],
-    gradleVersions: "com.github.ben-manes:gradle-versions-plugin:0.39.0",
+    gradleVersions: "com.github.ben-manes:gradle-versions-plugin:0.42.0",
     kotlin: [
         gradle: "org.jetbrains.kotlin:kotlin-gradle-plugin:${KAversions.kotlin}",
     ],
