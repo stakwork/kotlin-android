@@ -5,12 +5,12 @@ ext.KAversions = [
     'buildTools': "30.0.3",
     'compileSdk': 30,
     'minSdk': 16,
-    'androidGradle': '7.3.1',
+    'androidGradle': '7.4.2',
     'coroutines': '1.5.1',
     'lifecycle': '2.4.0',
     'hilt': '2.42',
     'hiltJetpack': '1.0.0-alpha03',
-    'kotlin': '1.7.10',
+    'kotlin': '1.6.21',
     'navigation': '2.3.5',
 ]
 
