@@ -63,7 +63,6 @@ dependencies {
     implementation project(path: ':kotlin:common:build-config')
     implementation project(path: ':kotlin:features:feature-navigation')
 
-    implementation KAdeps.androidx.lifecycle.hilt
     implementation KAdeps.google.hilt
     implementation KAdeps.google.hiltCompiler
 

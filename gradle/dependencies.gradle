@@ -6,7 +6,7 @@ ext.KAversions = [
     'compileSdk': 30,
     'minSdk': 16,
     'androidGradle': '7.4.2',
-    'coroutines': '1.5.1',
+    'coroutines': '1.6.4',
     'lifecycle': '2.4.0',
     'hilt': '2.42',
     'hiltJetpack': '1.0.0-alpha03',
@@ -29,7 +29,6 @@ ext.KAdeps = [
         core: "androidx.core:core-ktx:1.6.0",
         lifecycle: [
             commonJava8: "androidx.lifecycle:lifecycle-common-java8:${KAversions.lifecycle}",
-            hilt: "androidx.hilt:hilt-lifecycle-viewmodel:${KAversions.hiltJetpack}",
             viewModel: "androidx.lifecycle:lifecycle-viewmodel-ktx:${KAversions.lifecycle}",//
             viewModelSavedState: "androidx.lifecycle:lifecycle-viewmodel-savedstate:${KAversions.lifecycle}",
         ],
