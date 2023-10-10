@@ -11,7 +11,7 @@ ext.KAversions = [
     'hilt': '2.42',
     'hiltJetpack': '1.0.0-alpha03',
     'kotlin': '1.6.21',
-    'navigation': '2.3.5',
+    'navigation': '2.5.3',
 ]
 
 /**
