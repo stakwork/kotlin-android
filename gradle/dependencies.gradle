@@ -8,9 +8,9 @@ ext.KAversions = [
     'androidGradle': '7.4.2',
     'coroutines': '1.6.4',
     'lifecycle': '2.4.0',
-    'hilt': '2.42',
+    'hilt': '2.47',
     'hiltJetpack': '1.0.0-alpha03',
-    'kotlin': '1.6.21',
+    'kotlin': '1.8.20',
     'navigation': '2.5.3',
 ]
 
