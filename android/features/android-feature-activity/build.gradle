@@ -23,6 +23,7 @@ android {
             minifyEnabled false
         }
     }
+    namespace 'io.matthewnelson.android_feature_activity'
 }
 
 dependencies {

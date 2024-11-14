@@ -4,7 +4,7 @@
 ext.KAversions = [
     'buildTools': "30.0.3",
     'compileSdk': 30,
-    'minSdk': 16,
+    'minSdk': 23,
     'androidGradle': '7.4.2',
     'coroutines': '1.6.4',
     'lifecycle': '2.4.0',

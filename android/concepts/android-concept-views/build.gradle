@@ -29,6 +29,7 @@ android {
             minifyEnabled false
         }
     }
+    namespace 'io.matthewnelson.android_concept_views'
 }
 
 dependencies {
