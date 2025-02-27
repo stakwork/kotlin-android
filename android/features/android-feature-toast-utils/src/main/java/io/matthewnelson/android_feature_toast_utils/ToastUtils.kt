@@ -22,6 +22,7 @@ import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Build
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
@@ -43,7 +44,9 @@ open class ToastUtils(
     @ColorRes val toastBackgroundTint: Int = R.color.toast_utils_default_background_tint,
     @ColorRes val textColor: Int = R.color.toast_utils_default_text,
     @DrawableRes val imageBackground: Int? = null,
-    @DrawableRes val image: Int? = null
+    @DrawableRes val image: Int? = null,
+    val showOnTop: Boolean = false,
+    val verticalPositionInPixels: Int = 0
 )
 
 sealed class ToastUtilsResponse {
@@ -121,6 +124,9 @@ fun ToastUtils.show(context: Context, message: String): ToastUtilsResponse {
             } else {
                 Toast.LENGTH_SHORT
             }
+
+            val verticalGravity = if (showOnTop) Gravity.TOP else Gravity.BOTTOM
+            toast.setGravity(verticalGravity or Gravity.CENTER_HORIZONTAL, 0, verticalPositionInPixels)
 
             toast.show()
             ToastUtilsResponse.Success(toast)
