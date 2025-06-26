@@ -22,6 +22,7 @@ import io.matthewnelson.crypto_common.extensions.toByteArray
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okio.base64.decodeBase64ToArray
 import okio.base64.encodeBase64
 import org.bouncycastle_ktx.crypto.generators.PKCS5S2ParametersGenerator
@@ -33,7 +34,9 @@ import java.security.spec.InvalidKeySpecException
 import javax.crypto.BadPaddingException
 import javax.crypto.IllegalBlockSizeException
 import javax.crypto.NoSuchPaddingException
+import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
 
 inline val CharSequence.isSalted: Boolean
@@ -178,7 +181,7 @@ abstract class KOpenSSL {
      * */
     @Throws(CancellationException::class)
     @OptIn(RawPasswordAccess::class)
-    protected open suspend fun getSecretKeyComponents(
+    protected open suspend fun getSecretKeyComponentsOld(
         password: Password,
         salt: ByteArray,
         hashIterations: HashIterations
@@ -203,6 +206,34 @@ abstract class KOpenSSL {
                 generator.password?.fill('*'.code.toByte())
             }
         }
+
+    @Throws(CancellationException::class)
+    @OptIn(RawPasswordAccess::class)
+    protected suspend fun getSecretKeyComponents(
+        password: Password,
+        salt: ByteArray,
+        hashIterations: HashIterations
+    ): SecretKeyComponents = withContext(Dispatchers.Default) {
+
+        val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
+        val spec = PBEKeySpec(
+            password.value,
+            salt,
+            hashIterations.value,
+            48 * 8
+        )
+
+        try {
+            val secretKey = factory.generateSecret(spec).encoded
+
+            SecretKeyComponents(
+                key = secretKey.copyOfRange(0, 32),
+                iv = secretKey.copyOfRange(32, secretKey.size)
+            )
+        } finally {
+            spec.clearPassword()
+        }
+    }
 
     protected open class SecretKeyComponents(
         private val key: ByteArray,
